@@ -1,0 +1,5 @@
+-r minimal.txt
+-r regular.txt
+-r lolo.txt
+-r optional.txt
+-r tests.txt

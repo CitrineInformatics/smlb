@@ -1,0 +1,4 @@
+-r requirements/minimal.txt
+-r requirements/regular.txt
+-r requirements/lolo.txt
+-r requirements/optional.txt
