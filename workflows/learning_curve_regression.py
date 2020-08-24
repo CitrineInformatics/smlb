@@ -125,7 +125,7 @@ class LearningCurveRegression(Workflow):
 
         # remove validation data from dataset for finite datasets
         if self._data.is_finite:
-            remaining_data = self._data.complement(validation_data)
+            remaining_data = self._data._complement(self._data,validation_data)
         else:  # infinite
             # any finite subset has measure zero
             remaining_data = self._data
