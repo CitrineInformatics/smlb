@@ -121,6 +121,13 @@ class PredictiveDistribution(PredictiveDistributionDecomposition, metaclass=ABCM
 
         raise NotImplementedError
 
+    @property
+    @abstractmethod
+    def corr(self):
+        """Predictive correlation between predictions."""
+
+        raise NotImplementedError
+
 
 class DeltaPredictiveDistribution(PredictiveDistribution):
     """(Dirac) delta predictive distributions.
@@ -156,10 +163,11 @@ class DeltaPredictiveDistribution(PredictiveDistribution):
 
         return np.zeros_like(self._mean)
 
+    @property
+    def corr(self):
+        """Correlation of predictions."""
 
-# The normal predictive distributions are currently independent.
-# This could be changed, for example, to accommodate the full posterior of a Gaussian process,
-# that is, including the covariances between predictions.
+        return np.identity(len(self._mean))
 
 
 class NormalPredictiveDistribution(PredictiveDistribution):
@@ -195,3 +203,52 @@ class NormalPredictiveDistribution(PredictiveDistribution):
         """Standard deviations of predictive distributions."""
 
         return self._stddev
+
+    @property
+    def corr(self):
+        """Correlation of predictions."""
+
+        return np.identity(len(self._mean))
+
+
+class CorrelatedNormalPredictiveDistribution(PredictiveDistribution):
+    """Normal predictive distributions.
+    
+    A sequence of possibly correlated normal predictive distributions.
+    """
+
+    def __init__(self, mean, stddev, corr, **kwargs):
+        """Initialize state.
+
+        The correlated normal distribution is completely characterized by
+        its mean, standard deviations, and correlation matrix.
+
+        Parameters:
+            mean: a sequence of means (floats)
+            stddev: a sequence of standard deviations (non-negative floats)
+            corr: a matrix of Pearson correlations between individual predictions (floats between 0 and 1)
+        """
+
+        super().__init__(**kwargs)
+
+        self._mean = params.real_vector(mean)
+        self._stddev = params.real_vector(stddev, dimensions=len(self._mean), domain=(0, np.inf))
+        self._corr = params.real_matrix(corr, nrows=len(self._mean), ncols=len(self._mean))
+
+    @property
+    def mean(self):
+        """Means of predictive distributions."""
+
+        return self._mean
+
+    @property
+    def stddev(self):
+        """Standard deviations of predictive distributions."""
+
+        return self._stddev
+
+    @property
+    def corr(self):
+        """Correlation of predictions."""
+
+        return self._corr

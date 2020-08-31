@@ -20,6 +20,7 @@ from smlb import (
     Data,
     DeltaPredictiveDistribution,
     NormalPredictiveDistribution,
+    CorrrelatedNormalPredictiveDistribution,
     params,
     SupervisedLearner,
 )
@@ -47,6 +48,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
     def __init__(
         self,
         uncertainties: Optional[str] = None,
+        correlations: Optional[str] = None,
         n_estimators: int = 100,
         criterion: str = "mse",
         max_depth: Optional[int] = None,
@@ -72,6 +74,9 @@ class RandomForestRegressionSklearn(SupervisedLearner):
             uncertainties: whether and how to compute predictive uncertainties; possible choices are
                 None; by default, RandomForestRegressor does not return any predictive uncertainties;
                 "naive"; uses the ensembles standard deviation
+            correlations: whether and how to compute predictive correlations; possible choices are 
+                None; by default, RandomForestRegressor does not return any predictive correlations;
+                "naive"; uses the ensembles covariance over estimators.
             n_estimators: number of decision trees
             criterion: either variance reduction ("mse", mean squared error), or, mean absolute error ("mae")
             max_depth: maximum depth of a tree; default is restricted only by min_samples_leaf
@@ -102,6 +107,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
         # validate parameters
 
         self._uncertainties = params.enumeration(uncertainties, {None, "naive"})
+        self._correlations = params.enumeration(correlations, {None, "naive"})
 
         n_estimators = params.integer(n_estimators, from_=1)
         criterion = params.enumeration(criterion, {"mse", "mae"})
@@ -200,14 +206,24 @@ class RandomForestRegressionSklearn(SupervisedLearner):
         # returning predictions for all trees in the ensemble. Therefore,
         # `preds = self._model.predict(xpred)` is insufficient.
 
-        if self._uncertainties is None:
+        if self._uncertainties is None and self._correlations is None:
             preds = self._model.predict(xpred)
             return DeltaPredictiveDistribution(mean=preds)
         elif self._uncertainties == "naive":
             preds = np.asfarray([tree.predict(xpred) for tree in self._model.estimators_])
-            return NormalPredictiveDistribution(
-                mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0)
-            )
+            if self._correlations is None:
+                return NormalPredictiveDistribution(
+                    mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0)
+                )
+            elif self._correlations == "naive":
+                return CorrrelatedNormalPredictiveDistribution(
+                    mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0),
+                    corr=np.corrcoef(preds, rowvar=False)
+                )
+            else:
+                raise BenchmarkError(
+                    "internal error, unknown parameter for correlations of RandomForestRegressionSklearn"
+                )
         else:
             raise BenchmarkError(
                 "internal error, unknown parameter for uncertainties of RandomForestRegressionSklearn"
