@@ -14,6 +14,7 @@ from smlb.parameters import params
 from smlb.data import Data
 from smlb.transformations import DataTransformation
 from smlb.distributions import PredictiveDistribution
+from smlb.exceptions import InvalidParameterError
 
 # todo: add hyperparameters to interface
 
@@ -79,7 +80,7 @@ class SupervisedLearner(Learner):
             InvalidParameterError if data is not labeled
         """
 
-        data = params.instance(data, Labels)
+        data = params.instance(data, Data)
         if not data.is_labeled:
             raise InvalidParameterError("Labeled data", "unlabeled data")
 

@@ -45,6 +45,7 @@ from .distributions import (
     PredictiveDistribution,
     DeltaPredictiveDistribution,
     NormalPredictiveDistribution,
+    CorrelatedNormalPredictiveDistribution,
 )
 from .evaluations import Evaluation, EvaluationConfiguration
 from .plots import Plot, PlotConfiguration, GeneralizedFunctionPlot, LearningCurvePlot

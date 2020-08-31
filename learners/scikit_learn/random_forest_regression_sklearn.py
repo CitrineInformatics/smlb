@@ -20,7 +20,7 @@ from smlb import (
     Data,
     DeltaPredictiveDistribution,
     NormalPredictiveDistribution,
-    CorrrelatedNormalPredictiveDistribution,
+    CorrelatedNormalPredictiveDistribution,
     params,
     SupervisedLearner,
 )
@@ -216,7 +216,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
                     mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0)
                 )
             elif self._correlations == "naive":
-                return CorrrelatedNormalPredictiveDistribution(
+                return CorrelatedNormalPredictiveDistribution(
                     mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0),
                     corr=np.corrcoef(preds, rowvar=False)
                 )
