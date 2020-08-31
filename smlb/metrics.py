@@ -579,6 +579,99 @@ class MeanContinuousRankedProbabilityScore(ScalarEvaluationMetric):
         return np.mean(ContinuousRankedProbabilityScore()._evaluate(true, pred))
 
 
+class StandardConfidence(ScalarEvaluationMetric):
+    '''Fraction of the time that the magnitude of a residual was less than the uncertainty estimate.
+    Evaluates both relationship between uncertainty estimate and the residual, as well as the
+    overal normalization. Does not depend on the predicted value, only the residual
+
+    Represents the 68% confidence point in a "coverage probability" plot.
+
+    No "orientation". Closer to 0.68 is better.
+    '''
+
+    def _evaluate(self, true, pred):
+        ''' Compute standard confidence
+
+        Parameters:
+            true: observed property distributions; requires only means
+            pred: predictive property distributions
+
+        Returns:
+            standard confidence
+        '''
+
+        true = params.distribution(true)
+        pred = params.distribution(pred)
+
+        abs_residual = np.abs(true.mean - pred.mean)
+        is_less = abs_residual < pred.stddev
+        stdconf = np.mean(is_less)
+
+        return stdconf
+
+
+class RootMeanSquareStandardizedResiduals(ScalarEvaluationMetric):
+    '''Root Mean Square of the Standardized Residuals
+    Evaluates both relationship between uncertainty estimate and the residual, as well as the
+    overal normalization. Does not depend on the predicted value, only the residual.
+
+    Also known as RMSSE.
+
+    No "orientation". Closer to 1 is better.
+    '''
+
+    def _evaluate(self, true, pred):
+        ''' Compute RMSSE.
+
+        Parameters:
+            true: observed property distributions; requires only means
+            pred: predictive property distributions
+
+        Returns:
+            RMSSE
+        '''
+
+        true = params.distribution(true)
+        pred = params.distribution(pred)
+
+        strue = (true.mean - pred.mean) / pred.stddev
+        rmsse = np.sqrt(np.mean(np.power(strue, 2)))
+
+        return rmsse
+
+
+class UncertaintyCorrelation(ScalarEvaluationMetric):
+    '''Correlation between uncertainty estimate and abs(residual). 
+    A positive value is desirable. A negative value indicates pathological behavior.
+    Does not depend on the predicted value, only the residual.
+    '''
+
+    @property
+    def orientation(self):
+        """Indicate maximization."""
+
+        return +1
+
+    def _evaluate(self, true, pred):
+        ''' Compute Uncertainty Correlation
+
+        Parameters:
+            true: observed property distributions; requires only means
+            pred: predictive property distributions
+
+        Returns:
+            uncertainty correlation
+        '''
+
+        true = params.distribution(true)
+        pred = params.distribution(pred)
+
+        abs_residual = np.abs(true.mean - pred.mean)
+        uc_corr = np.corrcoef(abs_residual, pred.stddev)[0,1] # get off-diagonal of correlation matrix
+
+        return uc_corr
+
+
 # helper function 
 
 def two_sample_cumulative_distribution_function_statistic(
