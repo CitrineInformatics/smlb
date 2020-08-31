@@ -37,7 +37,7 @@ def test_RandomForestRegressionSklearn_1():
 def test_RandomForestRegressionSklearn_2():
     """Simple examples: linear 1-d function."""
 
-    rf = RandomForestRegressionSklearn(random_state=1, uncertainties="naive")
+    rf = RandomForestRegressionSklearn(random_state=1, uncertainties="naive", correlations="naive")
     train_data = smlb.TabularData(
         data=np.array([[-2], [-1.5], [-1], [-0.5], [0], [0.5], [1], [1.5], [2]]),
         labels=np.array([-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]),
@@ -49,6 +49,9 @@ def test_RandomForestRegressionSklearn_2():
 
     stddev = rf.apply(smlb.TabularData(data=np.array([[-2], [0], [2]]))).stddev
     assert stddev[0] > stddev[1] < stddev[2]
+
+    corr = rf.apply(smlb.TabularData(data=np.array([[-2], [0], [2]]))).corr
+    assert corr[0,1] > corr[1,2] < corr[0,2]
 
     # without uncertainties
     rf = RandomForestRegressionSklearn(random_state=1)  # default for uncertainties is None
