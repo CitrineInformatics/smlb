@@ -194,6 +194,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
             data: finite indexed data to predict;
             compute_corr: whether or not to compute a correlation matrix. 
                 Useful to specify independently, to not overflow RAM. 
+                WARNING: this could easily overflow RAM if len(data) is too large (O(10k) or larger)
 
         Returns:
             predictive normal distribution
@@ -218,6 +219,11 @@ class RandomForestRegressionSklearn(SupervisedLearner):
                     mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0)
                 )
             elif self._correlations == "naive":
+                if len(preds) > 10000:
+                    print(
+                        'Warning: Input correlations are being computed for many (>10k) predictions. '
+                        'This could result in a memory overflow. '
+                    )
                 return CorrelatedNormalPredictiveDistribution(
                     mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0),
                     corr=np.corrcoef(preds, rowvar=False)
