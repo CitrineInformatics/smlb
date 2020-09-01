@@ -128,3 +128,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 datasets/experimental/qm9_ramakrishnan_etal14/gdb9-14b.zip
+*.p

@@ -51,7 +51,7 @@ def test_RandomForestRegressionSklearn_2():
     stddev = rf.apply(smlb.TabularData(data=np.array([[-2], [0], [2]]))).stddev
     assert stddev[0] > stddev[1] < stddev[2]
 
-    corr = rf.apply(smlb.TabularData(data=np.array([[-1], [0], [1]]))).corr
+    corr = rf.apply(smlb.TabularData(data=np.array([[-1], [0], [1]])), compute_corr=True).corr
     assert abs(corr[0,1]) > abs(corr[0,2]) < abs(corr[1,2])
 
     # Confirm that the kernel behaves properly
