@@ -611,7 +611,7 @@ class StandardConfidence(ScalarEvaluationMetric):
 
 
 class RootMeanSquareStandardizedResiduals(ScalarEvaluationMetric):
-    '''Root Mean Square of the Standardized Residuals (RMSSE).
+    """Root Mean Square of the Standardized Residuals (RMSSE).
     
     RMSSE evaluates the quality of the predicted uncertainty estimates, both in terms of individual predictions and overall normalization.
     Compared to standard confidence, RMSSE is more sensitive to outliers.
