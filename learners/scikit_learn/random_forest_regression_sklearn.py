@@ -221,7 +221,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
                     mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0)
                 )
             elif self._correlations == "naive":
-                if (len(preds) > 25000) and not self._force_corr:
+                if (data.num_samples > 25000) and not self._force_corr:
                     warn(
                         "Input correlations requested for >25k predictions."
                         " Corelation matrix will not be computed."
@@ -232,9 +232,15 @@ class RandomForestRegressionSklearn(SupervisedLearner):
                         mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0)
                     )
                 else:
+                    # Must handle single-prediction separately, as in this case np.corrcoef
+                    # will return single number rather than 1x1 array.
+                    if preds.shape[1] == 1: 
+                        corr = np.array([[1]])
+                    else:
+                        corr = np.corrcoef(preds, rowvar=False)
                     return CorrelatedNormalPredictiveDistribution(
                         mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0),
-                        corr=np.corrcoef(preds, rowvar=False)
+                        corr=corr
                     )
             else:
                 raise BenchmarkError(
