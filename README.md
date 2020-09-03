@@ -29,7 +29,7 @@ See the [Overview](docs/overview.md) for a more detailed description.
 
 ## Getting started
 
-To get started follow [installation](docs/installation.md) instructions and run the [tutorial](docs/tutorial.ipynb).
+To get started, follow [installation](docs/installation.md) instructions and run the [tutorial](docs/tutorial.ipynb).
 
 ## Other
 
