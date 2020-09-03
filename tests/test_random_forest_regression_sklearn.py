@@ -51,15 +51,13 @@ def test_RandomForestRegressionSklearn_2():
     stddev = rf.apply(smlb.TabularData(data=np.array([[-2], [0], [2]]))).stddev
     assert stddev[0] > stddev[1] < stddev[2]
 
-    corr = rf.apply(smlb.TabularData(data=np.array([[-1], [0], [1]])), compute_corr=True).corr
-    assert abs(corr[0,1]) > abs(corr[0,2]) < abs(corr[1,2])
-
-    # Confirm that the kernel behaves properly
-    lower_indices = np.tril_indices(corr.shape[0], k=-1, m=corr.shape[1])
-    correlations = np.abs(corr[lower_indices])
-    absolute_differences = pairwise_distances([[-1], [0], [1]])[lower_indices]
-    kernel_quality_metric = abs(np.corrcoef(correlations, absolute_differences)[0,1])
-    assert kernel_quality_metric > 0
+    corr = rf.apply(smlb.TabularData(data=np.array([[-1], [0], [1]]))).corr
+    assert corr.shape == (len(mean), len(mean))
+    assert np.allclose(corr, 
+        [[ 1, -0.165, 0.026], 
+        [-0.165, 1 , -0.307],
+        [0.0256, -0.307, 1]],
+    rtol=0.02)
 
     # without uncertainties
     rf = RandomForestRegressionSklearn(random_state=1)  # default for uncertainties is None

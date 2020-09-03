@@ -192,14 +192,11 @@ class RandomForestRegressionSklearn(SupervisedLearner):
 
         return self
 
-    def apply(self, data: Data, compute_corr: bool=False) -> NormalPredictiveDistribution:
+    def apply(self, data: Data) -> NormalPredictiveDistribution:
         r"""Predicts new inputs.
 
         Parameters:
             data: finite indexed data to predict;
-            compute_corr: whether or not to compute a correlation matrix. 
-                Useful to specify independently, to not overflow RAM. 
-                WARNING: this could easily overflow RAM if len(data) is too large (O(10k) or larger)
 
         Returns:
             predictive normal distribution
@@ -214,12 +211,12 @@ class RandomForestRegressionSklearn(SupervisedLearner):
         # returning predictions for all trees in the ensemble. Therefore,
         # `preds = self._model.predict(xpred)` is insufficient.
 
-        if self._uncertainties is None and compute_corr is False:
+        if self._uncertainties is None and self._correlations is None:
             preds = self._model.predict(xpred)
             return DeltaPredictiveDistribution(mean=preds)
         elif self._uncertainties == "naive":
             preds = np.asfarray([tree.predict(xpred) for tree in self._model.estimators_])
-            if compute_corr is False:
+            if  self._correlations is None:
                 return NormalPredictiveDistribution(
                     mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0)
                 )
