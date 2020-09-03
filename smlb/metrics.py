@@ -12,6 +12,7 @@ See documentation for relationships and derived metrics.
 """
 
 from abc import ABCMeta, abstractmethod, abstractproperty
+from warnings import warn
 
 import numpy as np
 import scipy as sp
@@ -463,7 +464,12 @@ class LogPredictiveDensity(VectorEvaluationMetric):
 
         true = params.distribution(true)
         pred = params.normal_distribution(pred)
-
+        if np.any(pred.stddev == 0):
+            warn(
+                f"Some uncertainties are zero. Metric {self.__class__.__name__}"
+                "may return nan.",
+                RuntimeWarning
+            )
         lpd = -(
             np.log(np.sqrt(2 * np.pi))
             + np.log(pred.stddev)
@@ -553,7 +559,12 @@ class ContinuousRankedProbabilityScore(VectorEvaluationMetric):
 
         true = params.distribution(true)
         pred = params.normal_distribution(pred)
-
+        if np.any(pred.stddev == 0):
+            warn(
+                f"Some uncertainties are zero. Metric {self.__class__.__name__}"
+                "may return nan.",
+                RuntimeWarning
+            )
         strue = (true.mean - pred.mean) / pred.stddev  # re-used intermediate quantity
         crps = pred.stddev * (
             strue * (2 * sp.stats.norm.cdf(strue) - 1)
@@ -638,7 +649,13 @@ class RootMeanSquareStandardizedResiduals(ScalarEvaluationMetric):
 
         true = params.distribution(true)
         pred = params.distribution(pred)
-
+        if np.any(pred.stddev == 0):
+            warn(
+                f"Some uncertainties are zero. Metric {self.__class__.__name__}"
+                "will be nan.",
+                RuntimeWarning
+            )
+            return np.nan
         strue = (true.mean - pred.mean) / pred.stddev
         rmsse = np.sqrt(np.mean(np.power(strue, 2)))
 
