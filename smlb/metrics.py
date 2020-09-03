@@ -580,17 +580,17 @@ class MeanContinuousRankedProbabilityScore(ScalarEvaluationMetric):
 
 
 class StandardConfidence(ScalarEvaluationMetric):
-    '''Fraction of the time that the magnitude of a residual was less than the uncertainty estimate.
-    Evaluates both relationship between uncertainty estimate and the residual, as well as the
-    overal normalization. Does not depend on the predicted value, only the residual
+    """Fraction of the time that the magnitude of the residual is less than the predicted standard deviation.
+    Standard confidence evaluates the quality of the predicted uncertainty estimates, both in terms of individual predictions and overall normalization.
+    Does not depend on the predicted values, only the residuals.
 
     Represents the 68% confidence point in a "coverage probability" plot.
 
     No "orientation". Closer to 0.68 is better.
-    '''
+    """
 
     def _evaluate(self, true, pred):
-        ''' Compute standard confidence
+        """ Compute standard confidence
 
         Parameters:
             true: observed property distributions; requires only means
@@ -598,7 +598,7 @@ class StandardConfidence(ScalarEvaluationMetric):
 
         Returns:
             standard confidence
-        '''
+        """
 
         true = params.distribution(true)
         pred = params.distribution(pred)
@@ -611,17 +611,17 @@ class StandardConfidence(ScalarEvaluationMetric):
 
 
 class RootMeanSquareStandardizedResiduals(ScalarEvaluationMetric):
-    '''Root Mean Square of the Standardized Residuals
-    Evaluates both relationship between uncertainty estimate and the residual, as well as the
-    overal normalization. Does not depend on the predicted value, only the residual.
-
-    Also known as RMSSE.
+    '''Root Mean Square of the Standardized Residuals (RMSSE).
+    
+    RMSSE evaluates the quality of the predicted uncertainty estimates, both in terms of individual predictions and overall normalization.
+    Compared to standard confidence, RMSSE is more sensitive to outliers.
+    Does not depend on the predicted values, only the residuals.
 
     No "orientation". Closer to 1 is better.
-    '''
+    """
 
     def _evaluate(self, true, pred):
-        ''' Compute RMSSE.
+        """ Compute RMSSE.
 
         Parameters:
             true: observed property distributions; requires only means
@@ -629,7 +629,7 @@ class RootMeanSquareStandardizedResiduals(ScalarEvaluationMetric):
 
         Returns:
             RMSSE
-        '''
+        """
 
         true = params.distribution(true)
         pred = params.distribution(pred)
@@ -641,10 +641,10 @@ class RootMeanSquareStandardizedResiduals(ScalarEvaluationMetric):
 
 
 class UncertaintyCorrelation(ScalarEvaluationMetric):
-    '''Correlation between uncertainty estimate and abs(residual). 
+    """Correlation between uncertainty estimate and abs(residual). 
     A positive value is desirable. A negative value indicates pathological behavior.
-    Does not depend on the predicted value, only the residual.
-    '''
+    Does not depend on the predicted values, only the residuals.
+    """
 
     @property
     def orientation(self):
@@ -653,7 +653,7 @@ class UncertaintyCorrelation(ScalarEvaluationMetric):
         return +1
 
     def _evaluate(self, true, pred):
-        ''' Compute Uncertainty Correlation
+        """Compute Uncertainty Correlation
 
         Parameters:
             true: observed property distributions; requires only means
@@ -661,7 +661,7 @@ class UncertaintyCorrelation(ScalarEvaluationMetric):
 
         Returns:
             uncertainty correlation
-        '''
+        """
 
         true = params.distribution(true)
         pred = params.distribution(pred)
@@ -717,4 +717,3 @@ def two_sample_cumulative_distribution_function_statistic(
     stat = np.asfarray(f(cdfa, cdfb))
 
     return g(stat[:-1], xdif)
-
