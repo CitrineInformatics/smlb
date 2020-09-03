@@ -14,12 +14,14 @@ import numpy as np
 
 import sklearn as skl
 from sklearn.ensemble import RandomForestRegressor
+from warnings import warn
 
 from smlb import (
     BenchmarkError,
     Data,
     DeltaPredictiveDistribution,
     NormalPredictiveDistribution,
+    CorrelatedNormalPredictiveDistribution,
     params,
     SupervisedLearner,
 )
@@ -47,6 +49,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
     def __init__(
         self,
         uncertainties: Optional[str] = None,
+        correlations: Optional[str] = None,
         n_estimators: int = 100,
         criterion: str = "mse",
         max_depth: Optional[int] = None,
@@ -62,6 +65,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
         random_state: int = None,
         ccp_alpha: float = 0.0,
         max_samples: Optional[Union[int, float]] = None,
+        force_corr: Optional[bool] = False,
         **kwargs,
     ):
         """Initialize state.
@@ -72,6 +76,9 @@ class RandomForestRegressionSklearn(SupervisedLearner):
             uncertainties: whether and how to compute predictive uncertainties; possible choices are
                 None; by default, RandomForestRegressor does not return any predictive uncertainties;
                 "naive"; uses the ensembles standard deviation
+            correlations: whether and how to compute predictive correlations; possible choices are 
+                None; by default, RandomForestRegressor does not return any predictive correlations;
+                "naive"; uses the ensembles covariance over estimators.
             n_estimators: number of decision trees
             criterion: either variance reduction ("mse", mean squared error), or, mean absolute error ("mae")
             max_depth: maximum depth of a tree; default is restricted only by min_samples_leaf
@@ -91,6 +98,8 @@ class RandomForestRegressionSklearn(SupervisedLearner):
             ccp_alpha: complexity parameter for minimal cost-complexity pruning.
             max_samples: number of input samples to draw during bootstrap; integers directly specify the number,
                 floating point values specify which fraction of samples to use; all by default
+            force_corr: force computation of the correlation matrix even when number of candidates is
+                higher than cap set at 25k for performance reasons.
 
         The sklearn.RandomForestRegressor parameters `oob_score`, `verbose`, `warm_restart` are not considered.
         
@@ -102,6 +111,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
         # validate parameters
 
         self._uncertainties = params.enumeration(uncertainties, {None, "naive"})
+        self._correlations = params.enumeration(correlations, {None, "naive"})
 
         n_estimators = params.integer(n_estimators, from_=1)
         criterion = params.enumeration(criterion, {"mse", "mae"})
@@ -143,6 +153,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
             lambda arg: params.real(arg, from_=0.0, to=1.0),
             params.none,
         )
+        self._force_corr = params.boolean(force_corr)
 
         self._model = skl.ensemble.RandomForestRegressor(
             n_estimators=n_estimators,
@@ -200,14 +211,35 @@ class RandomForestRegressionSklearn(SupervisedLearner):
         # returning predictions for all trees in the ensemble. Therefore,
         # `preds = self._model.predict(xpred)` is insufficient.
 
-        if self._uncertainties is None:
+        if self._uncertainties is None and self._correlations is None:
             preds = self._model.predict(xpred)
             return DeltaPredictiveDistribution(mean=preds)
         elif self._uncertainties == "naive":
             preds = np.asfarray([tree.predict(xpred) for tree in self._model.estimators_])
-            return NormalPredictiveDistribution(
-                mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0)
-            )
+            if  self._correlations is None:
+                return NormalPredictiveDistribution(
+                    mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0)
+                )
+            elif self._correlations == "naive":
+                if (len(preds) > 25000) and not self._force_corr:
+                    warn(
+                        "Input correlations requested for >25k predictions."
+                        " Corelation matrix will not be computed."
+                        " To force computation anyway, set `force_corr = True` in learner constructor.",
+                        UserWarning
+                    )
+                    return NormalPredictiveDistribution(
+                        mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0)
+                    )
+                else:
+                    return CorrelatedNormalPredictiveDistribution(
+                        mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0),
+                        corr=np.corrcoef(preds, rowvar=False)
+                    )
+            else:
+                raise BenchmarkError(
+                    "internal error, unknown parameter for correlations of RandomForestRegressionSklearn"
+                )
         else:
             raise BenchmarkError(
                 "internal error, unknown parameter for uncertainties of RandomForestRegressionSklearn"

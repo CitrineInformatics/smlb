@@ -8,6 +8,7 @@ Matthias Rupp 2020, Citrine Informatics.
 import pytest
 
 import numpy as np
+from sklearn.metrics import pairwise_distances
 
 skl = pytest.importorskip("sklearn")
 
@@ -37,7 +38,7 @@ def test_RandomForestRegressionSklearn_1():
 def test_RandomForestRegressionSklearn_2():
     """Simple examples: linear 1-d function."""
 
-    rf = RandomForestRegressionSklearn(random_state=1, uncertainties="naive")
+    rf = RandomForestRegressionSklearn(random_state=1, uncertainties="naive", correlations="naive")
     train_data = smlb.TabularData(
         data=np.array([[-2], [-1.5], [-1], [-0.5], [0], [0.5], [1], [1.5], [2]]),
         labels=np.array([-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]),
@@ -49,6 +50,14 @@ def test_RandomForestRegressionSklearn_2():
 
     stddev = rf.apply(smlb.TabularData(data=np.array([[-2], [0], [2]]))).stddev
     assert stddev[0] > stddev[1] < stddev[2]
+
+    corr = rf.apply(smlb.TabularData(data=np.array([[-1], [0], [1]]))).corr
+    assert corr.shape == (len(mean), len(mean))
+    assert np.allclose(corr, 
+        [[ 1, -0.165, 0.026], 
+        [-0.165, 1 , -0.307],
+        [0.0256, -0.307, 1]],
+    rtol=0.02)
 
     # without uncertainties
     rf = RandomForestRegressionSklearn(random_state=1)  # default for uncertainties is None
