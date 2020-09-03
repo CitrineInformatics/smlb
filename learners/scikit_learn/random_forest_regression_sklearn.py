@@ -221,7 +221,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
                     mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0)
                 )
             elif self._correlations == "naive":
-                if (len(preds) > 25000) and not self._force_corr:
+                if (data.num_samples > 25000) and not self._force_corr:
                     warn(
                         "Input correlations requested for >25k predictions."
                         " Corelation matrix will not be computed."
