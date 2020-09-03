@@ -14,6 +14,7 @@ import numpy as np
 
 import sklearn as skl
 from sklearn.ensemble import RandomForestRegressor
+from warnings import warn
 
 from smlb import (
     BenchmarkError,
@@ -64,6 +65,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
         random_state: int = None,
         ccp_alpha: float = 0.0,
         max_samples: Optional[Union[int, float]] = None,
+        force_corr: Optional[bool] = False,
         **kwargs,
     ):
         """Initialize state.
@@ -96,6 +98,8 @@ class RandomForestRegressionSklearn(SupervisedLearner):
             ccp_alpha: complexity parameter for minimal cost-complexity pruning.
             max_samples: number of input samples to draw during bootstrap; integers directly specify the number,
                 floating point values specify which fraction of samples to use; all by default
+            force_corr: force computation of the correlation matrix even when number of candidates is
+                higher than cap set at 25k for performance reasons.
 
         The sklearn.RandomForestRegressor parameters `oob_score`, `verbose`, `warm_restart` are not considered.
         
@@ -149,6 +153,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
             lambda arg: params.real(arg, from_=0.0, to=1.0),
             params.none,
         )
+        self._force_corr = params.boolean(force_corr)
 
         self._model = skl.ensemble.RandomForestRegressor(
             n_estimators=n_estimators,
@@ -219,15 +224,21 @@ class RandomForestRegressionSklearn(SupervisedLearner):
                     mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0)
                 )
             elif self._correlations == "naive":
-                if len(preds) > 10000:
-                    print(
-                        'Warning: Input correlations are being computed for many (>10k) predictions. '
-                        'This could result in a memory overflow. '
+                if (len(preds) > 25000) and not self._force_corr:
+                    warn(
+                        "Input correlations requested for >25k predictions."
+                        " Corelation matrix will not be computed."
+                        " To force computation anyway, set `force_corr = True` in learner constructor.",
+                        UserWarning
                     )
-                return CorrelatedNormalPredictiveDistribution(
-                    mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0),
-                    corr=np.corrcoef(preds, rowvar=False)
-                )
+                    return NormalPredictiveDistribution(
+                        mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0)
+                    )
+                else:
+                    return CorrelatedNormalPredictiveDistribution(
+                        mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0),
+                        corr=np.corrcoef(preds, rowvar=False)
+                    )
             else:
                 raise BenchmarkError(
                     "internal error, unknown parameter for correlations of RandomForestRegressionSklearn"
