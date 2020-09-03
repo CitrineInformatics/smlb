@@ -1,0 +1,12 @@
+language: python
+python:
+- '3.6'
+- '3.7'
+cache:
+  directories:
+  - build
+install:
+- pip install -U -r test_requirements.txt
+- pip install --no-deps -e .
+script:
+- pytest tests
