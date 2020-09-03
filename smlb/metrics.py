@@ -584,9 +584,14 @@ class StandardConfidence(ScalarEvaluationMetric):
     Standard confidence evaluates the quality of the predicted uncertainty estimates, both in terms of individual predictions and overall normalization.
     Does not depend on the predicted values, only the residuals.
 
-    Represents the 68% confidence point in a "coverage probability" plot.
+    An alternative definition of standard confidence is as the fraction of observations for which the
+    "normalized residual" -- residual divided by predicted uncertainty -- is less than one.
+    In the ideal case the normalized residuals are normally distributed with std=1, and
+    so in the ideal case the standard confidence will be 0.68. Thus there is no "orientation",
+    and closer to 0.68 is better.
 
-    No "orientation". Closer to 0.68 is better.
+    The standard confidence is the observed coverage probability at the 68% confidence level.
+    See e.g. https://www.stats.ox.ac.uk/pub/bdr/IAUL/Course1Notes5.pdf.
     """
 
     def _evaluate(self, true, pred):
