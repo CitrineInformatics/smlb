@@ -617,7 +617,7 @@ class StandardConfidence(ScalarEvaluationMetric):
         """
 
         true = params.distribution(true)
-        pred = params.distribution(pred)
+        pred = params.normal_distribution(pred)
 
         abs_residual = np.abs(true.mean - pred.mean)
         is_less = abs_residual < pred.stddev
@@ -648,7 +648,7 @@ class RootMeanSquareStandardizedResiduals(ScalarEvaluationMetric):
         """
 
         true = params.distribution(true)
-        pred = params.distribution(pred)
+        pred = params.normal_distribution(pred)
         if np.any(pred.stddev == 0):
             warn(
                 f"Some uncertainties are zero. Metric {self.__class__.__name__}"
@@ -686,7 +686,7 @@ class UncertaintyCorrelation(ScalarEvaluationMetric):
         """
 
         true = params.distribution(true)
-        pred = params.distribution(pred)
+        pred = params.normal_distribution(pred)
 
         abs_residual = np.abs(true.mean - pred.mean)
         uc_corr = np.corrcoef(abs_residual, pred.stddev)[0,1] # get off-diagonal of correlation matrix
