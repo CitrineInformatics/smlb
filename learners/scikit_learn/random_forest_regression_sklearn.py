@@ -223,8 +223,9 @@ class RandomForestRegressionSklearn(SupervisedLearner):
             elif self._correlations == "naive":
                 if (data.num_samples > 25000) and not self._force_corr:
                     warn(
-                        "Input correlations requested for >25k predictions."
-                        " Corelation matrix will not be computed."
+                        "Input correlations requested for >2.5E4 predictions."
+                        " Corelation matrix will not be computed, because a matrix this large may"
+                        " take up too much RAM. (2.5E4^2 entries * 8 byes per entry / 1E6 bytes per MB = 3200MB)."
                         " To force computation anyway, set `force_corr = True` in learner constructor.",
                         UserWarning
                     )
