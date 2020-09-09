@@ -54,8 +54,8 @@ def test_RandomForestRegressionSklearn_2():
     corr = rf.apply(smlb.TabularData(data=np.array([[-1], [0], [1]]))).corr
     assert corr.shape == (len(mean), len(mean))
     assert np.allclose(corr, 
-        [[ 1, -0.165, 0.026], 
-        [-0.165, 1 , -0.307],
+        [[1, -0.165, 0.026], 
+        [-0.165, 1, -0.307],
         [0.0256, -0.307, 1]],
     rtol=0.02)
 

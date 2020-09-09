@@ -216,7 +216,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
             return DeltaPredictiveDistribution(mean=preds)
         elif self._uncertainties == "naive":
             preds = np.asfarray([tree.predict(xpred) for tree in self._model.estimators_])
-            if  self._correlations is None:
+            if self._correlations is None:
                 return NormalPredictiveDistribution(
                     mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0)
                 )
@@ -250,4 +250,3 @@ class RandomForestRegressionSklearn(SupervisedLearner):
             raise BenchmarkError(
                 "internal error, unknown parameter for uncertainties of RandomForestRegressionSklearn"
             )
-
