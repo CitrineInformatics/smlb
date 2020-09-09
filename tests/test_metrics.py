@@ -266,7 +266,7 @@ def test_sc_examples():
     pred_mu = [0, 2, 4, 4]
     pred_sigma = [1, 1.25, 1.75, 2.2]
     sc = smlb.metrics.StandardConfidence()
-    np.testing.assert_allclose(sc(true, (pred_mu, pred_sigma)), 0.25)
+    np.testing.assert_allclose(sc(true, (pred_mu, pred_sigma)), 0.75)
 
 
 #########################################
