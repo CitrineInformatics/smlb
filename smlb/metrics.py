@@ -12,6 +12,7 @@ See documentation for relationships and derived metrics.
 """
 
 from abc import ABCMeta, abstractmethod, abstractproperty
+from warnings import warn
 
 import numpy as np
 import scipy as sp
@@ -463,7 +464,12 @@ class LogPredictiveDensity(VectorEvaluationMetric):
 
         true = params.distribution(true)
         pred = params.normal_distribution(pred)
-
+        if np.any(pred.stddev == 0):
+            warn(
+                f"Some uncertainties are zero. Metric {self.__class__.__name__}"
+                "may return nan.",
+                RuntimeWarning
+            )
         lpd = -(
             np.log(np.sqrt(2 * np.pi))
             + np.log(pred.stddev)
@@ -553,7 +559,12 @@ class ContinuousRankedProbabilityScore(VectorEvaluationMetric):
 
         true = params.distribution(true)
         pred = params.normal_distribution(pred)
-
+        if np.any(pred.stddev == 0):
+            warn(
+                f"Some uncertainties are zero. Metric {self.__class__.__name__}"
+                "may return nan.",
+                RuntimeWarning
+            )
         strue = (true.mean - pred.mean) / pred.stddev  # re-used intermediate quantity
         crps = pred.stddev * (
             strue * (2 * sp.stats.norm.cdf(strue) - 1)
@@ -577,6 +588,110 @@ class MeanContinuousRankedProbabilityScore(ScalarEvaluationMetric):
         """Return arithmetic mean of CRPS."""
 
         return np.mean(ContinuousRankedProbabilityScore()._evaluate(true, pred))
+
+
+class StandardConfidence(ScalarEvaluationMetric):
+    """Fraction of the time that the magnitude of the residual is less than the predicted standard deviation.
+    Standard confidence evaluates the quality of the predicted uncertainty estimates, both in terms of individual predictions and overall normalization.
+    Does not depend on the predicted values, only the residuals.
+
+    An alternative definition of standard confidence is as the fraction of observations for which the
+    "normalized residual" -- residual divided by predicted uncertainty -- is less than one.
+    In the ideal case the normalized residuals are normally distributed with std=1, and
+    so in the ideal case the standard confidence will be 0.68. Thus there is no "orientation",
+    and closer to 0.68 is better.
+
+    The standard confidence is the observed coverage probability at the 68% confidence level.
+    See e.g. https://www.stats.ox.ac.uk/pub/bdr/IAUL/Course1Notes5.pdf.
+    """
+
+    def _evaluate(self, true, pred):
+        """ Compute standard confidence
+
+        Parameters:
+            true: observed property distributions; requires only means
+            pred: predictive property distributions
+
+        Returns:
+            standard confidence
+        """
+
+        true = params.distribution(true)
+        pred = params.normal_distribution(pred)
+
+        abs_residual = np.abs(true.mean - pred.mean)
+        is_less = abs_residual < pred.stddev
+        stdconf = np.mean(is_less)
+
+        return stdconf
+
+
+class RootMeanSquareStandardizedResiduals(ScalarEvaluationMetric):
+    """Root Mean Square of the Standardized Residuals (RMSSE).
+    
+    RMSSE evaluates the quality of the predicted uncertainty estimates, both in terms of individual predictions and overall normalization.
+    Compared to standard confidence, RMSSE is more sensitive to outliers.
+    Does not depend on the predicted values, only the residuals.
+
+    No "orientation". Closer to 1 is better.
+    """
+
+    def _evaluate(self, true, pred):
+        """ Compute RMSSE.
+
+        Parameters:
+            true: observed property distributions; requires only means
+            pred: predictive property distributions
+
+        Returns:
+            RMSSE
+        """
+
+        true = params.distribution(true)
+        pred = params.normal_distribution(pred)
+        if np.any(pred.stddev == 0):
+            warn(
+                f"Some uncertainties are zero. Metric {self.__class__.__name__}"
+                "will be nan.",
+                RuntimeWarning
+            )
+            return np.nan
+        strue = (true.mean - pred.mean) / pred.stddev
+        rmsse = np.sqrt(np.mean(np.power(strue, 2)))
+
+        return rmsse
+
+
+class UncertaintyCorrelation(ScalarEvaluationMetric):
+    """Correlation between uncertainty estimate and abs(residual). 
+    A positive value is desirable. A negative value indicates pathological behavior.
+    Does not depend on the predicted values, only the residuals.
+    """
+
+    @property
+    def orientation(self):
+        """Indicate maximization."""
+
+        return +1
+
+    def _evaluate(self, true, pred):
+        """Compute Uncertainty Correlation
+
+        Parameters:
+            true: observed property distributions; requires only means
+            pred: predictive property distributions
+
+        Returns:
+            uncertainty correlation
+        """
+
+        true = params.distribution(true)
+        pred = params.normal_distribution(pred)
+
+        abs_residual = np.abs(true.mean - pred.mean)
+        uc_corr = np.corrcoef(abs_residual, pred.stddev)[0,1] # get off-diagonal of correlation matrix
+
+        return uc_corr
 
 
 # helper function 
@@ -624,4 +739,3 @@ def two_sample_cumulative_distribution_function_statistic(
     stat = np.asfarray(f(cdfa, cdfb))
 
     return g(stat[:-1], xdif)
-

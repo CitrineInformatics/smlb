@@ -39,6 +39,9 @@ from .metrics import (
     MeanLogPredictiveDensity,
     ContinuousRankedProbabilityScore,
     MeanContinuousRankedProbabilityScore,
+    StandardConfidence,
+    RootMeanSquareStandardizedResiduals,
+    UncertaintyCorrelation,
     two_sample_cumulative_distribution_function_statistic,
 )
 from .distributions import (
