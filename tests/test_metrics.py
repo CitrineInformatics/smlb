@@ -42,6 +42,7 @@ def test_orient():
         smlb.RootMeanSquaredError,
         smlb.MeanLogPredictiveDensity,
         smlb.MeanContinuousRankedProbabilityScore,
+        smlb.UncertaintyCorrelation,
     )
 
     true = smlb.NormalPredictiveDistribution([1, 2, 3], [0.5, 0.6, 0.7])
@@ -251,6 +252,51 @@ def test_mcrps_examples():
         np.mean(crps((1, 2, 3), ((1.5, 1.5, 3), (0.5, 0.5, 0.1)))),
         atol=1e-6,
     )
+
+
+#########################
+#  Standard Confidence  #
+#########################
+
+
+def test_sc_examples():
+    """ Test standard confidence. """
+    
+    true = [0, 1, 2, 2]
+    pred_mu = [0, 2, 4, 4]
+    pred_sigma = [1, 1.25, 1.75, 2.2]
+    sc = smlb.metrics.StandardConfidence()
+    np.testing.assert_allclose(sc(true, (pred_mu, pred_sigma)), 0.75)
+
+
+#########################################
+#  RootMeanSquareStandardizedResiduals  #
+#########################################
+
+
+def test_rmsse_examples():
+    """ Test root mean square standardized residuals. """
+    
+    true = [0, 1, 2, 2]
+    pred_mu = [0, 2, 4, 4]
+    pred_sigma = [1, 1, 1, 2]
+    rmsse = smlb.RootMeanSquareStandardizedResiduals()
+    np.testing.assert_allclose(rmsse(true, (pred_mu, pred_sigma)), 1.225, rtol=0.01)
+
+
+############################
+#  UncertaintyCorrelation  #
+############################
+
+
+def test_uccorr_examples():
+    """ Test root mean square standardized residuals. """
+    
+    true = [0, 1, 2, 2]
+    pred_mu = [0, 2, 4, 4]
+    pred_sigma = [1, 1, 1, 2]
+    uccorr = smlb.UncertaintyCorrelation()
+    np.testing.assert_allclose(uccorr(true, (pred_mu, pred_sigma)), 0.522, rtol=0.01)
 
 
 ######################################################

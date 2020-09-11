@@ -39,12 +39,16 @@ from .metrics import (
     MeanLogPredictiveDensity,
     ContinuousRankedProbabilityScore,
     MeanContinuousRankedProbabilityScore,
+    StandardConfidence,
+    RootMeanSquareStandardizedResiduals,
+    UncertaintyCorrelation,
     two_sample_cumulative_distribution_function_statistic,
 )
 from .distributions import (
     PredictiveDistribution,
     DeltaPredictiveDistribution,
     NormalPredictiveDistribution,
+    CorrelatedNormalPredictiveDistribution,
 )
 from .evaluations import Evaluation, EvaluationConfiguration
 from .plots import Plot, PlotConfiguration, GeneralizedFunctionPlot, LearningCurvePlot
