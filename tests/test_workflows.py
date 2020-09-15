@@ -43,7 +43,7 @@ def test_learning_curve_regression():
 
     learner_rf_skl = RandomForestRegressionSklearn(random_state=0)
 
-    from workflows.learning_curve_regression import LearningCurveRegression
+    from smlb.workflows.learning_curve_regression import LearningCurveRegression
 
     workflow = LearningCurveRegression(
         data=dataset,
