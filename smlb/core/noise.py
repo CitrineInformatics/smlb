@@ -19,11 +19,11 @@ import copy
 
 import numpy as np
 
-from smlb.exceptions import BenchmarkError, InvalidParameterError
-from smlb.parameters import params
-from smlb.data import Data
-from smlb.transformations import DataValuedTransformation
-from smlb.random import Random
+from smlb import BenchmarkError, InvalidParameterError
+from smlb import params
+from smlb import Data
+from smlb import DataValuedTransformation
+from smlb import Random
 
 
 class Noise(Random, metaclass=ABCMeta):

@@ -13,10 +13,10 @@ from typing import Any, Callable, Optional, Sequence, Union
 
 import numpy as np
 
-from smlb.utility import is_sequence
-from smlb.exceptions import BenchmarkError, InvalidParameterError
-from smlb.parameters import params
-from smlb.data import Data
+from smlb import is_sequence
+from smlb import BenchmarkError, InvalidParameterError
+from smlb import params
+from smlb import Data
 
 
 # An alternative design to having a single TabularData class would be to have

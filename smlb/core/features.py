@@ -8,7 +8,7 @@ Features transform datasets.
 """
 
 
-from .transformations import DataValuedTransformation, IdentityTransformation
+from smlb import DataValuedTransformation, IdentityTransformation
 
 
 class Features(DataValuedTransformation):

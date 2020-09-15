@@ -18,9 +18,9 @@ import numpy as np
 import scipy as sp
 import scipy.stats  # for normal distribution. Python 3.8 will offer a 'statistics' module including PDF and CDF of the normal distribution
 
-from .exceptions import InvalidParameterError
-from .object import SmlbObject
-from .parameters import params
+from smlb import InvalidParameterError
+from smlb import SmlbObject
+from smlb import params
 
 ##################
 #  Base classes  #

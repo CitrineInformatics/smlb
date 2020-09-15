@@ -29,12 +29,12 @@ from typing import Any, Optional
 
 import numpy as np
 
-from .exceptions import BenchmarkError, InvalidParameterError
-from .parameters import params
-from .random import Random
-from .transformations import DataValuedTransformation
-from .data import Data
-from .vector_space_data import VectorSpaceData
+from smlb import BenchmarkError, InvalidParameterError
+from smlb import params
+from smlb import Random
+from smlb import DataValuedTransformation
+from smlb import Data
+from smlb import VectorSpaceData
 
 
 class Sampler(DataValuedTransformation):

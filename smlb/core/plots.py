@@ -18,19 +18,16 @@ An implementation enabling different plotting backends was put on hold
 due to increased complexity (pull request #22).
 """
 
-from abc import abstractmethod
-import io
-from typing import Any, Optional, Tuple, Union
-import os.path
+from typing import Optional, Union
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .exceptions import BenchmarkError, InvalidParameterError
-from .utility import is_sequence
-from .parameters import params
-from .evaluations import Evaluation, EvaluationConfiguration
+from smlb import BenchmarkError, InvalidParameterError
+from smlb import is_sequence
+from smlb import params
+from smlb import Evaluation, EvaluationConfiguration
 
 # todo: A possible optimization is to not re-render Plots upon successive calls to render().
 #       Example: rendering to several different file formats.

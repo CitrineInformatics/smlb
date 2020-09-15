@@ -11,9 +11,9 @@ from abc import ABCMeta, abstractmethod
 
 import numpy as np
 
-from .object import SmlbObject
-from .exceptions import BenchmarkError
-from .parameters import params
+from smlb import SmlbObject
+from smlb import BenchmarkError
+from smlb import params
 
 # Notes:
 # There is currently no division into continuous and discrete distributions.

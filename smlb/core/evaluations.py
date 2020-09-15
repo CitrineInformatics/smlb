@@ -8,11 +8,11 @@ Graphical and textual summaries of results.
 """
 
 from abc import ABCMeta, abstractmethod
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
-from .object import SmlbObject
-from .exceptions import BenchmarkError, InvalidParameterError
-from .parameters import params
+from smlb import SmlbObject
+from smlb import BenchmarkError
+from smlb import params
 
 
 class EvaluationConfiguration(SmlbObject):

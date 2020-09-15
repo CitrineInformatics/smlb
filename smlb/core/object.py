@@ -7,7 +7,7 @@ A benchmark of regression models in chem- and materials informatics.
 Base class all objects derive from.
 """
 
-from .exceptions import InvalidParameterError
+from smlb import InvalidParameterError
 
 
 class SmlbObject:

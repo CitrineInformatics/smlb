@@ -17,9 +17,9 @@ by varying the initial seed for the pseudo-random number generator.
 
 import numpy as np
 
-from .exceptions import InvalidParameterError
-from .object import SmlbObject
-from .parameters import params
+from smlb import InvalidParameterError
+from smlb import SmlbObject
+from smlb import params
 
 # the current implementation is a NumPy-based coarse approximation of
 # https://github.com/google/jax/blob/master/design_notes/prng.mdbased

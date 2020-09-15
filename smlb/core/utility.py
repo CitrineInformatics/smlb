@@ -7,11 +7,9 @@ A benchmark of regression models in chem- and materials informatics.
 Auxiliary code.
 """
 
-import io
-
 import numpy as np
 
-from .exceptions import InvalidParameterError
+from smlb import InvalidParameterError
 
 
 def is_sequence(arg):

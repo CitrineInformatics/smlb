@@ -26,10 +26,10 @@ from smlb import (
     Data,
     DataTransformationFailureMode,
     Features,
-    JavaGateway,
     params,
     TabularData,
 )
+from smlb.core.java import JavaGateway
 
 # todo: get column types and names from CDK descriptors, set accordingly (requires named column support)
 # todo: detect changed path to CDK jar on repeated calls and re-initialize JVM if necessary

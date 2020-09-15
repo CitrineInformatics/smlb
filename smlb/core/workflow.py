@@ -9,7 +9,7 @@ Workflows are instruction sets for benchmarks.
 
 from abc import ABCMeta, abstractmethod
 
-from .object import SmlbObject
+from smlb import SmlbObject
 
 # todo: Workflow should provide interface and routines to
 #       handle execution and caching of task results

@@ -11,8 +11,8 @@ from typing import Optional, Union
 
 import numpy as np
 
-from .exceptions import BenchmarkError, InvalidParameterError
-from .utility import is_sequence, which
+from smlb import InvalidParameterError
+from smlb import is_sequence, which
 
 # Circular import dependencies
 #

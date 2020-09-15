@@ -6,15 +6,12 @@ Citrine Informatics 2019.
 """
 
 from abc import ABCMeta, abstractmethod
-from typing import Any
 
-import numpy as np
-
-from smlb.parameters import params
-from smlb.data import Data
-from smlb.transformations import DataTransformation
-from smlb.distributions import PredictiveDistribution
-from smlb.exceptions import InvalidParameterError
+from smlb import params
+from smlb import Data
+from smlb import DataTransformation
+from smlb import PredictiveDistribution
+from smlb import InvalidParameterError
 
 # todo: add hyperparameters to interface
 

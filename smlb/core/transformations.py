@@ -27,11 +27,11 @@ from typing import Any
 
 import numpy as np
 
-from .data import Data, complement
-from .exceptions import BenchmarkError, InvalidParameterError
-from .object import SmlbObject
-from .parameters import params
-from .utility import is_sequence
+from smlb import Data, complement
+from smlb import BenchmarkError, InvalidParameterError
+from smlb import SmlbObject
+from smlb import params
+from smlb import is_sequence
 
 
 class DataTransformation(SmlbObject, metaclass=ABCMeta):

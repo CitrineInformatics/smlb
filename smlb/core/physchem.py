@@ -7,7 +7,7 @@ A benchmark of regression models in chem- and materials informatics.
 Chemical, physics and materials data.
 """
 
-from .parameters import params
+from smlb import params
 
 _element_data = {
     1: {"Z": 1, "abbreviation": "H"},

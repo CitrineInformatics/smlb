@@ -27,9 +27,9 @@ Data sources and datasets. See class Data for details.
 from abc import ABCMeta, abstractmethod
 from typing import Optional, Sequence, TypeVar, Union
 
-from smlb.object import SmlbObject
-from smlb.exceptions import InvalidParameterError
-from smlb.parameters import params
+from smlb import SmlbObject
+from smlb import InvalidParameterError
+from smlb import params
 
 # type annotation variables for indices (I), samples (S), and labels (L)
 I, L, S = TypeVar("I"), TypeVar("L"), TypeVar("S")

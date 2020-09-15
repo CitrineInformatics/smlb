@@ -32,13 +32,11 @@ Code in this file supports other parts of smlb or user code to call Java librari
 
 
 from abc import ABCMeta, abstractmethod
-import os
 from typing import Optional
 
 import py4j.java_gateway
 
-from smlb.exceptions import BenchmarkError
-from smlb.parameters import params
+from smlb import params
 
 # todo: redirect Java output to loggers (requires logging functionality)
 

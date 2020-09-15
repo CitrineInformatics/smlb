@@ -11,10 +11,10 @@ from typing import Callable, Optional, Sequence, Tuple, TypeVar
 
 import numpy as np
 
-from smlb.exceptions import BenchmarkError, InvalidParameterError
-from smlb.data import Data
-from smlb.tabular_data import TabularData
-from smlb.parameters import params
+from smlb import BenchmarkError, InvalidParameterError
+from smlb import Data
+from smlb import TabularData
+from smlb import params
 
 I, L, S = TypeVar("I"), TypeVar("L"), TypeVar("S")
 
