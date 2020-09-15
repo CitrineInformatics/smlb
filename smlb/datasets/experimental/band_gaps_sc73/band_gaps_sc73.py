@@ -170,7 +170,6 @@ class BandGapsStrehlowCook1973Dataset(smlb.TabularData):
                 ignored_prop += 1
 
             else:
-                print(prop)
                 raise RuntimeError(f"Unknown property type '{prop['name']}'")
 
         return {
