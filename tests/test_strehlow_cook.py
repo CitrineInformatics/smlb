@@ -7,15 +7,13 @@ A benchmark of regression models in chem- and materials informatics.
 
 import pytest
 
-import numpy as np
-
 import smlb
 
 
 def test_band_gaps_strehlow_cook():
     """Tests instantiating Strehlow & Cook band gaps dataset."""
 
-    from datasets.experimental.band_gaps_sc73.band_gaps_sc73 import BandGapsStrehlowCook1973Dataset
+    from smlb.datasets.experimental.band_gaps_sc73.band_gaps_sc73 import BandGapsStrehlowCook1973Dataset
 
     bg = BandGapsStrehlowCook1973Dataset(filter_="bg")
 

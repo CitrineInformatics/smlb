@@ -5,8 +5,6 @@ A benchmark of regression models in chem- and materials informatics.
 2020 Citrine Informatics.
 """
 
-import pytest
-
 import numpy as np
 
 import smlb
@@ -15,7 +13,7 @@ import smlb
 def test_superconductors_citrine16_1():
     """Tests instantiating dataset."""
 
-    from datasets.experimental.superconductors_citrine16.superconductors_citrine16 import (
+    from smlb.datasets.experimental.superconductors_citrine16.superconductors_citrine16 import (
         SuperconductorsCitrine2016Dataset,
     )
 

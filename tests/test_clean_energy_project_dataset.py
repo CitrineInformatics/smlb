@@ -9,8 +9,6 @@ import io
 
 import numpy as np
 
-import smlb
-
 # numbers are not actual numbers from dataset
 example_input = """ "id", "SMILES_str", "stoich_str", "mass", "pce", "voc", "jsc", "e_homo_alpha", "e_gap_alpha", "e_lumo_alpha", "tmp_smiles_str"
 "655365" , "C1C=CC=C1c1cc2[se]c3c4occc4c4nsnc4c3c2cn1"               , "C18H9N3OSSe", "39.3", "5.1", "0.86", "91.5", "-5.4", "2.0", "-3.4", "C1=CC=C(C1)c1cc2[se]c3c4occc4c4nsnc4c3c2cn1"
@@ -26,7 +24,7 @@ example_input = """ "id", "SMILES_str", "stoich_str", "mass", "pce", "voc", "jsc
 def test_clean_energy_project_1():
     """Tests instantiating dataset."""
 
-    from datasets.experimental.clean_energy_project.clean_energy_project import (
+    from smlb.datasets.experimental.clean_energy_project.clean_energy_project import (
         CleanEnergyProjectDataset,
     )
 

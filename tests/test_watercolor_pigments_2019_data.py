@@ -5,13 +5,7 @@ A benchmark of regression models in chem- and materials informatics.
 2020, Matthias Rupp, Citrine Informatics.
 """
 
-import pytest
-
-import numpy as np
-
-import smlb
-
-from datasets.experimental.watercolor_pigments_c19.watercolor_pigments_c19 import (
+from smlb.datasets.experimental.watercolor_pigments_c19.watercolor_pigments_c19 import (
     WatercolorPigments2019Dataset,
     WatercolorPigments2019DatasetFeatures,
 )

@@ -47,6 +47,8 @@ class JavaGateway(metaclass=ABCMeta):
     """Provide gateway to Java functionality.
 
     Uses py4j, see https://www.py4j.org/
+    This class should not be included in the top-level smlb __init__.py file
+    because py4j is an optional dependency.
     """
 
     # this implementation uses class members to enable keeping the JVM

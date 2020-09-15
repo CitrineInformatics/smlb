@@ -34,3 +34,21 @@ from smlb.core.plots import Plot, PlotConfiguration, GeneralizedFunctionPlot, Le
 from smlb.core.workflow import Workflow
 from smlb.core.noise import Noise, NoNoise, NormalNoise, LabelNoise
 from smlb.core.learners import Learner, UnsupervisedLearner, SupervisedLearner
+from smlb.core.metrics import (
+    ScalarEvaluationMetric,
+    VectorEvaluationMetric,
+    Residuals,
+    AbsoluteResiduals,
+    SquaredResiduals,
+    MeanAbsoluteError,
+    MeanSquaredError,
+    RootMeanSquaredError,
+    StandardizedRootMeanSquaredError,
+    LogPredictiveDensity,
+    MeanLogPredictiveDensity,
+    ContinuousRankedProbabilityScore,
+    MeanContinuousRankedProbabilityScore,
+    StandardConfidence,
+    RootMeanSquareStandardizedResiduals,
+    UncertaintyCorrelation,
+)

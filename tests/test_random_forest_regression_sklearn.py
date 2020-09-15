@@ -8,12 +8,11 @@ Matthias Rupp 2020, Citrine Informatics.
 import pytest
 
 import numpy as np
-from sklearn.metrics import pairwise_distances
 
 skl = pytest.importorskip("sklearn")
 
 import smlb
-from learners.scikit_learn.random_forest_regression_sklearn import RandomForestRegressionSklearn
+from smlb.learners.scikit_learn.random_forest_regression_sklearn import RandomForestRegressionSklearn
 
 # todo: rework the example to be meaningful for random forests
 

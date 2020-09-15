@@ -10,12 +10,10 @@ import os.path
 import numpy as np
 import pytest
 
-pytest.importorskip("datasets.experimental.qm9_ramakrishnan_etal14")
-from datasets.experimental.qm9_ramakrishnan_etal14.qm9_ramakrishnan_etal14 import (
+pytest.importorskip("smlb.datasets.experimental.qm9_ramakrishnan_etal14")
+from smlb.datasets.experimental.qm9_ramakrishnan_etal14.qm9_ramakrishnan_etal14 import (
     Qm9RamakrishnanEtAl2014Dataset,
 )  # noqa E402
-
-from test_data import validate_data_interface
 
 # test dataset
 # a small subset of the whole database.

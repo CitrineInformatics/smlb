@@ -15,7 +15,7 @@ import smlb
 def test_schwefel26_1981_examples():
     """Tests instantiating and evaluating Schwefel26 (1981) datasets."""
 
-    from datasets.synthetic.schwefel26_1981.schwefel26_1981 import Schwefel261981Data
+    from smlb.datasets.synthetic.schwefel26_1981.schwefel26_1981 import Schwefel261981Data
 
     s1 = Schwefel261981Data(dimensions=1)
     s2 = Schwefel261981Data(dimensions=2)

@@ -15,7 +15,7 @@ import smlb
 def test_friedman_silverman_1989_examples():
     """Tests instantiating and evaluating Friedman (1979) datasets."""
 
-    from datasets.synthetic.friedman_silverman_1989.friedman_silverman_1989 import (
+    from smlb.datasets.synthetic.friedman_silverman_1989.friedman_silverman_1989 import (
         FriedmanSilverman1989Data,
     )
 

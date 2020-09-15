@@ -15,7 +15,7 @@ import pytest
 
 import smlb
 
-from features.chemistry_development_kit_molecules import (
+from smlb.features.chemistry_development_kit_molecules import (
     ChemistryDevelopmentKitMoleculeFeatures,
     CdkJavaGateway,
 )

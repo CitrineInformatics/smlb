@@ -8,7 +8,6 @@ A benchmark of regression models in chem- and materials informatics.
 import pytest
 
 import numpy as np
-import numpy.testing
 import scipy as sp
 
 import smlb
@@ -265,7 +264,7 @@ def test_sc_examples():
     true = [0, 1, 2, 2]
     pred_mu = [0, 2, 4, 4]
     pred_sigma = [1, 1.25, 1.75, 2.2]
-    sc = smlb.metrics.StandardConfidence()
+    sc = smlb.StandardConfidence()
     np.testing.assert_allclose(sc(true, (pred_mu, pred_sigma)), 0.75)
 
 
@@ -316,13 +315,13 @@ def test_cdfs_example_normal():
     sample_b = np.random.normal(size=n)
 
     np.testing.assert_allclose(
-        smlb.two_sample_cumulative_distribution_function_statistic(sample_a, sample_b),
+        smlb.core.metrics.two_sample_cumulative_distribution_function_statistic(sample_a, sample_b),
         0,
         atol=1e-3,
     )
 
     np.testing.assert_allclose(
-        smlb.two_sample_cumulative_distribution_function_statistic(
+        smlb.core.metrics.two_sample_cumulative_distribution_function_statistic(
             sample_a, sample_b, f=lambda p, t: np.abs(p - t)
         ),
         0,
@@ -339,7 +338,7 @@ def test_cdfs_example():
     sample_b = [2, 3, 3]
 
     np.testing.assert_allclose(
-        smlb.two_sample_cumulative_distribution_function_statistic(
+        smlb.core.metrics.two_sample_cumulative_distribution_function_statistic(
             sample_a, sample_b, f=lambda p, t: np.abs(p - t)
         ),
         2 / 3 + 1 / 3,
@@ -352,7 +351,7 @@ def test_cdfs_example():
     sample_b = [2, 4, 4]
 
     np.testing.assert_allclose(
-        smlb.two_sample_cumulative_distribution_function_statistic(
+        smlb.core.metrics.two_sample_cumulative_distribution_function_statistic(
             sample_a, sample_b, f=lambda p, t: np.square(p - t)
         ),
         (1 / 4) ** 2 + (2 / 4 - 1 / 3) ** 2 + (3 / 4 - 1 / 3) ** 2,
@@ -362,7 +361,7 @@ def test_cdfs_example():
     # same example with different integralf
 
     np.testing.assert_allclose(
-        smlb.two_sample_cumulative_distribution_function_statistic(
+        smlb.core.metrics.two_sample_cumulative_distribution_function_statistic(
             sample_a, sample_b, f=lambda p, t: np.abs(p - t), g=lambda s, w: np.max(s)
         ),
         3 / 4 - 1 / 3,
@@ -376,12 +375,12 @@ def test_cdfs_sign_example():
     sample_a = [1, 2]
     sample_b = [2]
 
-    assert smlb.two_sample_cumulative_distribution_function_statistic(
+    assert smlb.core.metrics.two_sample_cumulative_distribution_function_statistic(
         sample_a, sample_b, f=lambda p, t: p - t, g=lambda s, w: np.sign(s) * np.abs(s)
     )
 
-    assert smlb.two_sample_cumulative_distribution_function_statistic(
+    assert smlb.core.metrics.two_sample_cumulative_distribution_function_statistic(
         sample_a, sample_b, f=lambda p, t: p - t, g=lambda s, w: np.sign(s) * np.abs(s)
-    ) == -smlb.two_sample_cumulative_distribution_function_statistic(
+    ) == -smlb.core.metrics.two_sample_cumulative_distribution_function_statistic(
         sample_b, sample_a, f=lambda p, t: p - t, g=lambda s, w: np.sign(s) * np.abs(s)
     )
