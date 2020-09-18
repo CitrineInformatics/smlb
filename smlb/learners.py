@@ -6,9 +6,6 @@ Citrine Informatics 2019.
 """
 
 from abc import ABCMeta, abstractmethod
-from typing import Any
-
-import numpy as np
 
 from smlb.parameters import params
 from smlb.data import Data

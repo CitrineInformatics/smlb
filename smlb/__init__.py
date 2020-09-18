@@ -50,6 +50,8 @@ from .distributions import (
     NormalPredictiveDistribution,
     CorrelatedNormalPredictiveDistribution,
 )
+from .scorer import Scorer, LIScorer
+from .optimizer import Optimizer, TrackedTransformation
 from .evaluations import Evaluation, EvaluationConfiguration
 from .plots import Plot, PlotConfiguration, GeneralizedFunctionPlot, LearningCurvePlot
 from .workflow import Workflow
