@@ -50,7 +50,6 @@ class TrackedTransformation(DataTransformation):
         scorer: a Scorer, to calculate a scalar-valued score at the point.
             This value is what the optimizer attempts to optimize.
         goal: whether to "maximize" or "minimize" the score.
-            Since optimizers minimize, if the goal is to maximize then we invert the score
     """
 
     def __init__(self, learner: Learner, scorer: Scorer, goal: str = "maximize"):
@@ -59,9 +58,9 @@ class TrackedTransformation(DataTransformation):
 
         goal = params.enumeration(goal, {"maximize", "minimize"})
         if goal == "maximize":
-            self._direction = -1
-        elif goal == "minimize":
             self._direction = 1
+        elif goal == "minimize":
+            self._direction = -1
 
         self._iterations = []
 
@@ -76,6 +75,12 @@ class TrackedTransformation(DataTransformation):
 
         return self._iterations
 
+    @property
+    def direction(self) -> float:
+        """Whether it is better to maximize or minimize this score."""
+
+        return self._direction
+
     def fit(self, data: Data):
         """Fit the learner on the data."""
 
@@ -84,7 +89,7 @@ class TrackedTransformation(DataTransformation):
     def apply(self, data: Data) -> float:
         """Apply the learner and to produce an output distribution and score that distribution.
         Append the information about this iteration to the running list.
-        Return a score that is modified so that lower is better, for use with optimizers.
+        Return a score such that higher is always better.
         """
 
         dist = self._learner.apply(data)
@@ -130,7 +135,7 @@ class RandomOptimizer(Optimizer):
 
     Parameters:
         num_iters: the number of random samples to draw
-        domain: optional domain from which to draw values. If not provided, then the vector space
+        domain: optional domain from which to draw values. If not provided, then the
             dataset determines its own domain.
         rng: pseudo-random number generator
     """
