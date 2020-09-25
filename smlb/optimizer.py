@@ -18,23 +18,24 @@ from smlb import (
     DataTransformation,
     PredictiveDistribution,
     VectorSpaceData,
-    RandomVectorSampler
+    RandomVectorSampler,
+    Random
 )
 
 
 @dataclass
 class OptimizerIteration:
-    """Record the results of a single function evaluation during an optimization trajectory.
+    """Record the results of a set of function evaluations during an optimization trajectory.
 
     Parameters:
-        input: the input data, often a `TabularData` with one row
-        output: the predicted distribution after applying the learner, often univariate
-        score: the scalar-valued score of hthe output
+        input: the input data, often a `TabularData`
+        output: the predicted distribution after applying the learner
+        scores: the scalar-valued scores of the output
     """
 
     input: Data
     output: PredictiveDistribution
-    score: float
+    scores: Sequence[float]
 
 
 class TrackedTransformation(DataTransformation):
@@ -93,9 +94,9 @@ class TrackedTransformation(DataTransformation):
         """
 
         dist = self._learner.apply(data)
-        score = self._scorer.apply(dist)
-        self._iterations.append(OptimizerIteration(data, dist, score))
-        return score * self._direction
+        scores = self._scorer.apply(dist)
+        self._iterations.append(OptimizerIteration(data, dist, scores))
+        return scores * self._direction
 
 
 class Optimizer(SmlbObject, metaclass=ABCMeta):
@@ -130,25 +131,22 @@ class Optimizer(SmlbObject, metaclass=ABCMeta):
         raise NotImplementedError
 
 
-class RandomOptimizer(Optimizer):
+class RandomOptimizer(Optimizer, Random):
     """Draws a random sample at each iteration.
 
     Parameters:
-        num_iters: the number of random samples to draw
+        num_samples: the number of random samples to draw
         domain: optional domain from which to draw values. If not provided, then the
             dataset determines its own domain.
         rng: pseudo-random number generator
     """
 
-    def __init__(self, num_iters: int, domain: Optional[Any] = None, rng=None, **kwargs):
-        super.__init__(**kwargs)
-        self._num_iters = params.integer(num_iters, above=0)
-        self._sampler = RandomVectorSampler(size=1, domain=domain, rng=rng)
+    def __init__(self, num_samples: int, domain: Optional[Any] = None, rng=None, **kwargs):
+        super().__init__(rng=rng, **kwargs)
+        self._num_samples = params.integer(num_samples, above=0)
+        self._sampler = RandomVectorSampler(size=self._num_samples, domain=domain, rng=rng)
 
     def _optimize(self, data: VectorSpaceData, function_tracker: TrackedTransformation):
-        """Generate random samples and evaluate each one.
-        This ensures that each iteration is stored as an optimization iteration object.
-        """
-        for _ in range(self._num_iters):
-            sample = self._sampler.apply(data)
-            function_tracker.apply(sample)
+        """Generate num_samples random samples and evaluate them."""
+        samples = self._sampler.apply(data)
+        function_tracker.apply(samples)

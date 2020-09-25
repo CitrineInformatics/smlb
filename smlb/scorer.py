@@ -6,15 +6,16 @@ Citrine Informatics 2019-2020
 """
 
 from abc import ABCMeta, abstractmethod
+from typing import Sequence
 import math
 
 from scipy.special import erf
+import numpy as np
 
 from smlb import (
     SmlbObject,
     params,
     PredictiveDistribution,
-    BenchmarkError
 )
 
 
@@ -29,7 +30,7 @@ class Scorer(SmlbObject, metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def apply(self, dist: PredictiveDistribution) -> float:
+    def apply(self, dist: PredictiveDistribution) -> Sequence[float]:
         """Applies the acquisition function to a distribution to produce a score.
 
         Parameters:
@@ -41,7 +42,7 @@ class Scorer(SmlbObject, metaclass=ABCMeta):
         raise NotImplementedError
 
 
-class LIScorer(Scorer):
+class LikelihoodOfImprovement(Scorer):
     """Likelihood of improvement beyond a univariate target.
 
     Parameters:
@@ -60,7 +61,7 @@ class LIScorer(Scorer):
         elif goal == "minimize":
             self._direction = -1
 
-    def apply(self, dist: PredictiveDistribution) -> float:
+    def apply(self, dist: PredictiveDistribution) -> Sequence[float]:
         """Calculate the likelihood of the given distribution improving on the target value.
         This currently only works for normal distributions. To extend to non-normal distributions,
         we should have the `PredictiveDistribution` class expose a `cdf()` method.
@@ -72,26 +73,30 @@ class LIScorer(Scorer):
              The probability mass of the distribution that is above/below the target
                 (depending on if the goal is to maximize or minimize)
         """
-        mean = params.real_vector(dist.mean, dimensions=1)
-        stdev = params.real_vector(dist.stddev, dimensions=1)
-
-        if len(mean) != 1 or len(stdev) != 1:
-            raise BenchmarkError(
-                f"LI Scorer can only be applied to a univariate distribution. Got a distribution"
-                f"of type {dist.__class__} with means {mean} and standard deviations {stdev}."
-            )
+        mean = params.real_vector(dist.mean)
+        stddev = params.real_vector(dist.stddev, dimensions=len(mean), domain=(0, np.inf))
 
         # If the goal is to minimize, negate the target and the mean value.
-        # Then, calculate the integral from the target value to infinity for a normal distribution
-        # with mean `mean` and standard deviation `stdev`.
+        # Then, calculate the likelihood of improvement assuming maximization.
         target = self._target * self._direction
-        mean = mean[0] * self._direction
-        stdev = params.real(stdev[0], from_=0)
+        mean = mean * self._direction
+        return np.asfarray(
+            [self._calculate_li_above(m, s, target) for m, s in zip(mean, stddev)]
+        )
 
-        if stdev == 0:
+    @staticmethod
+    def _calculate_li_above(mean, stddev, target):
+        """Calculate the likelihood of improvement, assuming the goal is to exceed the target.
+
+        Parameters:
+            mean: mean of the normal distribution
+            stddev: standard deviation of the normal distribution
+            target: value to exceed
+        """
+        stddev = params.real(stddev, from_=0.0)
+        if stddev == 0:
             if mean > target:
                 return 1.0
             else:
                 return 0.0
-
-        return 0.5 * (1 - erf((target - mean) / (stdev * math.sqrt(2))))
+        return 0.5 * (1 - erf((target - mean) / (stddev * math.sqrt(2))))
