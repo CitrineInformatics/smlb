@@ -22,11 +22,10 @@ from smlb import (
 class Scorer(SmlbObject, metaclass=ABCMeta):
     """Abstract base class for scorers.
 
-    Many `Scorer`s act exclusively on univariate distributions and will raise a BenchmarkError
-    if provided with a multivariate distribution as the input to their `apply` method.
+    A score acts on a predictive distribution and returns a sequence of float-valued scores.
 
-    The `Scorer` concept can be extended to implementation that act on multivariate distributions,
-    representing the score of a batch of candidates.
+    A score might produce one score for each element of the distribution, or it might produce
+    a single score for the entire distribution, representing a batch score.
     """
 
     @abstractmethod

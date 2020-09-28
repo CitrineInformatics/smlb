@@ -51,7 +51,7 @@ from .distributions import (
     CorrelatedNormalPredictiveDistribution,
 )
 from .scorer import Scorer, LikelihoodOfImprovement
-from .optimizer import Optimizer, TrackedTransformation, OptimizerIteration
+from .optimizer import Optimizer, TrackedTransformation, OptimizerIteration, RandomOptimizer
 from .evaluations import Evaluation, EvaluationConfiguration
 from .plots import Plot, PlotConfiguration, GeneralizedFunctionPlot, LearningCurvePlot
 from .workflow import Workflow
