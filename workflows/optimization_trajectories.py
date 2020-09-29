@@ -14,7 +14,9 @@ from smlb import (
     Scorer,
     Optimizer,
     TrackedTransformation,
-    OptimizerIteration
+    OptimizerResults,
+    Evaluation,
+    OptimizationTrajectoryPlot
 )
 
 
@@ -28,6 +30,8 @@ class OptimizationTrajectory(Workflow):
         scorer: score the predictions supplied by the model
         optimizers: sequence of optimizers, each of which tries to find the point in `data`
             that optimizes the score produced by `scorer`
+        evaluations: one or more evaluations to apply;
+            default is the median trajectory for each optimizer
         num_trials: number of trials to perform for each optimizer
         training_data: optional data on which to train the model (unnecessary if the model
             is pre-trained or is an analytic function)
@@ -39,6 +43,7 @@ class OptimizationTrajectory(Workflow):
             model: Learner,
             scorer: Scorer,
             optimizers: Sequence[Optimizer],
+            evaluations: Sequence[Evaluation] = (OptimizationTrajectoryPlot(),),
             num_trials: int = 1,
             training_data: Optional[Data] = None
     ):
@@ -46,45 +51,66 @@ class OptimizationTrajectory(Workflow):
         self._scorer = params.instance(scorer, Scorer)
         self._model = params.instance(model, Learner)
         self._optimizers = params.sequence(optimizers, type_=Optimizer)
+        self._evaluations = params.tuple_(
+            evaluations, lambda arg: params.instance(arg, Evaluation)
+        )
         self._num_trials = params.integer(num_trials, from_=1)
         self._training_data = params.optional_(
             training_data, lambda arg: params.instance(arg, Data)
         )
 
     def run(self):
-        """Execute workflow."""
+        """Execute workflow.
+
+        1. Run each optimizer once for each trial, creating a matrix of `OptimizerResults` objects.
+        2. For each optimizer calculate the "best score trajectory" for each trial and coerce
+            them into the format required by Evaluation objects.
+            TODO: there's a potential abstraction here, similar to the Metric in
+                LearningCurveRegression. But it's unclear if there's anything else we might want
+                to compute besides the best score at each step.
+        3. Apply evaluations to the results.
+        """
         if self._training_data is not None:
             self._model.fit(self._training_data)
         func = TrackedTransformation(self._model, self._scorer)
 
         num_optimizers = len(self._optimizers)
         trajectories = np.empty(
-            (num_optimizers, self._num_trials), dtype=Sequence[OptimizerIteration]
+            (num_optimizers, self._num_trials), dtype=OptimizerResults
         )
-        best_score_trajectory = np.empty_like(trajectories, dtype=Sequence[float])
 
         for i, optimizer in enumerate(self._optimizers):
             for j in range(self._num_trials):
-                results = optimizer.optimize(self._data, func)
+                results: OptimizerResults = optimizer.optimize(self._data, func)
                 trajectories[i, j] = results
-                # TODO: Break this out into a new type of metric object
-                #   Are there any other quantities we might want to calculate?
-                best_score_trajectory[i, j] = self.best_score_trajectory(results, func.direction == 1.0)
 
-        # TODO: add Evaluations to plot the results
+        def _collect_optimization_results(list_of_trajectories: Sequence[OptimizerResults]):
+            """Convert optimization results into the format required by Evaluation objects.
 
-    @staticmethod
-    def best_score_trajectory(results: Sequence[OptimizerIteration], maximize: bool) -> Sequence[float]:
-        num_scores = np.sum([len(result.scores) for result in results])
-        best_score = np.empty(num_scores)
-        idx = 0
-        best_score_so_far = results[0].scores[0]
-        direction = 1.0 if maximize else -1.0
+            Parameters:
+                list_of_trajectories: a sequence of `OptimizerResults` objects, each one
+                    a separate trial of the same optimizer.
 
-        for optimization_iter in results:
-            for eval in optimization_iter.scores:
-                if eval > best_score_so_far:
-                    best_score_so_far = eval
-                best_score[idx] = best_score_so_far * direction
-                idx += 1
-        return best_score
+            Returns:
+                A sequence of tuples of the form (int, Sequence[float]), where the first entry
+                if the evaluation number (horizontal axis) and the second entry is a sequence
+                of all the scores at that point (vertical axis).
+            """
+            max_trajectory_length = np.max(
+                [t.num_evaluations for t in list_of_trajectories]
+            )
+            maximize = func.direction == 1.0
+            best_score_trajectories = np.vstack(
+                [t.best_score_trajectory(maximize, max_trajectory_length) for t in list_of_trajectories]
+            )
+
+            return [(j + 1, best_score_trajectories[:, j]) for j in range(max_trajectory_length)]
+
+        eval_data = [
+            _collect_optimization_results(trajectories[i, :])
+            for i in range(len(self._optimizers))
+        ]
+
+        for eval_ in self._evaluations:
+            eval_.evaluate(eval_data)
+            eval_.render()

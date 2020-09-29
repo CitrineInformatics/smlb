@@ -6,8 +6,9 @@ Citrine Informatics 2019-2020
 """
 
 from abc import ABCMeta, abstractmethod
-from dataclasses import dataclass
 from typing import Sequence, Optional, Any
+
+import numpy as np
 
 from smlb import (
     params,
@@ -15,6 +16,7 @@ from smlb import (
     Learner,
     Scorer,
     Data,
+    TabularData,
     DataTransformation,
     PredictiveDistribution,
     VectorSpaceData,
@@ -23,19 +25,109 @@ from smlb import (
 )
 
 
-@dataclass
-class OptimizerIteration:
+class OptimizerIteration(SmlbObject):
     """Record the results of a set of function evaluations during an optimization trajectory.
 
     Parameters:
-        input: the input data, often a `TabularData`
+        input: the input data
         output: the predicted distribution after applying the learner
-        scores: the scalar-valued scores of the output
+        scores: the scalar-valued scores of the output. This must be an array of length 1
+            (implying the score is calculated on the entire batch of inputs) or of length
+            equal to the number of samples in `data` (implying one score for each sample).
     """
 
-    input: Data
-    output: PredictiveDistribution
-    scores: Sequence[float]
+    def __init__(self,
+                 input_: TabularData,
+                 output: PredictiveDistribution,
+                 scores: Sequence[float],
+                 **kwargs
+                 ):
+        super().__init__(**kwargs)
+        self._input: TabularData = params.instance(input_, TabularData)
+        self._output: PredictiveDistribution = params.instance(output, PredictiveDistribution)
+        self._scores: Sequence[float] = params.any_(
+            scores,
+            lambda arg: params.sequence(arg, length=1, type_=float),
+            lambda arg: params.sequence(arg, length=self._num_evaluations, type_=float)
+        )
+
+        # total number of function evaluations during this iteration
+        self._num_evaluations: int = params.integer(self._input.num_samples, from_=1)
+
+    @property
+    def num_evaluations(self) -> int:
+        return self._num_evaluations
+
+    @property
+    def scores(self) -> Sequence[float]:
+        return self._scores
+
+    def scores_per_evaluation(self) -> Sequence[float]:
+        """Return a sequence of scores that correspond one-to-one with evaluations.
+        If there is one score, s, for the entire batch, return [s, s, s, ...]
+        (one for each function evaluation).
+        """
+        if len(self._scores) == 1:
+            return [self._scores[0]] * self.num_evaluations
+        else:
+            return self._scores
+
+
+class OptimizerResults:
+    """Holds the complete results of an optimization run, a sequence of OptimizerIterations."""
+
+    def __init__(self, results: Sequence[OptimizerIteration]):
+        self._results = params.sequence(results, type_=OptimizerIteration)
+        self._num_evaluations = np.sum([r.num_evaluations for r in self.results])
+
+    @property
+    def results(self) -> Sequence[OptimizerIteration]:
+        return self._results
+
+    @property
+    def num_evaluations(self):
+        """The total number of function evaluations across all of the iterations."""
+        return self._num_evaluations
+
+    def best_score_trajectory(self,
+                              maximize: bool = True,
+                              length: Optional[int] = None
+                              ) -> Sequence[float]:
+        """Calculate the best score found so far as a function of number of function evaluations.
+
+        Parameters:
+            maximize: whether the goal is to maximize (true) or minimize (false) the score
+            length: total length of the result. If larger than the actual number of function
+                evaluations, the result will be padded with the best value. If smaller than the
+                actual number of evaluations, the result will be truncated.
+                If None, the result is returned as-is.
+
+        Returns:
+            A sequence of floats, each one corresponding to the best score found at that point
+            in the optimization trajectory.
+        """
+        maximize = params.boolean(maximize)
+        length = params.optional_(length, lambda arg: params.integer(arg, from_=1))
+
+        best_score = np.empty(self.num_evaluations)
+        idx = 0
+        best_score_so_far = self.results[0].scores[0]
+        direction = 1.0 if maximize else -1.0
+
+        for optimization_iter in self.results:
+            for eval_ in optimization_iter.scores:
+                if eval_ * direction > best_score_so_far * direction:
+                    best_score_so_far = eval_
+                best_score[idx] = best_score_so_far * direction
+                idx += 1
+
+        if length is not None:
+            extra_padding = length - len(best_score)
+            if extra_padding < 0:
+                return best_score[:extra_padding]  # TODO: throw an exception? Raise a warning?
+            return np.pad(best_score, ((0, extra_padding),), mode='edge')
+        else:
+            return best_score
 
 
 class TrackedTransformation(DataTransformation):
@@ -88,7 +180,7 @@ class TrackedTransformation(DataTransformation):
         return self._learner.fit(data)
 
     def apply(self, data: Data) -> float:
-        """Apply the learner and to produce an output distribution and score that distribution.
+        """Apply the learner to produce an output distribution and score that distribution.
         Append the information about this iteration to the running list.
         Return a score such that higher is always better.
         """
@@ -106,7 +198,7 @@ class Optimizer(SmlbObject, metaclass=ABCMeta):
             self,
             data: VectorSpaceData,
             function_tracker: TrackedTransformation
-    ) -> Sequence[OptimizerIteration]:
+    ) -> OptimizerResults:
         """
         Run the optimization. This first clears the `function_tracker`'s
         memory of previous iterations, then calls `_optimize`.
@@ -122,7 +214,7 @@ class Optimizer(SmlbObject, metaclass=ABCMeta):
         """
         function_tracker.clear()
         self._optimize(data, function_tracker)
-        return function_tracker.iterations
+        return OptimizerResults(function_tracker.iterations)
 
     @abstractmethod
     def _optimize(self, data: VectorSpaceData, function_tracker: TrackedTransformation):

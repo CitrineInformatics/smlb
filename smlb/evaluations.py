@@ -8,10 +8,10 @@ Graphical and textual summaries of results.
 """
 
 from abc import ABCMeta, abstractmethod
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 from .object import SmlbObject
-from .exceptions import BenchmarkError, InvalidParameterError
+from .exceptions import BenchmarkError
 from .parameters import params
 
 
@@ -116,7 +116,7 @@ class Evaluation(SmlbObject, metaclass=ABCMeta):
                      depend on the specific Evaluation
         """
 
-        pass  # might be called by derived class' evaluate() method
+        pass  # might be called by derived class's evaluate() method
 
     @abstractmethod
     def render(self):

@@ -5,8 +5,6 @@ A benchmark of regression models in chem- and materials informatics.
 (c) 2019-20, Citrine Informatics.
 """
 
-import pytest
-
 import numpy as np
 
 from smlb import (

@@ -51,8 +51,20 @@ from .distributions import (
     CorrelatedNormalPredictiveDistribution,
 )
 from .scorer import Scorer, LikelihoodOfImprovement
-from .optimizer import Optimizer, TrackedTransformation, OptimizerIteration, RandomOptimizer
+from .optimizer import (
+    Optimizer,
+    TrackedTransformation,
+    OptimizerIteration,
+    RandomOptimizer,
+    OptimizerResults
+)
 from .evaluations import Evaluation, EvaluationConfiguration
-from .plots import Plot, PlotConfiguration, GeneralizedFunctionPlot, LearningCurvePlot
+from .plots import (
+    Plot,
+    PlotConfiguration,
+    GeneralizedFunctionPlot,
+    LearningCurvePlot,
+    OptimizationTrajectoryPlot
+)
 from .workflow import Workflow
 from .java import JavaGateway
