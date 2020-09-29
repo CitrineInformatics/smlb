@@ -7,12 +7,9 @@ A benchmark of regression models in chem- and materials informatics.
 
 import pytest
 
-import numpy as np
-
 pytest.importorskip("sklearn")
 
 import smlb
-from smlb import params
 
 #############################
 #  LearningCurveRegression  #
@@ -53,4 +50,33 @@ def test_learning_curve_regression():
         validation=validation_set,
         learners=[learner_rf_skl, learner_gpr_skl],
     )  # default evaluation
+    workflow.run()
+
+
+def test_optimization_trajectories():
+    """Ensure that a simple optimization workflow can be run."""
+    from datasets.synthetic.friedman_1979.friedman_1979 import Friedman1979Data
+    dataset = Friedman1979Data(dimensions=5)
+    sampler = smlb.RandomVectorSampler(size=100, rng=0)
+    training_data = sampler.fit(dataset).apply(dataset)
+
+    from learners.scikit_learn.random_forest_regression_sklearn import RandomForestRegressionSklearn
+
+    learner = RandomForestRegressionSklearn(uncertainties="naive", random_state=0)
+    learner.fit(training_data)
+
+    from smlb.scorer import LikelihoodOfImprovement
+    li_scorer = LikelihoodOfImprovement(target=2, goal="minimize")
+
+    from smlb.optimizer import RandomOptimizer
+    optimizer = RandomOptimizer(num_samples=30, rng=0)
+
+    from workflows.optimization_trajectories import OptimizationTrajectory
+    workflow = OptimizationTrajectory(
+        data=dataset,
+        model=learner,
+        scorer=li_scorer,
+        optimizers=[optimizer, optimizer],  # just to check that it can handle multiple optimizers
+        num_trials=3
+    )
     workflow.run()

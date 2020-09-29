@@ -45,14 +45,13 @@ class OptimizerIteration(SmlbObject):
         super().__init__(**kwargs)
         self._input: TabularData = params.instance(input_, TabularData)
         self._output: PredictiveDistribution = params.instance(output, PredictiveDistribution)
+        # total number of function evaluations during this iteration
+        self._num_evaluations: int = params.integer(self._input.num_samples, from_=1)
         self._scores: Sequence[float] = params.any_(
             scores,
             lambda arg: params.sequence(arg, length=1, type_=float),
             lambda arg: params.sequence(arg, length=self._num_evaluations, type_=float)
         )
-
-        # total number of function evaluations during this iteration
-        self._num_evaluations: int = params.integer(self._input.num_samples, from_=1)
 
     @property
     def num_evaluations(self) -> int:
