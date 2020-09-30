@@ -811,6 +811,7 @@ class OptimizationTrajectoryPlot(GeneralizedFunctionPlot):
     that point in the optimization run.
     Each trial for a given optimizer is currently plotted as a dot.
     TODO: plot the median trajectory as a line and shade the quartiles.
+        (Create a new plotting method and override _render to call that method.)
 
     Parameters:
         log_scale: whether or not to use a log scale on the _horizontal_ axis
@@ -829,6 +830,13 @@ class OptimizationTrajectoryPlot(GeneralizedFunctionPlot):
         super().__init__(**kwargs)
 
     def evaluate(self, results, **kwargs):
+        """Evaluate optimization trajectory plot.
+
+        Parameters:
+            results: sequence of curve data, where each curve datum is a sequence of
+                tuples (index, scoress) of function evaluation number (positive integer)
+                and best scores found after that many evaluations (sequence of real numbers).
+        """
         tuple_testf = lambda arg: params.tuple_(
             arg, lambda arg: params.real(arg, above=0), params.real_vector, arity=2
         )
