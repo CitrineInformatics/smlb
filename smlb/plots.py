@@ -18,10 +18,7 @@ An implementation enabling different plotting backends was put on hold
 due to increased complexity (pull request #22).
 """
 
-from abc import abstractmethod
-import io
-from typing import Any, Optional, Tuple, Union
-import os.path
+from typing import Any, Optional, Union
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
