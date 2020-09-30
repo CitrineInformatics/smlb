@@ -75,13 +75,13 @@ class OptimizerIteration(SmlbObject):
 class OptimizerResults:
     """Holds the complete results of an optimization run, a sequence of OptimizerIterations."""
 
-    def __init__(self, results: Sequence[OptimizerIteration]):
-        self._results = params.sequence(results, type_=OptimizerIteration)
-        self._num_evaluations = np.sum([r.num_evaluations for r in self.results])
+    def __init__(self, iterations: Sequence[OptimizerIteration]):
+        self._iterations = params.sequence(iterations, type_=OptimizerIteration)
+        self._num_evaluations = np.sum([r.num_evaluations for r in self.iterations])
 
     @property
-    def results(self) -> Sequence[OptimizerIteration]:
-        return self._results
+    def iterations(self) -> Sequence[OptimizerIteration]:
+        return self._iterations
 
     @property
     def num_evaluations(self):
@@ -110,10 +110,10 @@ class OptimizerResults:
 
         best_score = np.empty(self.num_evaluations)
         idx = 0
-        best_score_so_far = self.results[0].scores[0]
+        best_score_so_far = self.iterations[0].scores[0]
         direction = 1.0 if maximize else -1.0
 
-        for optimization_iter in self.results:
+        for optimization_iter in self.iterations:
             for eval_ in optimization_iter.scores:
                 if eval_ * direction > best_score_so_far * direction:
                     best_score_so_far = eval_
@@ -123,7 +123,7 @@ class OptimizerResults:
         if length is not None:
             extra_padding = length - len(best_score)
             if extra_padding < 0:
-                return best_score[:extra_padding]  # TODO: throw an exception? Raise a warning?
+                return best_score[:extra_padding]  # TODO: Raise a warning?
             return np.pad(best_score, ((0, extra_padding),), mode='edge')
         else:
             return best_score
