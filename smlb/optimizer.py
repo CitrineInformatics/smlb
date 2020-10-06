@@ -62,7 +62,7 @@ class OptimizerIteration(SmlbObject):
         return self._scores
 
     def scores_per_evaluation(self) -> Sequence[float]:
-        """Return a sequence of scores that correspond one-to-one with evaluations.
+        """Return a sequence scores, with each score matched in order to the sequence of function evaluations.
         If there is one score, s, for the entire batch, return [s, s, s, ...]
         (one for each function evaluation).
         """
@@ -204,7 +204,7 @@ class Optimizer(SmlbObject, metaclass=ABCMeta):
 
         Parameters:
             data: vector space from which the optimizer can sample data
-            function_tracker: a combination of a trained learner, which evaluates data points,
+            function_tracker: an instance of TrackedTransformation to track function evaluations and scores.
                 and a scorer, which converts the labeled data into a univariate score to minimize
 
         Returns:
@@ -228,7 +228,7 @@ class RandomOptimizer(Optimizer, Random):
     Parameters:
         num_samples: the number of random samples to draw
         domain: optional domain from which to draw values. If not provided, then the
-            dataset determines its own domain.
+            optimization domain is taken to be that of `data` parameter passed to `optimize()`.
         rng: pseudo-random number generator
     """
 
