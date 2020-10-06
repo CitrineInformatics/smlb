@@ -15,6 +15,7 @@ import setuptools
 
 # Package meta-data.
 NAME = "smlb"
+VERSION = "0.0.0"
 DESCRIPTION = "Scientific Machine Learning Benchmark"
 URL = "https://github.com/CitrineInformatics/smlb"
 EMAIL = "mrupp@mrupp.io"
@@ -41,7 +42,7 @@ except FileNotFoundError:
 
 setuptools.setup(
     name=NAME,
-    # version=VERSION, # taken from git tags
+    version=VERSION,
     description=DESCRIPTION,
     long_description=long_description,
     long_description_content_type="text/markdown",
