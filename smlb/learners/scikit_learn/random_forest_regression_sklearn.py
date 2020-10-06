@@ -40,7 +40,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
 
     Supports only numeric (vector) inputs and labels.
 
-    See 
+    See
         https://scikit-learn.org/stable/modules/ensemble.html#forests-of-randomized-trees
         https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html
     """
@@ -70,12 +70,12 @@ class RandomForestRegressionSklearn(SupervisedLearner):
         """Initialize state.
 
         sklearn-specific parameters are passed through to the implementation.
-        
+
         Parameters:
             uncertainties: whether and how to compute predictive uncertainties; possible choices are
                 None; by default, RandomForestRegressor does not return any predictive uncertainties;
                 "naive"; uses the ensembles standard deviation
-            correlations: whether and how to compute predictive correlations; possible choices are 
+            correlations: whether and how to compute predictive correlations; possible choices are
                 None; by default, RandomForestRegressor does not return any predictive correlations;
                 "naive"; uses the ensembles covariance over estimators.
             n_estimators: number of decision trees
@@ -90,7 +90,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
                 floating point values specify which fraction of all features to use;
                 "auto" uses all features, "sqrt" and "log2" use square root and binary logarithm of number of features
             max_leaf_nodes: maximum number of leaves a tree can have
-            min_impurity_decrease: minimum impurity decrease required for splitting 
+            min_impurity_decrease: minimum impurity decrease required for splitting
             bootstrap: if False, the whole dataset is used to build trees
             n_jobs: number of parallel jobs; -1 to use all available processors; None means 1
             random_state: pseudo-random number generator seed
@@ -101,7 +101,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
                 higher than cap set at 25k for performance reasons.
 
         The sklearn.RandomForestRegressor parameters `oob_score`, `verbose`, `warm_restart` are not considered.
-        
+
         See skl.ensemble.RandomForestRegressor parameters.
         """
 
@@ -176,12 +176,14 @@ class RandomForestRegressionSklearn(SupervisedLearner):
 
         Parameters:
             data: tabular labeled data to train on
-        
+
         Returns:
             self (allows chaining)
         """
 
-        data = params.instance(data, Data)  # todo: params.data(..., is_finite=True, is_labeled=True)
+        data = params.instance(
+            data, Data
+        )  # todo: params.data(..., is_finite=True, is_labeled=True)
         n = data.num_samples
 
         xtrain = params.real_matrix(data.samples(), nrows=n)
@@ -201,7 +203,9 @@ class RandomForestRegressionSklearn(SupervisedLearner):
             predictive normal distribution
         """
 
-        data = params.instance(data, Data)  # todo: params.data(..., is_finite=True, is_labeled=True)
+        data = params.instance(
+            data, Data
+        )  # todo: params.data(..., is_finite=True, is_labeled=True)
 
         xpred = params.real_matrix(data.samples())
 
@@ -226,7 +230,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
                         " Corelation matrix will not be computed, because a matrix this large may"
                         " take up too much RAM. (2.5E4^2 entries * 8 byes per entry / 1E6 bytes per MB = 3200MB)."
                         " To force computation anyway, set `force_corr = True` in learner constructor.",
-                        UserWarning
+                        UserWarning,
                     )
                     return NormalPredictiveDistribution(
                         mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0)
@@ -234,13 +238,12 @@ class RandomForestRegressionSklearn(SupervisedLearner):
                 else:
                     # Must handle single-prediction separately, as in this case np.corrcoef
                     # will return single number rather than 1x1 array.
-                    if preds.shape[1] == 1: 
+                    if preds.shape[1] == 1:
                         corr = np.array([[1]])
                     else:
                         corr = np.corrcoef(preds, rowvar=False)
                     return CorrelatedNormalPredictiveDistribution(
-                        mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0),
-                        corr=corr
+                        mean=np.mean(preds, axis=0), stddev=np.std(preds, axis=0), corr=corr
                     )
             else:
                 raise BenchmarkError(

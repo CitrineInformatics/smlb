@@ -39,7 +39,7 @@ from smlb import Evaluation, EvaluationConfiguration
 
 class PlotConfiguration(EvaluationConfiguration):
     """Configuration settings for Plots.
-    
+
     Provides backend-independent basic settings:
     * font sizes
     * color sets
@@ -111,7 +111,7 @@ class PlotConfiguration(EvaluationConfiguration):
     @property
     def color_set(self):
         """Query color set in RGB color space
-        
+
         Returns:
             n x 3 array, where n is number of colors and each entry consists of
                 red, green and blue values in the range [0,1]
@@ -121,13 +121,13 @@ class PlotConfiguration(EvaluationConfiguration):
 
     def color(self, i: int):
         """Query color from current colorset.
-        
+
         Color in RGB color space. Colors do not cycle.
 
         Parameters:
             i: index of queried color
 
-        The rationale for not cycling colors is to alert the user that there are not enough 
+        The rationale for not cycling colors is to alert the user that there are not enough
         unique colors, as opposed to not being able to tell apart elements of the plot.
         If cycling is desired, pass i mod length of color scheme.
         """
@@ -139,7 +139,7 @@ class PlotConfiguration(EvaluationConfiguration):
 
 class Plot(Evaluation):
     """Base class for static graphical outcomes.
-    
+
     Uses matplotlib (https://matplotlib.org) as rendering engine.
 
     Provides basic plotting abstractions so that specific plots
@@ -157,7 +157,7 @@ class Plot(Evaluation):
         """Initialize Evaluation.
 
         Parameters:
-            target: rendering target that evaluation outcome is rendered to; 
+            target: rendering target that evaluation outcome is rendered to;
                 can be a single filename, or a matplotlib Axes or (Figure, Axes) pair,
                 or a sequence thereof; if a matplotlib Axes or (Figure, Axes) pair,
                 evaluation will add to it; if None, a new rendering target is created
@@ -208,7 +208,7 @@ class Plot(Evaluation):
 
     def _default_configuration(self):
         """Query default Plot configuration.
-        
+
         Factory method that returns default plot configuration."""
 
         return PlotConfiguration()
@@ -342,7 +342,7 @@ class Plot(Evaluation):
         """Set axes scales.
 
         Parameters:
-            axes_scales: scales (None, "linear" or "log") for horizontal and vertical axes; 
+            axes_scales: scales (None, "linear" or "log") for horizontal and vertical axes;
                 None indicates to use the current value
 
         Examples:
@@ -406,7 +406,7 @@ class Plot(Evaluation):
         """Draw box-whisker plots.
 
         Parameter:
-            positions: where to place plots on horizontal axis 
+            positions: where to place plots on horizontal axis
             values: samples for each location
             color: color index
             widths: widths of boxes
@@ -446,7 +446,7 @@ class GeneralizedFunctionPlot(Plot):
     Plots multiple outputs (vertical axis) associated to inputs (horizontal axis).
     Multiple outputs per input can be visualized as points or box-whisker plots.
 
-    If several functions provide values at the same horizontal location, 
+    If several functions provide values at the same horizontal location,
     the corresponding visualizations can be rectified (horizontally displaced)
     so as to not overlap and thus improve readability of the plot.
     """
@@ -467,11 +467,11 @@ class GeneralizedFunctionPlot(Plot):
             visualization_type: how to visualize generalized functions.
                 Either single value or list of appropriate length.
                 Possible values: "points" (default), "box-whisker"
-            rectify: whether and by how much each curves' values will be horizontally displaced 
+            rectify: whether and by how much each curves' values will be horizontally displaced
                 to visually disentangle markers from different curves at the same location.
                 True indicates automatic displacement, False indicates no displacement.
                 If not specified, horizontal axis positions are not modified (default).
-                If the horizontal axis scaling is logarithmic, the rectification factor 
+                If the horizontal axis scaling is logarithmic, the rectification factor
                 is applied in log-space.
 
         Examples:
@@ -509,20 +509,20 @@ class GeneralizedFunctionPlot(Plot):
         """Compute plot data for multiple generalized (set-valued) functions.
 
         Multiple curves C_1, ..., C_k can be drawn.
-        Each curve C_i is specified by a non-empty sequence of 2-tuples, 
-        where the first value is location on horizontal axis, and the 
+        Each curve C_i is specified by a non-empty sequence of 2-tuples,
+        where the first value is location on horizontal axis, and the
         other value is a sequence of locations on the vertical axis.
 
         Each curve can be drawn in a different way (points, box-whisker).
-        
+
         Parameters:
             results: sequence of generalized functions data (curve data).
-                     Each datum is a sequence of tuples (x,fx), where 
+                     Each datum is a sequence of tuples (x,fx), where
                      x is a real number and fx is a sequence of real numbers.
 
         Examples:
             # two curves sharing one horizontal location
-            evaluate([ 
+            evaluate([
                 [(1,(1,0.9,1.1)), (3,(2,))],  # curve 1
                 [(1,(0.7,)), (2,(3.1,2.8)), (4,(5.5,7.3,6))], # curve 2
             ])
@@ -648,12 +648,12 @@ class LearningCurvePlot(GeneralizedFunctionPlot):
 
     "Learning curves" are plots of empirical prediction error as a function of training set size.
     Asymptotically, the prediction error decays as a negative power, $\epsilon = a' n^{-b}$. [1]
-    On a log-log plot, $\epsilon$ is therefore linear, $\log \epsilon = a - b \log(n)$, 
+    On a log-log plot, $\epsilon$ is therefore linear, $\log \epsilon = a - b \log(n)$,
     and the offset $a$ and slope $b$ can be used to characterize predictive performance of models. [2]
 
-    [1] Shun-ichi Amari, Naotake Fujita, Shigeru Shinomoto: Four Types of Learning Curves, 
+    [1] Shun-ichi Amari, Naotake Fujita, Shigeru Shinomoto: Four Types of Learning Curves,
         Neural Computation 4(4): 605-618, 1992. DOI 10.1162/neco.1992.4.4.605
-    [2] Bing Huang, O. Anatole von Lilienfeld: Communication: Understanding molecular 
+    [2] Bing Huang, O. Anatole von Lilienfeld: Communication: Understanding molecular
         representations in machine learning: the role of uniqueness and target similarity,
         Journal of Chemical Physics 145(16): 161102, 2016. DOI 10.1063/1.4964627
     """
@@ -667,11 +667,11 @@ class LearningCurvePlot(GeneralizedFunctionPlot):
         **kwargs,
     ):
         """Initialize learning curve plot.
-        
+
         Parameters:
             fits: if True, show estimated asymptotic fits
             fit_lambda: regularization strength for asymptotic fits; defaults to 1e-7
-            fit_weights: if and how to weight fits; one of 
+            fit_weights: if and how to weight fits; one of
                 None: no weighting, "variance": weigh by variance for each training set size
             base: base for logarithmic plotting
             All parameters from base classes, in particular GeneralizedFunctionPlot and Plot.
@@ -679,7 +679,9 @@ class LearningCurvePlot(GeneralizedFunctionPlot):
 
         # set learning curve-specific arguments if not explicitly set
         kwargs["axes_scales"] = kwargs.get("axes_scales", ("log", "log"))
-        kwargs["axes_labels"] = kwargs.get("axes_labels", ("training set size", "evaluation metric", None, None))
+        kwargs["axes_labels"] = kwargs.get(
+            "axes_labels", ("training set size", "evaluation metric", None, None)
+        )
 
         super().__init__(**kwargs)
 
@@ -696,15 +698,15 @@ class LearningCurvePlot(GeneralizedFunctionPlot):
 
     def asymptotic_fit(self, fdata):
         r"""Compute asymptotic fit in log-space for a single curve.
-        
+
         The asymptotic fit is computed using a simple form of linear ridge regression,
-        estimating two parameters, offset b and slope a: $f(x) = b + a x$. 
-        In short, we augment x with a second dimension of constant value 1 to remove the bias, 
-        $f( (x,1) ) = <(a,b),(x,1)>$. Then, solving 
+        estimating two parameters, offset b and slope a: $f(x) = b + a x$.
+        In short, we augment x with a second dimension of constant value 1 to remove the bias,
+        $f( (x,1) ) = <(a,b),(x,1)>$. Then, solving
         $\argmin_{a,b} \sum_{i=1}^n (y_i - f((x_i,1)))^2 + \lambda ||(a,b)||^2$
-        by rewriting in matrix notation, setting the derivative to zero and solving for (a,b) yields 
-        $(a,b) = (X^T X + \lambda I)^{-1} X^T y$, where the $n \times 2$-dimensional matrix X 
-        contains the data the fit is based on. The variance, or mean squared error (MSE), 
+        by rewriting in matrix notation, setting the derivative to zero and solving for (a,b) yields
+        $(a,b) = (X^T X + \lambda I)^{-1} X^T y$, where the $n \times 2$-dimensional matrix X
+        contains the data the fit is based on. The variance, or mean squared error (MSE),
         indicates how well empirical errors follow the asymptotic fit.
 
         Parameters:
@@ -750,7 +752,7 @@ class LearningCurvePlot(GeneralizedFunctionPlot):
         """Evaluate learning curve plot.
 
         Parameters:
-            results: sequence of curve data, where each curve datum is a sequence of tuples (n,fx) 
+            results: sequence of curve data, where each curve datum is a sequence of tuples (n,fx)
                 of training set size n (positive integer) and performance values fx (sequence of real numbers).
         """
 
@@ -781,7 +783,12 @@ class LearningCurvePlot(GeneralizedFunctionPlot):
             self.add_auxiliary(
                 "asymptotic_fits",
                 tuple(
-                    {"offset": offset, "slope": slope, "residuals": residuals, "variance": variance}
+                    {
+                        "offset": offset,
+                        "slope": slope,
+                        "residuals": residuals,
+                        "variance": variance,
+                    }
                     for (offset, slope, residuals, variance) in asymptotic_fits
                 ),
             )

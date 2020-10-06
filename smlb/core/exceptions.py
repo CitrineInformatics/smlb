@@ -12,7 +12,7 @@ All benchmark exceptions derive from BenchmarkError.
 
 class BenchmarkError(Exception):
     """Signals failure in benchmarking.
-    
+
     This is the exception generally raised within the benchmark.
     All more specific exceptions derive from it."""
 

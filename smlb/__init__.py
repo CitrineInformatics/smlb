@@ -19,7 +19,7 @@ from smlb.core.transformations import (
     DataValuedTransformation,
     IdentityTransformation,
     InvertibleTransformation,
-    DataTransformationFailureMode
+    DataTransformationFailureMode,
 )
 from smlb.core.features import Features, IdentityFeatures
 from smlb.core.sampling import Sampler, RandomSubsetSampler, RandomVectorSampler, GridSampler

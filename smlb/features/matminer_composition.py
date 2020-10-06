@@ -74,7 +74,7 @@ class MatminerCompositionFeatures(Features):
         https://github.com/hackingmaterials/matminer/blob/master/matminer/featurizers/composition.py
 
         Parameters:
-            select: which feature sets to compute (by default, all). Specifying 
+            select: which feature sets to compute (by default, all). Specifying
                 multiple sets (e.g., ('stoichiometry', 'elemental') selects both).
                 Valid choices:
                 'all': all features
@@ -83,7 +83,7 @@ class MatminerCompositionFeatures(Features):
                 'ionic': ion properties
                 'valence': valence orbital shell features
             samplef: a function accepting and returning a sample. This enables
-                transformation of samples, for example, to select an entry by key 
+                transformation of samples, for example, to select an entry by key
                 if sample is a dictionary, or to turn a dictionary into a vector.
                 Default is to return the sample unchanged.
             stoichiometry_p_list: list of L_p norms to compute
@@ -104,7 +104,10 @@ class MatminerCompositionFeatures(Features):
             select = SELECT_SETS
         if isinstance(select, str):
             select = (select,)  # tuple(str,) yields tuple of characters in str
-        select = params.tuple_(select, lambda arg: params.enumeration(arg, set(SELECT_SETS)),)
+        select = params.tuple_(
+            select,
+            lambda arg: params.enumeration(arg, set(SELECT_SETS)),
+        )
 
         self._stoichiometry_p_list = params.tuple_(
             stoichiometry_p_list, lambda p: params.integer(p, from_=0)

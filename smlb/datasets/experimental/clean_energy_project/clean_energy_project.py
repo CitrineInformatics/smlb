@@ -40,7 +40,10 @@ class CleanEnergyProjectDataset(TabularDataFromPandas):
     """
 
     def __init__(
-        self, source: str, join: Optional[Union[str, bool]] = None, **kwargs,
+        self,
+        source: str,
+        join: Optional[Union[str, bool]] = None,
+        **kwargs,
     ):
         """Loads dataset.
 

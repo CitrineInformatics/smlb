@@ -102,7 +102,7 @@ class PredictiveDistributionDecomposition(SmlbObject):
 
 class PredictiveDistribution(PredictiveDistributionDecomposition, metaclass=ABCMeta):
     """Abstract base class for predictive distributions.
-    
+
     A sequence of same-type distributions with possibly different parameters.
     For example, a sequence of normal distributions, each with its own mean and standard deviation.
     """
@@ -136,13 +136,13 @@ class DeltaPredictiveDistribution(PredictiveDistribution):
 
     A sequence of delta predictive distributions.
 
-    In some (but not all) contexts it can make sense to view this distribution 
+    In some (but not all) contexts it can make sense to view this distribution
     as the limiting case of a normal distribution with standard deviation going to zero.
     """
 
     def __init__(self, mean, **kwargs):
         """Initialize state.
-        
+
         Parameters:
             mean: sequence of means (floats)
         """
@@ -172,7 +172,7 @@ class DeltaPredictiveDistribution(PredictiveDistribution):
 
 class NormalPredictiveDistribution(PredictiveDistribution):
     """Normal predictive distributions.
-    
+
     A sequence of (independent) normal predictive distributions.
     """
 
@@ -213,7 +213,7 @@ class NormalPredictiveDistribution(PredictiveDistribution):
 
 class CorrelatedNormalPredictiveDistribution(PredictiveDistribution):
     """Normal predictive distributions.
-    
+
     A sequence of possibly correlated normal predictive distributions.
     """
 

@@ -32,13 +32,13 @@ class params:
     Parameters are tested for validity and are brought into
     a canonical form. The validated canonicalized parameter
     is returned. In case of errors, InvalidParameterError is raised.
-    
+
     Recommended usage example:
 
         def f(n):
             n = params.integer(n)
 
-    Note that this is unproblematic even for mutable parameters as 
+    Note that this is unproblematic even for mutable parameters as
     the parameter is re-assigned.
     """
 
@@ -73,7 +73,7 @@ class params:
 
         Accepts values True, False, "true", "True", "false", "False".
         Rejects values 0, 1, 0., 1.
-        
+
         Parameters:
             arg: parameter to validate as boolean
 
@@ -114,7 +114,7 @@ class params:
             to: if specified, highest admissible number (closed set upper bound)
             above: if specified, highest non-admissible number (open set lower bound)
             below: if specified, lowest non-admissible number (open set upper bound)
-        
+
         Returns:
             built-in integer type
 
@@ -158,7 +158,7 @@ class params:
     @staticmethod
     def real(arg, from_=None, to=None, above=None, below=None):
         """Real number, floating point type.
-        
+
         Parameters:
             arg: parameter to validate as a real numbre
             from_: if specified, lowest admissible number (closed set lower bound)
@@ -205,12 +205,12 @@ class params:
         """A string.
 
         The argument must be a string, no conversion from non-string types.
-        
+
         Currently supports only built-in string type.
 
         Parameters:
             arg: parameter to validate as string
-        
+
         Returns:
             arg as string
 
@@ -262,10 +262,10 @@ class params:
             arg: parameter to be validated as a sequence
             length: required length of sequence or None (default)
             type_: required type for all sequence elements or None (default)
-        
+
         Returns:
             arg if a sequence
-        
+
         Raises:
             InvalidParameterError if arg is not a sequence, of given length and type if specified
         """
@@ -324,7 +324,7 @@ class params:
 
         Most functions will have positional_or_keyword, var_positional or var_keyword parameters.
 
-        Example: 
+        Example:
             `def f5(a, b, *c, d=1, e=2, **f): pass`
             has 2 positional-or-keyword, 1 variable-positional, 2 keyword-only and 1 variable-keyword arguments.
 
@@ -432,7 +432,7 @@ class params:
         Parameters:
             arg: parameter to validate
             dtype: dtype of arg if not None (default)
-        
+
         Returns:
             NumPy array, of given dtype if specified
 
@@ -458,7 +458,7 @@ class params:
         Parameters:
             arg: parameter to validate as rectangular NumPy array
             dtype: dtype of arg if not None (default)
-        
+
         Returns:
             rectangular NumPy array with given dtype if specified
 
@@ -564,21 +564,21 @@ class params:
     @staticmethod
     def hypercube_domain(arg, dimensions: Optional[int] = None):
         """A hypercube domain in a real vector space.
-        
+
         A sequence of ranges [a,b].
 
-        If only a single interval is passed as `arg`, 
+        If only a single interval is passed as `arg`,
         it is extended to match the dimensionality.
         For this, dimensionality needs to be specified.
 
         If dimensionality is not specified, any sequence
-        of ranges is accepted. In this case, a single range 
+        of ranges is accepted. In this case, a single range
         is not accepted, as it can not be reliably extended.
 
         Parameters:
             arg: sequence of ranges [a,b]
             dimensions: dimensionality of sequence
-        
+
         Returns:
             2d NumPy array of shape (dimensions,2) and dtype float
         """
@@ -614,7 +614,7 @@ class params:
     @staticmethod
     def interval(arg, from_=None, to=None, above=None, below=None):
         """Intervals [a,b], [a,b), (a,b], (a,b), 2-tuple of floats.
-        
+
         If bounds are not specified, interval can be anywhere on the real line.
         It is always required that a <= b.
 
@@ -658,7 +658,7 @@ class params:
         """Predictive distribution.
 
         Parameters:
-            arg: parameter to validate; predictive distributions; 
+            arg: parameter to validate; predictive distributions;
                  a sequence is interpreted as specifying the means of a DeltaPredictiveDistribution
 
         Returns:
@@ -694,7 +694,7 @@ class params:
         """Predictive normal distribution.
 
         Parameters:
-            arg: parameter to validate; normal predictive distributions; 
+            arg: parameter to validate; normal predictive distributions;
                  a pair of two same-length sequences is interpreted as
                  means and standard deviations of independent normal predictive distributions
 
@@ -864,7 +864,7 @@ class params:
 
         Parameters:
             arg: parameter to be validated as a chemical element specification
-        
+
         Returns:
             proton number corresponding to element
 

@@ -61,10 +61,10 @@ class JavaGateway(metaclass=ABCMeta):
     @abstractmethod
     def __init__(self, class_path: Optional[str] = None):
         """Initialize Java gateway.
-        
-        If derived class is initialized for the first time, 
+
+        If derived class is initialized for the first time,
         start up JVM and create gateway. On subsequent initializations
-        of derived class, the same gateway is used, except when a 
+        of derived class, the same gateway is used, except when a
         different class_path is passed. In that case,
         the JVM is shut down and restarted with the new class path.
 
@@ -72,7 +72,7 @@ class JavaGateway(metaclass=ABCMeta):
             class_path: local filesystem class path containing one
                 or more directories or .jar files. If not specified,
                 an empty string is passed as classpath to the JVM.
-        
+
         Raises:
             BenchmarkError if the class_path is invalid.
         """

@@ -28,9 +28,9 @@ class EvaluationConfiguration(SmlbObject):
 
 class Evaluation(SmlbObject, metaclass=ABCMeta):
     """Abstract base class for graphical and textual summaries of results.
-    
+
     After initialization, an Evaluation is first `evaluate`d and then `render`ed.
-    Derived classes should re-define `_render`, not `render`, which takes care of 
+    Derived classes should re-define `_render`, not `render`, which takes care of
     initialization and release of resources for the derived class's `_render` method.
     """
 
@@ -89,7 +89,7 @@ class Evaluation(SmlbObject, metaclass=ABCMeta):
         Parameters:
             key: string key for retrieving information later
             value: auxiliary information to store under key
-        
+
         A setter could have been used, for example, as
         `auxiliary = { key: value }`. This solution was
         considered abuse of notation as the syntax would
@@ -138,4 +138,3 @@ class Evaluation(SmlbObject, metaclass=ABCMeta):
         """
 
         raise NotImplementedError
-

@@ -43,7 +43,7 @@ class PseudoRandomNumberGenerator:
 
         Parameters:
             num: number of resultant keys
-        
+
         Returns:
             num pseudo-random number generator keys
         """
@@ -55,7 +55,7 @@ class PseudoRandomNumberGenerator:
 
         Parameters:
             name: method name
-        
+
         Returns:
             corresponding NumPy pseudo-random number generator instance method
         """
@@ -65,7 +65,7 @@ class PseudoRandomNumberGenerator:
 
 class Random(SmlbObject):
     """Mix-in base class providing pseudo-random numbers.
-    
+
     Derive from this class if using pseudo-random numbers.
 
     Design:
@@ -73,15 +73,15 @@ class Random(SmlbObject):
 
     Counter-based pseudo-random number generation:
         John K. Salmon, Mark A. Moraes, Ron O. Dror, David E. Shaw:
-        Parallel Random Numbers: As Easy As 1, 2, 3. In: Proceedings 
-        of the International Conference for High Performance Computing, 
-        Networking, Storage and Analysis (SC~11), Seattle, Washington, 
+        Parallel Random Numbers: As Easy As 1, 2, 3. In: Proceedings
+        of the International Conference for High Performance Computing,
+        Networking, Storage and Analysis (SC~11), Seattle, Washington,
         November 12--18, 2011. DOI 10.1145/2063384.2063405
 
     Splittable pseudo-random number generators:
-        Koen Claessen, Micha{\l} H. Pa{\l}ka: Splittable Pseudorandom 
+        Koen Claessen, Micha{\l} H. Pa{\l}ka: Splittable Pseudorandom
         Number Generators using Cryptographic Hashing, p. 47--58. In:
-        The 18th {ACM} {SIGPLAN} International Conference on Functional 
+        The 18th {ACM} {SIGPLAN} International Conference on Functional
         Programming (ICFP 2013), Boston, Massachusetts, September 25--27,
         2013. DOI 10.1145/2578854.2503784
 

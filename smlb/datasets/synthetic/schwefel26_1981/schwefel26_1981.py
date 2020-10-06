@@ -24,8 +24,8 @@ class Schwefel261981Data(VectorSpaceData):
     Hans-Paul Schwefel: Numerical Optimization of Computer Models, Wiley, Chichester, 1981.
     Volume 26 of Interdisciplinary Systems Research series.
 
-    Multiple optimization test functions by H.-P. Schwefel exist and are in use. 
-    For disambiguation, this function has been named Schwefel 26 (1981). 
+    Multiple optimization test functions by H.-P. Schwefel exist and are in use.
+    For disambiguation, this function has been named Schwefel 26 (1981).
 
     Unfortunately, the original publication was not available to us, preventing verification.
     """

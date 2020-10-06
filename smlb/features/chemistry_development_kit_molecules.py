@@ -528,60 +528,60 @@ class ChemistryDevelopmentKitMoleculeFeatures(Features):
     # a subset of descriptors that are fast to compute and do not fail often
     # (tested on QM9 and CEP datasets)
     PRESET_ROBUST = (
-        'acidic_group_count',
-        'alogp',
-        'apol',
-        'aromatic_atoms_count',
-        'aromatic_bonds_count',
-        'atom_count',
+        "acidic_group_count",
+        "alogp",
+        "apol",
+        "aromatic_atoms_count",
+        "aromatic_bonds_count",
+        "atom_count",
         # 'auto_correlation_charge',  # NaN
-        'auto_correlation_mass',
-        'auto_correlation_polarizability',
-        'basic_group_count',
+        "auto_correlation_mass",
+        "auto_correlation_polarizability",
+        "basic_group_count",
         # 'bcut',  # NaN
-        'bond_count',
-        'bpol',
-        'carbon_types',
+        "bond_count",
+        "bpol",
+        "carbon_types",
         # 'chi_chain',  # too slow
         # 'chi_cluster',  # too slow
         # 'chi_path',  # too slow
         # 'chi_path_cluster',  # too slow
         # 'cpsa',  # NaN
-        'eccentric_connectivity_index',
-        'fmf',
-        'fractional_csp3',
-        'fractional_psa',
-        'fragment_complexity',
+        "eccentric_connectivity_index",
+        "fmf",
+        "fractional_csp3",
+        "fractional_psa",
+        "fragment_complexity",
         # 'gravitational_index',  # NaN
-        'h_bond_acceptor_count',
-        'h_bond_donor_count',
-        'hybridization_ratio',
+        "h_bond_acceptor_count",
+        "h_bond_donor_count",
+        "hybridization_ratio",
         # 'ip_molecular_learning',  # NaN
-        'jp_log',
-        'kappa_shape_indices',
-        'kier_hall_smarts',
-        'largest_chain',
-        'largest_pi_system',
+        "jp_log",
+        "kappa_shape_indices",
+        "kier_hall_smarts",
+        "largest_chain",
+        "largest_pi_system",
         # 'length_over_breadth',  # NaN
         # 'longest_aliphatic_chain',  # fails
-        'mannhold_logp',
-        'mde',
+        "mannhold_logp",
+        "mde",
         # 'moment_of_inertia',  # NaN
-        'petitjean_number',
+        "petitjean_number",
         # 'petitjean_shape_index',  # NaN
-        'rotatable_bonds_count',
-        'rule_of_five',
-        'small_ring',
-        'spiro_atom_count',
-        'tpsa',
+        "rotatable_bonds_count",
+        "rule_of_five",
+        "small_ring",
+        "spiro_atom_count",
+        "tpsa",
         # 'vabc_volume',  # NaN
-        'v_adj_ma',
-        'weight',
+        "v_adj_ma",
+        "weight",
         # 'weighted_path',  # too slow
         # 'whim',  # NaN
-        'wiener_numbers',
-        'xlogp',
-        'zagreb_index'
+        "wiener_numbers",
+        "xlogp",
+        "zagreb_index",
     )
 
     # py4j Java gateway process for CDK molecular features

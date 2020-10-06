@@ -38,7 +38,7 @@ class DataTransformation(SmlbObject, metaclass=ABCMeta):
     """Abstract base class for data transformations.
 
     A DataTransformation is a function object that can be fitted on
-    training data and applied to (other) data to return transformed data. 
+    training data and applied to (other) data to return transformed data.
     Its interface contains two functions, fit() and apply().
 
     Provides:
