@@ -11,7 +11,7 @@ import numpy as np
 skl = pytest.importorskip("sklearn")
 
 import smlb
-from learners.scikit_learn.gaussian_process_regression_sklearn import GaussianProcessRegressionSklearn
+from smlb.learners.scikit_learn.gaussian_process_regression_sklearn import GaussianProcessRegressionSklearn
 
 
 def test_GaussianProcessRegressionSklearn_1():

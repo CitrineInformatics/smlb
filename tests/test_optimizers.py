@@ -16,7 +16,7 @@ from smlb import (
     LikelihoodOfImprovement,
     RandomOptimizer
 )
-from datasets.synthetic.friedman_1979.friedman_1979 import Friedman1979Data
+from smlb.datasets.synthetic.friedman_1979.friedman_1979 import Friedman1979Data
 
 
 class FakeLearner(Learner):

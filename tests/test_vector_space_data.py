@@ -117,7 +117,7 @@ def test_VectorSpaceData_parabola_1d(fixture_VectorSpaceData_parabola_1d):
 # def test_intersection_2():
 #     """Computational efficiency of intersection for an actual synthetic dataset as test case."""
 
-#     from datasets.synthetic.friedman_1979.friedman_1979 import Friedman1979Data
+#     from smlb.datasets.synthetic.friedman_1979.friedman_1979 import Friedman1979Data
 
 #     data = Friedman1979Data(dimensions=10)
 

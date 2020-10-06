@@ -11,6 +11,7 @@ pytest.importorskip("sklearn")
 
 import smlb
 
+
 #############################
 #  LearningCurveRegression  #
 #############################
@@ -19,7 +20,7 @@ import smlb
 def test_learning_curve_regression():
     """Simple examples"""
 
-    from datasets.synthetic.friedman_1979.friedman_1979 import Friedman1979Data
+    from smlb.datasets.synthetic.friedman_1979.friedman_1979 import Friedman1979Data
 
     dataset = Friedman1979Data(dimensions=5)
 
@@ -29,20 +30,20 @@ def test_learning_curve_regression():
         smlb.RandomVectorSampler(size=size, rng=0) for size in training_sizes
     )  # dataset domain is used by default
 
-    from learners.scikit_learn.gaussian_process_regression_sklearn import (
+    from smlb.learners.scikit_learn.gaussian_process_regression_sklearn import (
         GaussianProcessRegressionSklearn,
     )
 
     learner_gpr_skl = GaussianProcessRegressionSklearn(
         random_state=0
     )  # default is Gaussian kernel
-    from learners.scikit_learn.random_forest_regression_sklearn import (
+    from smlb.learners.scikit_learn.random_forest_regression_sklearn import (
         RandomForestRegressionSklearn,
     )
 
     learner_rf_skl = RandomForestRegressionSklearn(random_state=0)
 
-    from workflows.learning_curve_regression import LearningCurveRegression
+    from smlb.workflows.learning_curve_regression import LearningCurveRegression
 
     workflow = LearningCurveRegression(
         data=dataset,
@@ -55,23 +56,22 @@ def test_learning_curve_regression():
 
 def test_optimization_trajectories():
     """Ensure that a simple optimization workflow can be run."""
-    from datasets.synthetic.friedman_1979.friedman_1979 import Friedman1979Data
+    from smlb.datasets.synthetic.friedman_1979.friedman_1979 import Friedman1979Data
     dataset = Friedman1979Data(dimensions=5)
     sampler = smlb.RandomVectorSampler(size=100, rng=0)
     training_data = sampler.fit(dataset).apply(dataset)
 
-    from learners.scikit_learn.random_forest_regression_sklearn import RandomForestRegressionSklearn
+    from smlb.learners.scikit_learn.random_forest_regression_sklearn import RandomForestRegressionSklearn
 
     learner = RandomForestRegressionSklearn(uncertainties="naive", random_state=0)
     learner.fit(training_data)
 
-    from smlb.scorer import LikelihoodOfImprovement
-    li_scorer = LikelihoodOfImprovement(target=2, goal="minimize")
+    li_scorer = smlb.LikelihoodOfImprovement(target=2, goal="minimize")
 
-    from smlb.optimizer import RandomOptimizer
+    from smlb.core.optimizer import RandomOptimizer
     optimizer = RandomOptimizer(num_samples=30, rng=0)
 
-    from workflows.optimization_trajectories import OptimizationTrajectory
+    from smlb.workflows.optimization_trajectories import OptimizationTrajectory
     workflow = OptimizationTrajectory(
         data=dataset,
         model=learner,

@@ -5,33 +5,42 @@ A benchmark of regression models in chem- and materials informatics.
 2019-2020, Matthias Rupp, Citrine Informatics.
 """
 
-from .exceptions import BenchmarkError, InvalidParameterError
-from .object import SmlbObject
-from .utility import is_sequence, which
-from .parameters import params
-from .random import Random
-from .physchem import element_data
-from .data import Data, intersection, complement
-from .tabular_data import TabularData, TabularDataFromPandas
-from .vector_space_data import VectorSpaceData
-from .noise import Noise, NoNoise, NormalNoise, LabelNoise
-from .transformations import (
+from smlb.core.exceptions import BenchmarkError, InvalidParameterError
+from smlb.core.object import SmlbObject
+from smlb.core.utility import is_sequence, which
+from smlb.core.parameters import params
+from smlb.core.random import Random
+from smlb.core.physchem import element_data
+from smlb.core.data import Data, intersection, complement
+from smlb.core.tabular_data import TabularData, TabularDataFromPandas
+from smlb.core.vector_space_data import VectorSpaceData
+from smlb.core.transformations import (
     DataTransformation,
     DataValuedTransformation,
     IdentityTransformation,
     InvertibleTransformation,
     DataTransformationFailureMode
 )
-from .features import Features, IdentityFeatures
-from .learners import Learner, UnsupervisedLearner, SupervisedLearner
-from .sampling import Sampler, RandomSubsetSampler, RandomVectorSampler, GridSampler
-from .metrics import (
-    EvaluationMetric,
+from smlb.core.features import Features, IdentityFeatures
+from smlb.core.sampling import Sampler, RandomSubsetSampler, RandomVectorSampler, GridSampler
+from smlb.core.distributions import (
+    PredictiveDistribution,
+    DeltaPredictiveDistribution,
+    NormalPredictiveDistribution,
+    CorrelatedNormalPredictiveDistribution,
+)
+from smlb.core.evaluations import Evaluation, EvaluationConfiguration
+from smlb.core.plots import Plot, PlotConfiguration, GeneralizedFunctionPlot, LearningCurvePlot
+from smlb.core.workflow import Workflow
+from smlb.core.noise import Noise, NoNoise, NormalNoise, LabelNoise
+from smlb.core.learners import Learner, UnsupervisedLearner, SupervisedLearner
+from smlb.core.metrics import (
     ScalarEvaluationMetric,
+    VectorEvaluationMetric,
     Residuals,
     AbsoluteResiduals,
-    MeanAbsoluteError,
     SquaredResiduals,
+    MeanAbsoluteError,
     MeanSquaredError,
     RootMeanSquaredError,
     StandardizedRootMeanSquaredError,
@@ -42,29 +51,21 @@ from .metrics import (
     StandardConfidence,
     RootMeanSquareStandardizedResiduals,
     UncertaintyCorrelation,
-    two_sample_cumulative_distribution_function_statistic,
 )
-from .distributions import (
-    PredictiveDistribution,
-    DeltaPredictiveDistribution,
-    NormalPredictiveDistribution,
-    CorrelatedNormalPredictiveDistribution,
-)
-from .scorer import Scorer, LikelihoodOfImprovement
-from .optimizer import (
+from smlb.core.scorer import Scorer, LikelihoodOfImprovement
+from smlb.core.optimizer import (
     Optimizer,
     TrackedTransformation,
     OptimizerIteration,
     RandomOptimizer,
     OptimizerResults
 )
-from .evaluations import Evaluation, EvaluationConfiguration
-from .plots import (
+from smlb.core.evaluations import Evaluation, EvaluationConfiguration
+from smlb.core.plots import (
     Plot,
     PlotConfiguration,
     GeneralizedFunctionPlot,
     LearningCurvePlot,
     OptimizationTrajectoryPlot
 )
-from .workflow import Workflow
-from .java import JavaGateway
+from smlb.core.workflow import Workflow

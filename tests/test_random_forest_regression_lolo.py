@@ -10,10 +10,9 @@ import numpy as np
 
 lolopy = pytest.importorskip("lolopy")
 py4j = pytest.importorskip("py4j")
-from py4j.protocol import Py4JJavaError
 
-pytest.importorskip("learners.lolo.random_forest_regression_lolo")
-from learners.lolo.random_forest_regression_lolo import RandomForestRegressionLolo
+pytest.importorskip("smlb.learners.lolo.random_forest_regression_lolo")
+from smlb.learners.lolo.random_forest_regression_lolo import RandomForestRegressionLolo
 
 import smlb
 
