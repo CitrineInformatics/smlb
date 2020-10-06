@@ -23,8 +23,12 @@ from smlb.core.transformations import (
 )
 from smlb.core.features import Features, IdentityFeatures
 from smlb.core.sampling import Sampler, RandomSubsetSampler, RandomVectorSampler, GridSampler
-from smlb.core.distributions import PredictiveDistribution, DeltaPredictiveDistribution, NormalPredictiveDistribution, CorrelatedNormalPredictiveDistribution
-
+from smlb.core.distributions import (
+    PredictiveDistribution,
+    DeltaPredictiveDistribution,
+    NormalPredictiveDistribution,
+    CorrelatedNormalPredictiveDistribution,
+)
 from smlb.core.evaluations import Evaluation, EvaluationConfiguration
 from smlb.core.plots import Plot, PlotConfiguration, GeneralizedFunctionPlot, LearningCurvePlot
 from smlb.core.workflow import Workflow
