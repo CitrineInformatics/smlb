@@ -13,7 +13,7 @@ from smlb import (
     Data,
     NormalPredictiveDistribution,
     InvalidParameterError,
-    LikelihoodOfImprovement,
+    ProbabilityOfImprovement,
     RandomOptimizer
 )
 from smlb.datasets.synthetic.friedman_1979.friedman_1979 import Friedman1979Data
@@ -36,7 +36,7 @@ def test_tracking():
     num_samples = 5
     dataset = Friedman1979Data()
     learner = FakeLearner()
-    scorer = LikelihoodOfImprovement(target=8.0, goal="maximize")
+    scorer = ProbabilityOfImprovement(target=8.0, goal="maximize")
 
     func = TrackedTransformation(learner, scorer)
     optimizer = RandomOptimizer(num_samples=num_samples, rng=0)

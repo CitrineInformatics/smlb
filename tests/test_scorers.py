@@ -9,7 +9,7 @@ import pytest
 
 import numpy as np
 from smlb import (
-    LikelihoodOfImprovement,
+    ProbabilityOfImprovement,
     InvalidParameterError,
     DeltaPredictiveDistribution,
     NormalPredictiveDistribution
@@ -19,23 +19,23 @@ from smlb import (
 def test_interface_erroneous_arguments():
     """Test whether errors are raised for invalid keyword arguments."""
     with pytest.raises(InvalidParameterError):
-        LikelihoodOfImprovement("not a number")
+        ProbabilityOfImprovement("not a number")
 
     with pytest.raises(InvalidParameterError):
-        LikelihoodOfImprovement(0.0, "optimize")
+        ProbabilityOfImprovement(0.0, "optimize")
 
 
 def test_likelihood_of_improvement_calculation():
     """Test the accuracy of the 'likelihood of improvement' calculation."""
     configs = [
         (DeltaPredictiveDistribution([1.0, 5.0]),
-            LikelihoodOfImprovement(2.0, "maximize"), [0.0, 1.0]),
+         ProbabilityOfImprovement(2.0, "maximize"), [0.0, 1.0]),
         (DeltaPredictiveDistribution([1.0, 5.0]),
-            LikelihoodOfImprovement(2.0, "minimize"), [1.0, 0.0]),
+         ProbabilityOfImprovement(2.0, "minimize"), [1.0, 0.0]),
         (NormalPredictiveDistribution([0.0, 4.0], [2.0, 1.0]),
-            LikelihoodOfImprovement(2.0, "maximize"), [0.159, 0.977]),
+         ProbabilityOfImprovement(2.0, "maximize"), [0.159, 0.977]),
         (NormalPredictiveDistribution([0.0, 4.0], [2.0, 1.0]),
-            LikelihoodOfImprovement(2.0, "minimize"), [0.841, 0.023])
+         ProbabilityOfImprovement(2.0, "minimize"), [0.841, 0.023])
     ]
 
     for dist, scorer, result in configs:

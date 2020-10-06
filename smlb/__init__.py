@@ -52,7 +52,7 @@ from smlb.core.metrics import (
     RootMeanSquareStandardizedResiduals,
     UncertaintyCorrelation,
 )
-from smlb.core.scorer import Scorer, LikelihoodOfImprovement
+from smlb.core.scorer import Scorer, ProbabilityOfImprovement
 from smlb.core.optimizer import (
     Optimizer,
     TrackedTransformation,

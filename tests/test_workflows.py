@@ -66,7 +66,7 @@ def test_optimization_trajectories():
     learner = RandomForestRegressionSklearn(uncertainties="naive", random_state=0)
     learner.fit(training_data)
 
-    li_scorer = smlb.LikelihoodOfImprovement(target=2, goal="minimize")
+    pi_scorer = smlb.ProbabilityOfImprovement(target=2, goal="minimize")
 
     from smlb.core.optimizer import RandomOptimizer
     optimizer = RandomOptimizer(num_samples=30, rng=0)
@@ -75,7 +75,7 @@ def test_optimization_trajectories():
     workflow = OptimizationTrajectory(
         data=dataset,
         model=learner,
-        scorer=li_scorer,
+        scorer=pi_scorer,
         optimizers=[optimizer, optimizer],  # just to check that it can handle multiple optimizers
         num_trials=3
     )

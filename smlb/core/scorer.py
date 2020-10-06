@@ -39,13 +39,13 @@ class Scorer(SmlbObject, metaclass=ABCMeta):
         raise NotImplementedError
 
 
-class LikelihoodOfImprovement(Scorer):
+class ProbabilityOfImprovement(Scorer):
     """Likelihood of improvement beyond a univariate target.
 
     Parameters:
         target: floating-point target value to exceed
         goal: whether the goal is to find a value above the target (maximize)
-            or below the target (minimize). Tune objectives are not supported at this time.
+            or below the target (minimize).
     """
 
     def __init__(self, target: float, goal: str = "maximize", **kwargs):
