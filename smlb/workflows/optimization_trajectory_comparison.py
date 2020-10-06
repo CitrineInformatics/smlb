@@ -22,6 +22,7 @@ from smlb import (
 
 class OptimizationTrajectoryComparison(Workflow):
     """Optimization trajectories for multiple trials and multiple optimizers on a single model.
+    The same class of optimizer could be represented multiple times with different parameters.
 
     Parameters:
         data: the real-valued vector space that defines the problem

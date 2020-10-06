@@ -71,7 +71,7 @@ def test_optimization_trajectories():
     from smlb.core.optimizer import RandomOptimizer
     optimizer = RandomOptimizer(num_samples=30, rng=0)
 
-    from smlb.workflows.optimization_trajectories import OptimizationTrajectoryComparison
+    from smlb.workflows.optimization_trajectory_comparison import OptimizationTrajectoryComparison
     workflow = OptimizationTrajectoryComparison(
         data=dataset,
         model=learner,
