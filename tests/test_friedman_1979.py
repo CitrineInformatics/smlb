@@ -15,7 +15,7 @@ import smlb
 def test_friedman_1979_examples():
     """Tests instantiating and evaluating Friedman (1979) datasets."""
 
-    from datasets.synthetic.friedman_1979.friedman_1979 import Friedman1979Data
+    from smlb.datasets.synthetic.friedman_1979.friedman_1979 import Friedman1979Data
 
     fd = Friedman1979Data()
     f5 = Friedman1979Data(dimensions=5)

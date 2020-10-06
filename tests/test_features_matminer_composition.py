@@ -14,7 +14,7 @@ pymatgen = pytest.importorskip("pymatgen")
 
 import smlb
 
-from features.matminer_composition import MatminerCompositionFeatures
+from smlb.features.matminer_composition import MatminerCompositionFeatures
 
 
 def test_MatminerCompositionFeatures_1():

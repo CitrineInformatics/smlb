@@ -7,9 +7,6 @@ A benchmark of regression models in chem- and materials informatics.
 
 import pytest
 
-import numpy as np
-import numpy.testing
-
 import smlb
 
 ###############

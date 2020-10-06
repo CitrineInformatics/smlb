@@ -12,7 +12,7 @@ import numpy as np
 skl = pytest.importorskip("sklearn")
 
 import smlb
-from learners.scikit_learn.gradient_boosted_trees_regression_sklearn import (
+from smlb.learners.scikit_learn.gradient_boosted_trees_regression_sklearn import (
     GradientBoostedTreesRegressionSklearn,
 )
 
