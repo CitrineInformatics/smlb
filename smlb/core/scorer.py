@@ -12,11 +12,9 @@ import math
 from scipy.special import erf
 import numpy as np
 
-from smlb import (
-    SmlbObject,
-    params,
-    PredictiveDistribution,
-)
+from smlb import SmlbObject
+from smlb import params
+from smlb import PredictiveDistribution
 
 
 class Scorer(SmlbObject, metaclass=ABCMeta):

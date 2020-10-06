@@ -131,7 +131,8 @@ class OptimizerResults:
 
 class TrackedTransformation(DataTransformation):
     """A wrapper class that combines a `Learner` and a `Scorer`, recording the results
-    and calculating the score every time the learner is applied.
+    and calculating the score every time the learner is applied. The score is adjusted
+    such that *lower is better*.
 
     This is necessary to interface with optimizers such as those implemented in scipy,
     which require a scalar-valued function and also don't expose every step of the
@@ -141,18 +142,19 @@ class TrackedTransformation(DataTransformation):
         learner: a Learner, to evaluate a specific sampled point
         scorer: a Scorer, to calculate a scalar-valued score at the point.
             This value is what the optimizer attempts to optimize.
-        goal: whether to "maximize" or "minimize" the score.
+        maximize: whether to maximize or minimize the score.
     """
 
-    def __init__(self, learner: Learner, scorer: Scorer, goal: str = "maximize"):
+    def __init__(self, learner: Learner, scorer: Scorer, maximize: bool = True):
         self._learner = params.instance(learner, Learner)
         self._scorer = params.instance(scorer, Scorer)
 
-        goal = params.enumeration(goal, {"maximize", "minimize"})
-        if goal == "maximize":
-            self._direction = 1
-        elif goal == "minimize":
+        maximize = params.boolean(maximize)
+        # If the goal is to maximize the score, invert the value because optimizers minimize.
+        if maximize:
             self._direction = -1
+        else:
+            self._direction = 1
 
         self._iterations = []
 
@@ -181,7 +183,7 @@ class TrackedTransformation(DataTransformation):
     def apply(self, data: Data) -> float:
         """Apply the learner to produce an output distribution and score that distribution.
         Append the information about this iteration to the running list.
-        Return a score such that higher is always better.
+        Return a score such that lower is always better.
         """
 
         dist = self._learner.apply(data)
@@ -199,25 +201,27 @@ class Optimizer(SmlbObject, metaclass=ABCMeta):
             function_tracker: TrackedTransformation
     ) -> OptimizerResults:
         """
-        Run the optimization. This first clears the `function_tracker`'s
-        memory of previous iterations, then calls `_optimize`.
+        Run the optimization. This first clears the `function_tracker`'s memory of
+        previous iterations, then calls `_minimize`. The score must be configured such that
+        lower scores are better.
 
         Parameters:
             data: vector space from which the optimizer can sample data
-            function_tracker: an instance of TrackedTransformation to track function evaluations and scores.
-                and a scorer, which converts the labeled data into a univariate score to minimize
+            function_tracker: an instance of TrackedTransformation to track function evaluations
+                and scores. and a scorer, which converts the labeled data into a
+                univariate score to minimize
 
         Returns:
-            A sequence of OptimizerIteration objects, one for every single function evaluation
-                that was performed.
+            A sequence of OptimizerIteration objects, one for every time the learner is applied
+            to a dataset.
         """
         function_tracker.clear()
-        self._optimize(data, function_tracker)
+        self._minimize(data, function_tracker)
         return OptimizerResults(function_tracker.iterations)
 
     @abstractmethod
-    def _optimize(self, data: VectorSpaceData, function_tracker: TrackedTransformation):
-        """Perform the optimization."""
+    def _minimize(self, data: VectorSpaceData, function_tracker: TrackedTransformation):
+        """Perform the minimization."""
 
         raise NotImplementedError
 
@@ -237,7 +241,7 @@ class RandomOptimizer(Optimizer, Random):
         self._num_samples = params.integer(num_samples, above=0)
         self._sampler = RandomVectorSampler(size=self._num_samples, domain=domain, rng=rng)
 
-    def _optimize(self, data: VectorSpaceData, function_tracker: TrackedTransformation):
+    def _minimize(self, data: VectorSpaceData, function_tracker: TrackedTransformation):
         """Generate num_samples random samples and evaluate them."""
         samples = self._sampler.apply(data)
         function_tracker.apply(samples)

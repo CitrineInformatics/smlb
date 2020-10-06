@@ -8,8 +8,7 @@ Citrine Informatics 2019.
 from abc import ABCMeta, abstractmethod
 
 from smlb import params
-from smlb import Data
-from smlb import DataTransformation
+from smlb import Data, DataTransformation
 from smlb import PredictiveDistribution
 from smlb import InvalidParameterError
 
