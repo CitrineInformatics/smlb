@@ -58,7 +58,7 @@ from smlb.core.optimizer import (
     TrackedTransformation,
     OptimizerIteration,
     RandomOptimizer,
-    OptimizerResults
+    OptimizerTrajectory
 )
 from smlb.core.evaluations import Evaluation, EvaluationConfiguration
 from smlb.core.plots import (

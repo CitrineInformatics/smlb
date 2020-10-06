@@ -72,8 +72,8 @@ class OptimizerIteration(SmlbObject):
             return self._scores
 
 
-class OptimizerResults:
-    """Holds the complete results of an optimization run, a sequence of OptimizerIterations."""
+class OptimizerTrajectory:
+    """Holds a single optimization trajectory, a sequence of OptimizerIterations."""
 
     def __init__(self, iterations: Sequence[OptimizerIteration]):
         self._iterations = params.sequence(iterations, type_=OptimizerIteration)
@@ -199,7 +199,7 @@ class Optimizer(SmlbObject, metaclass=ABCMeta):
             self,
             data: VectorSpaceData,
             function_tracker: TrackedTransformation
-    ) -> OptimizerResults:
+    ) -> OptimizerTrajectory:
         """
         Run the optimization. This first clears the `function_tracker`'s memory of
         previous iterations, then calls `_minimize`. The score must be configured such that
@@ -217,7 +217,7 @@ class Optimizer(SmlbObject, metaclass=ABCMeta):
         """
         function_tracker.clear()
         self._minimize(data, function_tracker)
-        return OptimizerResults(function_tracker.iterations)
+        return OptimizerTrajectory(function_tracker.iterations)
 
     @abstractmethod
     def _minimize(self, data: VectorSpaceData, function_tracker: TrackedTransformation):

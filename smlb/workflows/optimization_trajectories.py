@@ -14,13 +14,13 @@ from smlb import (
     Scorer,
     Optimizer,
     TrackedTransformation,
-    OptimizerResults,
+    OptimizerTrajectory,
     Evaluation,
     OptimizationTrajectoryPlot
 )
 
 
-class OptimizationTrajectory(Workflow):
+class OptimizationTrajectoryComparison(Workflow):
     """Optimization trajectories for multiple trials and multiple optimizers on a single model.
 
     Parameters:
@@ -62,7 +62,7 @@ class OptimizationTrajectory(Workflow):
     def run(self):
         """Execute workflow.
 
-        1. Run each optimizer once for each trial, creating a matrix of `OptimizerResults` objects.
+        1. Run each optimizer once for each trial, creating a matrix of `OptimizerTrajectory` objects.
         2. For each optimizer calculate the "best score trajectory" for each trial and coerce
             them into the format required by Evaluation objects.
             TODO: there's a potential abstraction here, similar to the Metric in
@@ -76,19 +76,19 @@ class OptimizationTrajectory(Workflow):
 
         num_optimizers = len(self._optimizers)
         trajectories = np.empty(
-            (num_optimizers, self._num_trials), dtype=OptimizerResults
+            (num_optimizers, self._num_trials), dtype=OptimizerTrajectory
         )
 
         for i, optimizer in enumerate(self._optimizers):
             for j in range(self._num_trials):
-                results: OptimizerResults = optimizer.optimize(self._data, func)
+                results: OptimizerTrajectory = optimizer.optimize(self._data, func)
                 trajectories[i, j] = results
 
-        def _collect_optimization_results(list_of_trajectories: Sequence[OptimizerResults]):
+        def _collect_optimization_results(list_of_trajectories: Sequence[OptimizerTrajectory]):
             """Convert optimization results into the format required by Evaluation objects.
 
             Parameters:
-                list_of_trajectories: a sequence of `OptimizerResults` objects, each one
+                list_of_trajectories: a sequence of `OptimizerTrajectory` objects, each one
                     a separate trial of the same optimizer.
 
             Returns:
