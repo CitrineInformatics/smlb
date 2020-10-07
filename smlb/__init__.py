@@ -52,3 +52,20 @@ from smlb.core.metrics import (
     RootMeanSquareStandardizedResiduals,
     UncertaintyCorrelation,
 )
+from smlb.core.scorer import Scorer, ProbabilityOfImprovement
+from smlb.core.optimizer import (
+    Optimizer,
+    TrackedTransformation,
+    OptimizerStep,
+    RandomOptimizer,
+    OptimizerTrajectory,
+)
+from smlb.core.evaluations import Evaluation, EvaluationConfiguration
+from smlb.core.plots import (
+    Plot,
+    PlotConfiguration,
+    GeneralizedFunctionPlot,
+    LearningCurvePlot,
+    OptimizationTrajectoryPlot,
+)
+from smlb.core.workflow import Workflow

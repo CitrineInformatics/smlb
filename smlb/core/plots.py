@@ -808,3 +808,44 @@ class LearningCurvePlot(GeneralizedFunctionPlot):
 
 # todo: add export of plots to ASCII art
 #       this is an important feature :-)
+
+
+class OptimizationTrajectoryPlot(GeneralizedFunctionPlot):
+    """Plot a series of optimization trajectories, each one tracking the best score found at
+    that point in the optimization run.
+    Each trial for a given optimizer is currently plotted as a dot.
+    TODO: plot the median trajectory as a line and shade the quartiles.
+        (Create a new plotting method and override _render to call that method.)
+
+    Parameters:
+        log_scale: whether or not to use a log scale on the _horizontal_ axis
+    """
+
+    def __init__(self, log_scale: bool = False, **kwargs):
+        log_scale = params.boolean(log_scale)
+        scale = "log" if log_scale else "linear"
+
+        kwargs["axes_scales"] = kwargs.get("axes_scales", (scale, "linear"))
+        kwargs["axes_labels"] = kwargs.get(
+            "axes_labels", ("function evaluations", "best score", None, None)
+        )
+        kwargs["rectify"] = False
+        kwargs["visualization_type"] = "points"
+
+        super().__init__(**kwargs)
+
+    def evaluate(self, results, **kwargs):
+        """Evaluate optimization trajectory plot.
+
+        Parameters:
+            results: sequence of curve data, where each curve datum is a sequence of
+                tuples (index, scoress) of function evaluation number (positive integer)
+                and best scores found after that many evaluations (sequence of real numbers).
+        """
+        tuple_testf = lambda arg: params.tuple_(
+            arg, lambda arg: params.real(arg, above=0), params.real_vector, arity=2
+        )
+        curve_testf = lambda arg: params.tuple_(arg, tuple_testf)
+        results = params.tuple_(results, curve_testf)
+
+        super().evaluate(results=results, **kwargs)

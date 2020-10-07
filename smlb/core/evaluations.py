@@ -116,7 +116,7 @@ class Evaluation(SmlbObject, metaclass=ABCMeta):
                      depend on the specific Evaluation
         """
 
-        pass  # might be called by derived class' evaluate() method
+        pass  # might be called by derived class's evaluate() method
 
     @abstractmethod
     def render(self):
