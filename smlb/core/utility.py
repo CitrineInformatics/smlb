@@ -14,7 +14,7 @@ from smlb import InvalidParameterError
 
 def is_sequence(arg):
     """True if argument is a list, tuple, array or similar object, but not a string, dictionary, set or similar object.
-    
+
     Parameters:
         arg: the object to test
 
@@ -35,8 +35,8 @@ def which(*args):
     """'which' statement.
 
     which(
-        cond_1, value_1, 
-        cond_2, value_2, 
+        cond_1, value_1,
+        cond_2, value_2,
         ...
     )
 

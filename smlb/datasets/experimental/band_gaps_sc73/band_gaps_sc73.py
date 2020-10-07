@@ -56,7 +56,7 @@ class BandGapsStrehlowCook1973Dataset(smlb.TabularData):
     def _canonicalize_formula(self, formula: str) -> str:
         """Helper function, brings chemical sum formula into a (more) canonical form.
 
-        Chemical formulae are sorted by proton number. 
+        Chemical formulae are sorted by proton number.
         This eases uniqueness tests and analysis.
         For example, 'CeO2' and 'O2Ce' will be represented as the same string.
 
@@ -209,12 +209,12 @@ class BandGapsStrehlowCook1973Dataset(smlb.TabularData):
 
         Parameters:
             filter_: function that accepts a sample and returns whether to keep it (True)
-                     or to exclude it (False). 
+                     or to exclude it (False).
                      Possible choices:
                      'all': all entries, including those without band gap, are retained
                      'bg': all entries with a measured band gap are retained
                      't300pm10': all entries with band gap measured at 300 +- 10 K are retained
-                     't300pm10_mc': all mono-crystalline entries with band gap measured at 
+                     't300pm10_mc': all mono-crystalline entries with band gap measured at
                                     300 +- 10 K are retained
             join: if True, entries with the same chemical sum formula are joined;
                 if a positive integer k, only entries with k or more band gap measurements are retained;

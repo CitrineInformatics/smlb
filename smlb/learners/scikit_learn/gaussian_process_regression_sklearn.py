@@ -116,7 +116,9 @@ class GaussianProcessRegressionSklearn(SupervisedLearner):
             self (allows chaining)
         """
 
-        data = params.instance(data, Data)  # todo: params.data(..., is_finite=True, is_labeled=True)
+        data = params.instance(
+            data, Data
+        )  # todo: params.data(..., is_finite=True, is_labeled=True)
         n = data.num_samples
 
         xtrain = params.real_matrix(data.samples(), nrows=n)
@@ -129,23 +131,23 @@ class GaussianProcessRegressionSklearn(SupervisedLearner):
     def apply(self, data: Data) -> NormalPredictiveDistribution:
         r"""Predicts new inputs.
 
-        For Gaussian processes, both the noise-free predictive (posterior) 
+        For Gaussian processes, both the noise-free predictive (posterior)
         distribution as well as the noise estimate are normally distributed.
         The predictive distribution with noise is the sum of the former two.
 
         The $\alpha$ training noise specified at initialization time is not
         added at prediction time, and thus not part of the noise model.
-        The current implementation considers contributions from any 
+        The current implementation considers contributions from any
         WhiteKernel or other kernel that has a hyperparameter 'noise_level'.
 
         Limitations:
             It is a currently accepted shortcoming that WhiteKernels that are
             not 'first-level' sum members might yield wrong noise models.
-            Examples: 
+            Examples:
             WhiteKernel(...) + other kernels will work
             kernel(...) * WhiteKernel(...) will not work as intended
 
-            Training data noise $\alpha$ is not added 
+            Training data noise $\alpha$ is not added
 
         Parameters:
             data: finite indexed data to predict;
@@ -159,7 +161,9 @@ class GaussianProcessRegressionSklearn(SupervisedLearner):
                              depends only on distance from the training data
         """
 
-        data = params.instance(data, Data)  # todo: params.data(..., is_finite=True, is_labeled=True)
+        data = params.instance(
+            data, Data
+        )  # todo: params.data(..., is_finite=True, is_labeled=True)
 
         xpred = params.real_matrix(data.samples())
         n = data.num_samples

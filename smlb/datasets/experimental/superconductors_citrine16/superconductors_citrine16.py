@@ -30,15 +30,15 @@ class SuperconductorsCitrine2016Dataset(TabularData):
     https://citrination.com/data_views/14083/data_summary
 
     This dataset contains chemical formulas and superconducting critical temperatures
-    collected from the literature. Each of the 587 entries contains 
+    collected from the literature. Each of the 587 entries contains
     one or two references (URL), chemical formula (string) and superconducting temperature T_c (K).
 
     Notes:
     * The dataset description states 586 entries. Reference 1 states 546 entries.
 
     References:
-    [1] Bryce Meredig, Erin Antono, Carena Church, Maxwell Hutchinson, Julia Ling, 
-        Sean Paradiso, Ben Blaiszik, Ian Foster, Brenna Gibbons, Jason Hattrick-Simpers, 
+    [1] Bryce Meredig, Erin Antono, Carena Church, Maxwell Hutchinson, Julia Ling,
+        Sean Paradiso, Ben Blaiszik, Ian Foster, Brenna Gibbons, Jason Hattrick-Simpers,
         Apurva Mehta, Logan Ward: Can machine learning identify the next high-temperature
         superconductor? Examining extrapolation performance for materials discovery,
         Molecular Systems Design & Engineering 3(5): 819-825, 2018. DOI 10.1039/c8me00012c
@@ -75,7 +75,7 @@ class SuperconductorsCitrine2016Dataset(TabularData):
 
         A conservative parametrization is:
         SuperconductorsCitrine2016Dataset(
-            process=True, join=True, 
+            process=True, join=True,
             filter_=lambda e: not any(e["flagged_formula"]),
             samplef=lambda e: e["formula"],
             labelf=lambda tc: np.median(tc)
@@ -216,7 +216,13 @@ class SuperconductorsCitrine2016Dataset(TabularData):
             formula = ",".join(e[2:-3])
             if formula[0] == '"':
                 formula = formula[1:-1]
-            e = e[:2] + [formula,] + e[-3:]
+            e = (
+                e[:2]
+                + [
+                    formula,
+                ]
+                + e[-3:]
+            )
 
         assert len(e) == 6
         assert e[3] == "Superconducting critical temperature (Tc)"

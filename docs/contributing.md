@@ -5,6 +5,7 @@ Scientific Machine Learning Benchmark (smlb)
 ## Code style
 
 `smlb` uses [black](https://github.com/psf/black) with `--line-length 99` as code formatter in conjunction with reasonable [PEP8](https://www.python.org/dev/peps/pep-0008/) adherence.
+Before creating a commit, apply Black with `black smlb -l 99` to format the code.
 
 Both `black` and `PEP8` are supported by all major code editors and integrated development environments.
 

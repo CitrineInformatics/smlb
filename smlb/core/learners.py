@@ -18,9 +18,9 @@ from smlb import InvalidParameterError
 
 class Learner(DataTransformation, metaclass=ABCMeta):
     """Abstract base class for machine-learning algorithms.
-    
+
     `Learner`s return `PredictiveDistribution`s.
-    
+
     Deterministic learners can return a `DeltaPredictiveDistribution`.
     For example, (deterministic) principal component analysis could return a
     multi-variate delta predictive distribution.
@@ -34,7 +34,7 @@ class Learner(DataTransformation, metaclass=ABCMeta):
 
         Parameters:
             data: training data
-        
+
         Returns:
             self (allows chaining)
         """
@@ -72,7 +72,7 @@ class SupervisedLearner(Learner):
 
         Returns:
             self (allows chaining)
-        
+
         Raises:
             InvalidParameterError if data is not labeled
         """

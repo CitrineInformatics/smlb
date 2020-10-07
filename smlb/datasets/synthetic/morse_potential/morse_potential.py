@@ -29,7 +29,7 @@ class MorsePotentialData(VectorSpaceData):
 
     def __init__(self, D, r0, a, domain=(0, np.inf), **args):
         """Initialize state.
-        
+
         Parameters:
             D: potential parameter determining well depth -D
             r0: potential parameter determining location r0 of minimum
@@ -47,7 +47,7 @@ class MorsePotentialData(VectorSpaceData):
 
         def morsef(r):
             """Evaluate Morse potential at a sequence of vectors r.
-            
+
             Parameters:
                 r: n x 1 matrix of n one-dimensional vectors
 

@@ -32,10 +32,10 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner):
 
     Based on
 
-    Jerome H. Friedman: Greedy function approximation: A gradient boosting machine, 
+    Jerome H. Friedman: Greedy function approximation: A gradient boosting machine,
     Annals of Statistics 29(5): 1189-1232, 2001. URL https://projecteuclid.org/euclid.aos/1013203451
 
-    Jerome H. Friedman: Stochastic Gradient Boosting, Computational Statistics & Data Analysis 38(4): 367-378, 2002. 
+    Jerome H. Friedman: Stochastic Gradient Boosting, Computational Statistics & Data Analysis 38(4): 367-378, 2002.
     DOI 10.1016/S0167-9473(01)00065-2  A preprint of this publication seems to have been published in 1999.
 
     See https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html
@@ -181,7 +181,9 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner):
             self (allows chaining)
         """
 
-        data = params.instance(data, Data)  # todo: params.data(..., is_finite=True, is_labeled=True)
+        data = params.instance(
+            data, Data
+        )  # todo: params.data(..., is_finite=True, is_labeled=True)
         n = data.num_samples
 
         xtrain = params.real_matrix(data.samples(), nrows=n)
@@ -203,7 +205,9 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner):
             predictive normal distribution
         """
 
-        data = params.instance(data, Data)  # todo: params.data(..., is_finite=True, is_labeled=True)
+        data = params.instance(
+            data, Data
+        )  # todo: params.data(..., is_finite=True, is_labeled=True)
 
         xpred = params.real_matrix(data.samples())
 

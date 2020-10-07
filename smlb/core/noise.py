@@ -37,7 +37,7 @@ class Noise(Random, metaclass=ABCMeta):
         """Generate noise.
 
         Parameters:
-            shape: shape of noise vector, matrix or higher-order tensor 
+            shape: shape of noise vector, matrix or higher-order tensor
 
         Returns:
             a numerical array of given shape containing samples from a noise distribution
@@ -72,10 +72,10 @@ class NoNoise(Noise):
     def noise(self, shape=None):
         """Return no noise.
 
-        A constant value is returned.        
+        A constant value is returned.
 
         Parameters:
-            shape: shape of noise vector, matrix or higher-order tensor 
+            shape: shape of noise vector, matrix or higher-order tensor
 
         Returns:
             a numerical array of given shape containing a constant value
@@ -113,7 +113,7 @@ class NormalNoise(Noise):
         """Add Gaussian noise to labels.
 
         Parameters:
-            shape: shape of noise vector, matrix or higher-order tensor 
+            shape: shape of noise vector, matrix or higher-order tensor
 
         Returns:
             a numerical array of given shape containing independent

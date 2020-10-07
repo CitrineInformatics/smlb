@@ -22,10 +22,10 @@ class SmlbObject:
         Raises InvalidParameterError if any arguments are passed.
 
         This class's initializer serves as a catch-all for invalid initializer arguments
-        in the inheritance chain. Arguments unused by specific initializers are passed 
-        to base class initializers using super(). Since Object is the last class in 
-        method resolution order, any arguments passed to it have not been handled by 
-        any of the classes in the inheritance chain. Such unhandled arguments are 
+        in the inheritance chain. Arguments unused by specific initializers are passed
+        to base class initializers using super(). Since Object is the last class in
+        method resolution order, any arguments passed to it have not been handled by
+        any of the classes in the inheritance chain. Such unhandled arguments are
         considered errors.
 
         Parameters:

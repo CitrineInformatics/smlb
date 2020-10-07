@@ -22,22 +22,22 @@ class WatercolorPigments2019Dataset(TabularData):
     Measured colors of binary mixtures of watercolor pigments on white paper.
 
     Reflectance of 780 binary mixtures of 13 primary watercolor pigments described by reflectance and transmittance.
-    Measurements use an OTO SD1220 spectrometer, a light source box and K1 light source. 
+    Measurements use an OTO SD1220 spectrometer, a light source box and K1 light source.
     Contains two types of data, increasing amounts of one primary pigment (I) and 1:1, 1:2, 2:1 mixtures of two
     pigments (M). Note that absolute pigment amounts matter, that is, 0.01 mL of pigment A and B each is different
     from 0.02 mL of A and B each. This is due to transparency of watercolor pigments. 12 increasing quantitites of
-    each primary pigment (0.01 mL, ..., 0.10 mL, 0.12 mL, 0.16 mL) and 780 out of 3 (1:1, 1:2 ratios) x 3 (amounts) 
+    each primary pigment (0.01 mL, ..., 0.10 mL, 0.12 mL, 0.16 mL) and 780 out of 3 (1:1, 1:2 ratios) x 3 (amounts)
     x 13 x 13 = 1404 possible binary mixtures. The dataset actually only provides colors for the primary pigments;
     in particular, transmittance and reflectance of pigment and reflectance of substrate are not provided separately.
 
     Based on:
 
-    Mei-Yun Chen: Prediction Model for Semitransparent Watercolor Pigment Mixtures Using Deep Learning 
-    with a Dataset of Transmittance and Reflectance, PhD thesis, Graduate Institute of Networking and 
-    Multimedia, College of Electrical Engineering and Computer Science, National Taiwan University, 
+    Mei-Yun Chen: Prediction Model for Semitransparent Watercolor Pigment Mixtures Using Deep Learning
+    with a Dataset of Transmittance and Reflectance, PhD thesis, Graduate Institute of Networking and
+    Multimedia, College of Electrical Engineering and Computer Science, National Taiwan University,
     Taipei, Taiwan, January 2019.
 
-    Mei-Yun Chen, Ya-Bo Huang, Sheng-Ping Chang, Ming Ouhyoung: Prediction Model for Semitransparent 
+    Mei-Yun Chen, Ya-Bo Huang, Sheng-Ping Chang, Ming Ouhyoung: Prediction Model for Semitransparent
     Watercolor Pigment Mixtures Using Deep Learning with a Dataset of Transmittance and Reflectance,
     arXiv: 1904.00275, 2019. https://arxiv.org/abs/1904.00275
 
@@ -190,7 +190,7 @@ class WatercolorPigments2019Dataset(TabularData):
 
         Remarks:
         * since absolute amounts matter, it does not make sense to use relative amounts like fractions
-        * mixing entails no order; mixing A and B is equivalent to mixing B and A; 
+        * mixing entails no order; mixing A and B is equivalent to mixing B and A;
           standard vector encodings do not reflect this
         * the "color groups" were not part of the original dataset; they were added as basic ingredient properties
         * primary ingredient mixtures (A,A) are a special case of binary mixtures (A,B) where A = B
@@ -232,9 +232,7 @@ class WatercolorPigments2019Dataset(TabularData):
 
 
 class WatercolorPigments2019DatasetFeatures(Features):
-    """Features for the WatercolorPigments2019Dataset.
-
-    """
+    """Features for the WatercolorPigments2019Dataset."""
 
     def __init__(self, encoding: str = "one-hot", **kwargs):
         """Initializes features.
@@ -250,9 +248,7 @@ class WatercolorPigments2019DatasetFeatures(Features):
 
         super().__init__(**kwargs)
 
-    def _apply_one_hot(
-        self, data: WatercolorPigments2019Dataset, primary: dict
-    ) -> TabularData:
+    def _apply_one_hot(self, data: WatercolorPigments2019Dataset, primary: dict) -> TabularData:
         """One-hot features."""
 
         # todo: treat primary features

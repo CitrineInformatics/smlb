@@ -137,7 +137,7 @@ def element_data(element, property_):
     Parameters:
         element: chemical element, given by either proton number (int) or abbreviation (str)
         property_: queried property; one of 'abbreviation', 'Z' (proton number)
-    
+
     Returns:
         queried property
 
