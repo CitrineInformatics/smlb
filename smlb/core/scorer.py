@@ -77,9 +77,7 @@ class ProbabilityOfImprovement(Scorer):
         # Then, calculate the likelihood of improvement assuming maximization.
         target = self._target * self._direction
         mean = mean * self._direction
-        return np.asfarray(
-            [self._calculate_li_above(m, s, target) for m, s in zip(mean, stddev)]
-        )
+        return np.asfarray([self._calculate_li_above(m, s, target) for m, s in zip(mean, stddev)])
 
     @staticmethod
     def _calculate_li_above(mean, stddev, target):

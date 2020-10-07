@@ -58,7 +58,7 @@ from smlb.core.optimizer import (
     TrackedTransformation,
     OptimizerStep,
     RandomOptimizer,
-    OptimizerTrajectory
+    OptimizerTrajectory,
 )
 from smlb.core.evaluations import Evaluation, EvaluationConfiguration
 from smlb.core.plots import (
@@ -66,6 +66,6 @@ from smlb.core.plots import (
     PlotConfiguration,
     GeneralizedFunctionPlot,
     LearningCurvePlot,
-    OptimizationTrajectoryPlot
+    OptimizationTrajectoryPlot,
 )
 from smlb.core.workflow import Workflow

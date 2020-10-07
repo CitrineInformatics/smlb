@@ -16,7 +16,7 @@ from smlb import (
     TrackedTransformation,
     OptimizerTrajectory,
     Evaluation,
-    OptimizationTrajectoryPlot
+    OptimizationTrajectoryPlot,
 )
 
 
@@ -39,14 +39,14 @@ class OptimizationTrajectoryComparison(Workflow):
     """
 
     def __init__(
-            self,
-            data: VectorSpaceData,
-            model: Learner,
-            scorer: Scorer,
-            optimizers: Sequence[Optimizer],
-            evaluations: Sequence[Evaluation] = (OptimizationTrajectoryPlot(),),
-            num_trials: int = 1,
-            training_data: Optional[Data] = None
+        self,
+        data: VectorSpaceData,
+        model: Learner,
+        scorer: Scorer,
+        optimizers: Sequence[Optimizer],
+        evaluations: Sequence[Evaluation] = (OptimizationTrajectoryPlot(),),
+        num_trials: int = 1,
+        training_data: Optional[Data] = None,
     ):
         self._data = params.instance(data, VectorSpaceData)
         self._scorer = params.instance(scorer, Scorer)
@@ -75,9 +75,7 @@ class OptimizationTrajectoryComparison(Workflow):
         func = TrackedTransformation(self._model, self._scorer)
 
         num_optimizers = len(self._optimizers)
-        trajectories = np.empty(
-            (num_optimizers, self._num_trials), dtype=OptimizerTrajectory
-        )
+        trajectories = np.empty((num_optimizers, self._num_trials), dtype=OptimizerTrajectory)
 
         for i, optimizer in enumerate(self._optimizers):
             for j in range(self._num_trials):
@@ -96,19 +94,19 @@ class OptimizationTrajectoryComparison(Workflow):
                 if the evaluation number (horizontal axis) and the second entry is a sequence
                 of all the scores at that point (vertical axis).
             """
-            max_trajectory_length = np.max(
-                [t.num_evaluations for t in list_of_trajectories]
-            )
+            max_trajectory_length = np.max([t.num_evaluations for t in list_of_trajectories])
             maximize = func.direction == 1.0
             best_score_trajectories = np.vstack(
-                [t.best_score_trajectory(maximize, max_trajectory_length) for t in list_of_trajectories]
+                [
+                    t.best_score_trajectory(maximize, max_trajectory_length)
+                    for t in list_of_trajectories
+                ]
             )
 
             return [(j + 1, best_score_trajectories[:, j]) for j in range(max_trajectory_length)]
 
         eval_data = [
-            _collect_optimization_results(trajectories[i, :])
-            for i in range(len(self._optimizers))
+            _collect_optimization_results(trajectories[i, :]) for i in range(len(self._optimizers))
         ]
 
         for eval_ in self._evaluations:

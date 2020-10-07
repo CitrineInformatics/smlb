@@ -826,8 +826,9 @@ class OptimizationTrajectoryPlot(GeneralizedFunctionPlot):
         scale = "log" if log_scale else "linear"
 
         kwargs["axes_scales"] = kwargs.get("axes_scales", (scale, "linear"))
-        kwargs["axes_labels"] = kwargs.get("axes_labels",
-                                           ("function evaluations", "best score", None, None))
+        kwargs["axes_labels"] = kwargs.get(
+            "axes_labels", ("function evaluations", "best score", None, None)
+        )
         kwargs["rectify"] = False
         kwargs["visualization_type"] = "points"
 

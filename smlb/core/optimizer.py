@@ -21,7 +21,7 @@ from smlb import (
     PredictiveDistribution,
     VectorSpaceData,
     RandomVectorSampler,
-    Random
+    Random,
 )
 
 
@@ -36,12 +36,13 @@ class OptimizerStep(SmlbObject):
             equal to the number of samples in `data` (implying one score for each sample).
     """
 
-    def __init__(self,
-                 input_: TabularData,
-                 output: PredictiveDistribution,
-                 scores: Sequence[float],
-                 **kwargs
-                 ):
+    def __init__(
+        self,
+        input_: TabularData,
+        output: PredictiveDistribution,
+        scores: Sequence[float],
+        **kwargs
+    ):
         super().__init__(**kwargs)
         self._input: TabularData = params.instance(input_, TabularData)
         self._output: PredictiveDistribution = params.instance(output, PredictiveDistribution)
@@ -50,7 +51,7 @@ class OptimizerStep(SmlbObject):
         self._scores: Sequence[float] = params.any_(
             scores,
             lambda arg: params.sequence(arg, length=1, type_=float),
-            lambda arg: params.sequence(arg, length=self._num_evaluations, type_=float)
+            lambda arg: params.sequence(arg, length=self._num_evaluations, type_=float),
         )
 
     @property
@@ -88,10 +89,9 @@ class OptimizerTrajectory:
         """The total number of function evaluations across all of the steps."""
         return self._num_evaluations
 
-    def best_score_trajectory(self,
-                              maximize: bool = True,
-                              length: Optional[int] = None
-                              ) -> Sequence[float]:
+    def best_score_trajectory(
+        self, maximize: bool = True, length: Optional[int] = None
+    ) -> Sequence[float]:
         """Calculate the best score found so far as a function of number of function evaluations.
 
         Parameters:
@@ -124,7 +124,7 @@ class OptimizerTrajectory:
             extra_padding = length - len(best_score)
             if extra_padding < 0:
                 return best_score[:extra_padding]  # TODO: Raise a warning?
-            return np.pad(best_score, ((0, extra_padding),), mode='edge')
+            return np.pad(best_score, ((0, extra_padding),), mode="edge")
         else:
             return best_score
 
@@ -196,9 +196,7 @@ class Optimizer(SmlbObject, metaclass=ABCMeta):
     """A scalar-valued optimizer that searches for the minimum value."""
 
     def optimize(
-            self,
-            data: VectorSpaceData,
-            function_tracker: TrackedTransformation
+        self, data: VectorSpaceData, function_tracker: TrackedTransformation
     ) -> OptimizerTrajectory:
         """
         Run the optimization. This first clears the `function_tracker`'s memory of
