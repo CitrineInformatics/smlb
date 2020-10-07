@@ -24,10 +24,10 @@ class FriedmanSilverman1989Data(VectorSpaceData):
     Jerome H. Friedman, Bernard W. Silverman: Flexible Parsimonious Smoothing and Additive Modeling,
     Technometrics 31(1): 3-21, 1989. DOI 10.2307/1270359
 
-    This implementation introduces some additional flexibility by allowing to specify input dimensionality 
+    This implementation introduces some additional flexibility by allowing to specify input dimensionality
     (at least 5), with all variables after the fifth one being ignored.
 
-    For additive independent standard-normal noise as in the publication above, 
+    For additive independent standard-normal noise as in the publication above,
     use the smlb LabelNoise DataTransformation with NormalNoise:
     data = FriedmanSilverman1989Data(...); noisy_data = LabelNoise(noise=NormalNoise(...)).fit(data).apply(data)
     """

@@ -74,7 +74,9 @@ class NiSuperalloyDataset(TabularData):
         labels_to_load = params.optional_(
             labels_to_load,
             lambda arg: params.any_(
-                arg, params.string, lambda arg: params.sequence(arg, type_=str),
+                arg,
+                params.string,
+                lambda arg: params.sequence(arg, type_=str),
             ),
         )
         ignore_dubious = params.boolean(ignore_dubious)

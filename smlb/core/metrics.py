@@ -29,7 +29,7 @@ from smlb import params
 
 class EvaluationMetric(SmlbObject, metaclass=ABCMeta):
     """Abstract base class for evaluation metrics.
-    
+
     Base class for ScalarEvaluationMetric and VectorEvaluationMetric.
 
     Design notes:
@@ -86,7 +86,7 @@ class EvaluationMetric(SmlbObject, metaclass=ABCMeta):
 
     def __call__(self, *args, **kwargs):
         """Provide convenient evaluation by being callable.
-        
+
         See evaluate() for details.
         """
 
@@ -99,13 +99,13 @@ class ScalarEvaluationMetric(EvaluationMetric):
     def __init__(self, orient=None, **kwargs):
         """Initialize state.
 
-            Parameters:
-                orient: actively orients metric towards minimization (-1) or maximization (+1)
-                        if unspecified, the natural orientation of the metric is retained
+        Parameters:
+            orient: actively orients metric towards minimization (-1) or maximization (+1)
+                    if unspecified, the natural orientation of the metric is retained
 
-            Raises:
-                InvalidParameterError if trying to orient a metric with no natural orientation
-            """
+        Raises:
+            InvalidParameterError if trying to orient a metric with no natural orientation
+        """
 
         super().__init__(**kwargs)
 
@@ -123,9 +123,9 @@ class ScalarEvaluationMetric(EvaluationMetric):
         """True if oriented.
 
         Here, oriented means that the metric has a preferred direction
-        (either more negative or more positive values indicating improvement) 
-        and is ordered. 
-        
+        (either more negative or more positive values indicating improvement)
+        and is ordered.
+
         Returns:
             True if the metric has an orientation, False otherwise
         """
@@ -139,7 +139,7 @@ class ScalarEvaluationMetric(EvaluationMetric):
         Examples without orientation include signed residuals and composite metrics.
 
         Orientation must be constant, that is, it must not change over the lifetime of an object.
-        
+
         Returns:
             -1 for minimization, +1 for maximization, or 0 if not applicable
         """
@@ -196,7 +196,7 @@ class VectorEvaluationMetric(EvaluationMetric):
 class Residuals(VectorEvaluationMetric):
     r"""Signed errors (residuals).
 
-    Prediction error residuals $f(x_i) - y_i$, 
+    Prediction error residuals $f(x_i) - y_i$,
     where $x_i$ are inputs, $f$ is the learner and $y_i$ are observed values.
     """
 
@@ -221,8 +221,8 @@ class Residuals(VectorEvaluationMetric):
 
 class AbsoluteResiduals(Residuals):
     """Absolute value of residuals.
-    
-    Unsigned residuals. Absolute prediction error residuals $|f(x_i) - y_i|$, 
+
+    Unsigned residuals. Absolute prediction error residuals $|f(x_i) - y_i|$,
     where $x_i$ are inputs, $f$ is the learner and $y_i$ are observed values.
     """
 
@@ -234,7 +234,7 @@ class AbsoluteResiduals(Residuals):
         Parameters:
             true: observed property distribution; requires only means
             pred: predictive property distribution; requires only means
-        
+
         Returns:
             unsigned residuals as NumPy array
         """
@@ -252,11 +252,11 @@ class SquaredResiduals(Residuals):
         """Evaluate squared prediction errors.
 
         squared residuals = ( pred - observed )^2
-        
+
         Parameters:
             true: observed property distribution; requires only means
             pred: predictive property distribution; requires only means
-        
+
         Returns:
             squared residuals as NumPy array
         """
@@ -283,7 +283,7 @@ class MeanAbsoluteError(ScalarEvaluationMetric):
         Parameters:
             true: observed property distribution; requires only means
             pred: predictive property distribution; requires only means
-        
+
         Returns:
             mean absolute error as floating point number
         """
@@ -343,7 +343,7 @@ class RootMeanSquaredError(MeanSquaredError):
 
 class StandardizedRootMeanSquaredError(RootMeanSquaredError):
     r"""Standardized Root Mean Squared Error (stdRMSE).
-    
+
     The standardized RMSE (stdRMSE), relative RMSE, or non-dimensional model
     error (NDME) is given by
 
@@ -351,11 +351,11 @@ class StandardizedRootMeanSquaredError(RootMeanSquaredError):
 
     \[ \text{std. dev.} = \sqrt{ \frac{1}{n} \sum_{i=1}^n ( y_i - \bar{y} )^2 } \]
 
-    and $\bar{y} = \frac{1}{n} \sum_{i=1}^n y_i$. 
+    and $\bar{y} = \frac{1}{n} \sum_{i=1}^n y_i$.
 
     The denominator can be interpreted as the RMSE of a model that predicts the
-    mean of the validation set (!) labels. stdRMSE is a unit-less (non-dimensional) 
-    quantity, often between 0 (perfect model) and 1 (guess-the-mean performance). 
+    mean of the validation set (!) labels. stdRMSE is a unit-less (non-dimensional)
+    quantity, often between 0 (perfect model) and 1 (guess-the-mean performance).
 
     If the IID assumption is violated, that is, label distributions of
     training and validation set differ, stdRMSE can be arbitrarily high.
@@ -371,7 +371,7 @@ class StandardizedRootMeanSquaredError(RootMeanSquaredError):
     An advantage of stdRMSE over RMSE divided by label range is that stdRMSE is less
     statistically volatile (min and max are extremal statistics with high variance).
 
-    For the estimator of the standard deviation, no bias correction is used by default 
+    For the estimator of the standard deviation, no bias correction is used by default
     (easing comparisons in many cases). See __init__ docstring for other options.
     """
 
@@ -443,17 +443,17 @@ class LogPredictiveDensity(VectorEvaluationMetric):
 
         Assumes a normal predictive distribution.
 
-        \[ 
+        \[
               \log p (y_i = t_i | x_i)
             = - ( \log \sqrt{2\pi} + \log \sigma_i + \frac{1}{2} ( \frac{y_i - t_i}{\sigma_i} )^2 )
         \]
 
-        See, for example, 
-            Joaquin Quinonero-Candela, Carl Edward Rasmussen, Fabian Sinz, Olivier Bousquet, and Bernhard Schölkopf. 
-            Evaluating predictive uncertainty challenge, p. 1-27, 2005. In Joaquin Quinonero-Candela, Ido Dagan, 
-            Bernardo Magnini, and Florence d'Alché Buc (editors), Proceedings of the First PASCAL Machine Learning 
+        See, for example,
+            Joaquin Quinonero-Candela, Carl Edward Rasmussen, Fabian Sinz, Olivier Bousquet, and Bernhard Schölkopf.
+            Evaluating predictive uncertainty challenge, p. 1-27, 2005. In Joaquin Quinonero-Candela, Ido Dagan,
+            Bernardo Magnini, and Florence d'Alché Buc (editors), Proceedings of the First PASCAL Machine Learning
             Challenges Workshop (MLCW 2005), Southampton, United Kingdom, April 11–13, 2005.
-        
+
         Parameters:
             true: observed property distribution; requires only means
             pred: predictive property distribution; must be normal
@@ -466,9 +466,8 @@ class LogPredictiveDensity(VectorEvaluationMetric):
         pred = params.normal_distribution(pred)
         if np.any(pred.stddev == 0):
             warn(
-                f"Some uncertainties are zero. Metric {self.__class__.__name__}"
-                "may return nan.",
-                RuntimeWarning
+                f"Some uncertainties are zero. Metric {self.__class__.__name__}" "may return nan.",
+                RuntimeWarning,
             )
         lpd = -(
             np.log(np.sqrt(2 * np.pi))
@@ -493,13 +492,13 @@ class MeanLogPredictiveDensity(ScalarEvaluationMetric):
         Mean of LogPredictiveDensity.
         Assumes a normal predictive distribution.
 
-        \[ 
+        \[
               1/n \sum_{i=1}^n \log p (y_i = t_i | x_i)
             = - ( \log \sqrt{2\pi} + \frac{1}{2n} \sum_{i=1}^n ( \log \sigma_i^2 + \frac{(y_i-t_i)^2}{\sigma_i^2} ) )
         \]
 
         See LogPredictiveDensity for details.
-        
+
         Parameters:
             true: observed property distribution; requires only means
             pred: predictive property distribution; must be normal
@@ -514,37 +513,37 @@ class MeanLogPredictiveDensity(ScalarEvaluationMetric):
 class ContinuousRankedProbabilityScore(VectorEvaluationMetric):
     r"""Continuous Ranked Probability Score (CRPS).
 
-    The Continuous Ranked Probability Score (CRPS) [1] is the squared-difference integral 
-    between the predicted cumulative distribution function F and that of a delta function 
+    The Continuous Ranked Probability Score (CRPS) [1] is the squared-difference integral
+    between the predicted cumulative distribution function F and that of a delta function
     on the true value:
 
-	\int\limits_{-\infty}^{\infty} \bigl( F(u) - F_y(u) \bigr)^2 w(u) \mathrm{d} u ,
+        \int\limits_{-\infty}^{\infty} \bigl( F(u) - F_y(u) \bigr)^2 w(u) \mathrm{d} u ,
 
     where $F_y(u) = 0$ for $u \leq y$ and 1 otherwise, and $w$ is a weighting function.
 
     For normal predictive distributions, an analytic expression exists: [2]
 
-    \sigma \Bigl( y' \bigl( 2 \Phi(y') - 1 \bigr) + 2 \phi(y') - \frac{1}{\sqrt{\pi}} \Bigr) 
-    
-    where $y' = \frac{y-\mu}{\sigma}$, and, $\Phi$ and $\phi$ are cumulative and probability 
+    \sigma \Bigl( y' \bigl( 2 \Phi(y') - 1 \bigr) + 2 \phi(y') - \frac{1}{\sqrt{\pi}} \Bigr)
+
+    where $y' = \frac{y-\mu}{\sigma}$, and, $\Phi$ and $\phi$ are cumulative and probability
     density functions of the standard normal distribution.
 
-    [1] James E. Matheson and Robert L. Winkler. Scoring rules for continuous 
+    [1] James E. Matheson and Robert L. Winkler. Scoring rules for continuous
         probability distributions. Management Science 22(10):1087–1096, 1976.
-    [2] Tilmann Gneiting, Adrian E. Raftery, Anton H. Westveld III, Tom Goldman. Calibrated 
-        probabilistic forecasting using ensemble model output statistics and minimum CRPS 
+    [2] Tilmann Gneiting, Adrian E. Raftery, Anton H. Westveld III, Tom Goldman. Calibrated
+        probabilistic forecasting using ensemble model output statistics and minimum CRPS
         estimation. Monthly Weather Review, 133(5):1098–1118, 2005.
     """
 
     def _evaluate(self, true, pred):
         """Evaluate continuous ranked probability score (CRPS).
-        
+
         CRPS depends on the mean of the observations and, in general, the full predictive distribution.
 
-        Currently implemented only for normal predictive distributions, for which a closed-form expression exists. 
+        Currently implemented only for normal predictive distributions, for which a closed-form expression exists.
         For arbitrary distributions (given as samples), an expression suitable for direct implementation is given by Equ. 3 in
 
-        Eric P. Grimit, Tilmann Gneiting, Veronica J. Berrocal, Nicholas A. Johnson: 
+        Eric P. Grimit, Tilmann Gneiting, Veronica J. Berrocal, Nicholas A. Johnson:
         The continuous ranked probability score for circular variables and its application to mesoscale forecast ensemble verification,
         Quarterly Journal of the Royal Meteorological Society 132(621C): 2925--2942, 2006. DOI 10.1256/qj.05.235
 
@@ -561,9 +560,8 @@ class ContinuousRankedProbabilityScore(VectorEvaluationMetric):
         pred = params.normal_distribution(pred)
         if np.any(pred.stddev == 0):
             warn(
-                f"Some uncertainties are zero. Metric {self.__class__.__name__}"
-                "may return nan.",
-                RuntimeWarning
+                f"Some uncertainties are zero. Metric {self.__class__.__name__}" "may return nan.",
+                RuntimeWarning,
             )
         strue = (true.mean - pred.mean) / pred.stddev  # re-used intermediate quantity
         crps = pred.stddev * (
@@ -606,7 +604,7 @@ class StandardConfidence(ScalarEvaluationMetric):
     """
 
     def _evaluate(self, true, pred):
-        """ Compute standard confidence
+        """Compute standard confidence
 
         Parameters:
             true: observed property distributions; requires only means
@@ -628,7 +626,7 @@ class StandardConfidence(ScalarEvaluationMetric):
 
 class RootMeanSquareStandardizedResiduals(ScalarEvaluationMetric):
     """Root Mean Square of the Standardized Residuals (RMSSE).
-    
+
     RMSSE evaluates the quality of the predicted uncertainty estimates, both in terms of individual predictions and overall normalization.
     Compared to standard confidence, RMSSE is more sensitive to outliers.
     Does not depend on the predicted values, only the residuals.
@@ -637,7 +635,7 @@ class RootMeanSquareStandardizedResiduals(ScalarEvaluationMetric):
     """
 
     def _evaluate(self, true, pred):
-        """ Compute RMSSE.
+        """Compute RMSSE.
 
         Parameters:
             true: observed property distributions; requires only means
@@ -651,9 +649,8 @@ class RootMeanSquareStandardizedResiduals(ScalarEvaluationMetric):
         pred = params.normal_distribution(pred)
         if np.any(pred.stddev == 0):
             warn(
-                f"Some uncertainties are zero. Metric {self.__class__.__name__}"
-                "will be nan.",
-                RuntimeWarning
+                f"Some uncertainties are zero. Metric {self.__class__.__name__}" "will be nan.",
+                RuntimeWarning,
             )
             return np.nan
         strue = (true.mean - pred.mean) / pred.stddev
@@ -663,7 +660,7 @@ class RootMeanSquareStandardizedResiduals(ScalarEvaluationMetric):
 
 
 class UncertaintyCorrelation(ScalarEvaluationMetric):
-    """Correlation between uncertainty estimate and abs(residual). 
+    """Correlation between uncertainty estimate and abs(residual).
     A positive value is desirable. A negative value indicates pathological behavior.
     Does not depend on the predicted values, only the residuals.
     """
@@ -689,43 +686,46 @@ class UncertaintyCorrelation(ScalarEvaluationMetric):
         pred = params.normal_distribution(pred)
 
         abs_residual = np.abs(true.mean - pred.mean)
-        uc_corr = np.corrcoef(abs_residual, pred.stddev)[0,1] # get off-diagonal of correlation matrix
+        uc_corr = np.corrcoef(abs_residual, pred.stddev)[
+            0, 1
+        ]  # get off-diagonal of correlation matrix
 
         return uc_corr
 
 
-# helper function 
+# helper function
+
 
 def two_sample_cumulative_distribution_function_statistic(
     sample_a, sample_b, f=lambda p, t: np.square(p - t), g=lambda s, w: np.sum(s * w)
 ):
     r"""Compute a statistic of the difference between two empirical cumulative distribution functions.
-    
+
     Calculate statistics of the cumulative distribution functions (CDF) of two samples.
-    Let $x_1,\ldots,x_d$ be the union of the two samples, $x_i < x_{i+1}$, and let 
+    Let $x_1,\ldots,x_d$ be the union of the two samples, $x_i < x_{i+1}$, and let
     $w_i = x_{i+1}-x_i$, $i = 1,\ldots,d-1$ be the differences between them.
     The calculated statistics have the form $g(s,w)$ where $s_i = f(F_a(x_i), F_b(x_i))$)
     and $F_a$, $F_b$ are the CDFs of the two samples.
 
     Here, the $x_i$ are the points where one or both of the CDFs changes, $f$ is a statistic
     that depends on the value of the two CDFs, and $g$ is an arbitrary function of $s$ and $w$.
-    
+
     The default choice for $g$ is Riemann integration; as the CDFs are step functions, this is exact
     and leads to statistics of the form
-    
+
     \[ \int_{-\infty}^{\infty} f(F_a(x),F_b(x)) dx . \]
 
     Parameters:
         sample_a: first sample; a sequence of real numbers
-        sample_b: second sample; a sequence of real numbers; 
+        sample_b: second sample; a sequence of real numbers;
                   can be of different length than first sample
-        f: function accepting two same-length real vectors, returning a real vector of same length. 
-           This function computes a value that depends only on the two CDFs, and is thus constant 
+        f: function accepting two same-length real vectors, returning a real vector of same length.
+           This function computes a value that depends only on the two CDFs, and is thus constant
            between change points. The default is the squared difference, f(a,b) = np.square(a-b).
            The convention here is to use the left endpoint of the "steps".
-        g: function accepting two same-length real vectors, returning a real number. 
-           Computes the statistic based on values of f and step "widths". 
-           The default, g(s,w) = np.sum(g * w), performs Riemann integration. 
+        g: function accepting two same-length real vectors, returning a real number.
+           Computes the statistic based on values of f and step "widths".
+           The default, g(s,w) = np.sum(g * w), performs Riemann integration.
     """
 
     sample_a = params.real_vector(sample_a)
