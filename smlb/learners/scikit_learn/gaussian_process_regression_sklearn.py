@@ -20,6 +20,7 @@ from smlb import (
     NormalPredictiveDistribution,
     params,
     SupervisedLearner,
+    Random,
 )
 
 # todo: hyperparameter optimization.
@@ -31,7 +32,7 @@ from smlb import (
 # todo: handle randomness via improved Random class
 
 
-class GaussianProcessRegressionSklearn(SupervisedLearner):
+class GaussianProcessRegressionSklearn(SupervisedLearner, Random):
     """Gaussian Process Regression, scikit-learn implementation.
 
     The default is a Gaussian kernel combined with a "White kernel" to model additive Gaussian noise.
@@ -58,6 +59,8 @@ class GaussianProcessRegressionSklearn(SupervisedLearner):
         """Initialize state.
 
         sklearn-specific parameters are passed through to the implementation.
+        The parameter `random_state` also acts as the seed `rng` for smlb's pseudo-random number
+        generator and _must_ be specified.
 
         Parameters:
             internal_hp_optimization: if True, hyperparameters are optimized "internally"
@@ -77,6 +80,7 @@ class GaussianProcessRegressionSklearn(SupervisedLearner):
         See skl.gaussian_process.GaussianProcessRegressor parameters.
         """
 
+        kwargs["rng"] = random_state
         super().__init__(**kwargs)
 
         internal_hp_optimization = params.boolean(internal_hp_optimization)
