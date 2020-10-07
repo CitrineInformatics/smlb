@@ -6,7 +6,7 @@ Citrine Informatics 2019-2020
 """
 
 from abc import ABCMeta, abstractmethod
-from typing import Sequence, Optional, Any
+from typing import Sequence, Optional
 
 import numpy as np
 
@@ -20,8 +20,6 @@ from smlb import (
     DataTransformation,
     PredictiveDistribution,
     VectorSpaceData,
-    RandomVectorSampler,
-    Random,
 )
 
 
@@ -222,24 +220,3 @@ class Optimizer(SmlbObject, metaclass=ABCMeta):
         """Perform the minimization."""
 
         raise NotImplementedError
-
-
-class RandomOptimizer(Optimizer, Random):
-    """Draws random samples.
-
-    Parameters:
-        num_samples: the number of random samples to draw
-        domain: optional domain from which to draw values. If not provided, then the
-            optimization domain is taken to be that of `data` parameter passed to `optimize()`.
-        rng: pseudo-random number generator
-    """
-
-    def __init__(self, num_samples: int, domain: Optional[Any] = None, rng=None, **kwargs):
-        super().__init__(rng=rng, **kwargs)
-        self._num_samples = params.integer(num_samples, above=0)
-        self._sampler = RandomVectorSampler(size=self._num_samples, domain=domain, rng=rng)
-
-    def _minimize(self, data: VectorSpaceData, function_tracker: TrackedTransformation):
-        """Generate num_samples random samples and evaluate them."""
-        samples = self._sampler.apply(data)
-        function_tracker.apply(samples)
