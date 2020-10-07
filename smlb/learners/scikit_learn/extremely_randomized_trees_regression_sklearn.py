@@ -21,12 +21,13 @@ from smlb import (
     Data,
     DeltaPredictiveDistribution,
     NormalPredictiveDistribution,
+    Random,
 )
 
 # todo: hyperparameter optimization.
 
 
-class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner):
+class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner, Random):
     """Extremely randomized trees regression, scikit-learn implementation.
 
     Ensemble of randomized decision trees via bootstrapping (sampling with replacement).
@@ -63,6 +64,8 @@ class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner):
         """Initialize state.
 
         sklearn-specific parameters are passed through to the implementation.
+        The parameter `random_state` also acts as the seed `rng` for smlb's pseudo-random number
+        generator and _must_ be specified.
 
         Parameters:
             uncertainties: whether and how to compute predictive uncertainties; choices are
@@ -93,6 +96,7 @@ class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner):
         See skl.ensemble.ExtraTreesRegressor parameters.
         """
 
+        kwargs["rng"] = random_state
         super().__init__(**kwargs)
 
         # validate parameters

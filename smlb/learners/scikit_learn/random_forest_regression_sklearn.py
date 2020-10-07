@@ -23,6 +23,7 @@ from smlb import (
     CorrelatedNormalPredictiveDistribution,
     params,
     SupervisedLearner,
+    Random,
 )
 
 # todo: hyperparameter optimization.
@@ -33,7 +34,7 @@ from smlb import (
 #        An empirical good default value is max_features=None for regression problems."
 
 
-class RandomForestRegressionSklearn(SupervisedLearner):
+class RandomForestRegressionSklearn(SupervisedLearner, Random):
     """Random forest regression, scikit-learn implementation.
 
     Ensemble of decision tree regressors via bootstrapping (sampling with replacement).
@@ -70,6 +71,8 @@ class RandomForestRegressionSklearn(SupervisedLearner):
         """Initialize state.
 
         sklearn-specific parameters are passed through to the implementation.
+        The parameter `random_state` also acts as the seed `rng` for smlb's pseudo-random number
+        generator and _must_ be specified.
 
         Parameters:
             uncertainties: whether and how to compute predictive uncertainties; possible choices are
@@ -105,6 +108,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
         See skl.ensemble.RandomForestRegressor parameters.
         """
 
+        kwargs["rng"] = random_state
         super().__init__(**kwargs)
 
         # validate parameters

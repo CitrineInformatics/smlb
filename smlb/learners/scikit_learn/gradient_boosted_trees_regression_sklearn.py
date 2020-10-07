@@ -18,12 +18,13 @@ from smlb import (
     NormalPredictiveDistribution,
     params,
     SupervisedLearner,
+    Random,
 )
 
 # todo: hyperparameter optimization.
 
 
-class GradientBoostedTreesRegressionSklearn(SupervisedLearner):
+class GradientBoostedTreesRegressionSklearn(SupervisedLearner, Random):
     """Gradient-boosted trees regression, scikit-learn implementation.
 
     Additive model where in each stage a regression tree is fit on the negative gradient of the loss function.
@@ -69,6 +70,8 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner):
         """Initialize state.
 
         sklearn-specific parameters are passed through to the implementation.
+        The parameter `random_state` also acts as the seed `rng` for smlb's pseudo-random number
+        generator and _must_ be specified.
 
         Parameters:
             uncertainties: whether and how to compute predictive uncertainties; possible choices are
@@ -105,6 +108,7 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner):
         See skl.ensemble.ExtraTreesRegressor parameters.
         """
 
+        kwargs["rng"] = random_state
         super().__init__(**kwargs)
 
         # validate parameters
