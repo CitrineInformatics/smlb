@@ -46,7 +46,7 @@ def test_tracking():
     results2 = optimizer.optimize(data=dataset, function_tracker=func)
 
     for result in [results1, results2]:
-        assert len(result.iterations) == 1
-        assert len(result.iterations[0].scores) == num_samples
+        assert len(result.steps) == 1
+        assert len(result.steps[0].scores) == num_samples
         assert result.num_evaluations == num_samples
-    assert results1.iterations[0].scores[0] != results2.iterations[0].scores[0]
+    assert results1.steps[0].scores[0] != results2.steps[0].scores[0]

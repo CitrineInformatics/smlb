@@ -25,7 +25,7 @@ from smlb import (
 )
 
 
-class OptimizerIteration(SmlbObject):
+class OptimizerStep(SmlbObject):
     """Record the results of a set of function evaluations during an optimization trajectory.
 
     Parameters:
@@ -45,7 +45,7 @@ class OptimizerIteration(SmlbObject):
         super().__init__(**kwargs)
         self._input: TabularData = params.instance(input_, TabularData)
         self._output: PredictiveDistribution = params.instance(output, PredictiveDistribution)
-        # total number of function evaluations during this iteration
+        # total number of function evaluations during this step
         self._num_evaluations: int = params.integer(self._input.num_samples, from_=1)
         self._scores: Sequence[float] = params.any_(
             scores,
@@ -75,17 +75,17 @@ class OptimizerIteration(SmlbObject):
 class OptimizerTrajectory:
     """Holds a single optimization trajectory, a sequence of OptimizerIterations."""
 
-    def __init__(self, iterations: Sequence[OptimizerIteration]):
-        self._iterations = params.sequence(iterations, type_=OptimizerIteration)
-        self._num_evaluations = np.sum([r.num_evaluations for r in self.iterations])
+    def __init__(self, steps: Sequence[OptimizerStep]):
+        self._steps = params.sequence(steps, type_=OptimizerStep)
+        self._num_evaluations = np.sum([r.num_evaluations for r in self.steps])
 
     @property
-    def iterations(self) -> Sequence[OptimizerIteration]:
-        return self._iterations
+    def steps(self) -> Sequence[OptimizerStep]:
+        return self._steps
 
     @property
     def num_evaluations(self):
-        """The total number of function evaluations across all of the iterations."""
+        """The total number of function evaluations across all of the steps."""
         return self._num_evaluations
 
     def best_score_trajectory(self,
@@ -110,10 +110,10 @@ class OptimizerTrajectory:
 
         best_score = np.empty(self.num_evaluations)
         idx = 0
-        best_score_so_far = self.iterations[0].scores[0]
+        best_score_so_far = self.steps[0].scores[0]
         direction = 1.0 if maximize else -1.0
 
-        for optimization_iter in self.iterations:
+        for optimization_iter in self.steps:
             for eval_ in optimization_iter.scores:
                 if eval_ * direction > best_score_so_far * direction:
                     best_score_so_far = eval_
@@ -156,18 +156,18 @@ class TrackedTransformation(DataTransformation):
         else:
             self._direction = 1
 
-        self._iterations = []
+        self._steps = []
 
     def clear(self):
-        """Reset the iterations to an empty list."""
+        """Reset the steps to an empty list."""
 
-        self._iterations = []
+        self._steps = []
 
     @property
-    def iterations(self) -> Sequence[OptimizerIteration]:
-        """Sequence of what happened at each iteration of the optimizer."""
+    def steps(self) -> Sequence[OptimizerStep]:
+        """Sequence of what happened at each step of the optimizer."""
 
-        return self._iterations
+        return self._steps
 
     @property
     def direction(self) -> float:
@@ -182,13 +182,13 @@ class TrackedTransformation(DataTransformation):
 
     def apply(self, data: Data) -> float:
         """Apply the learner to produce an output distribution and score that distribution.
-        Append the information about this iteration to the running list.
+        Append the information about this step to the running list.
         Return a score such that lower is always better.
         """
 
         dist = self._learner.apply(data)
         scores = self._scorer.apply(dist)
-        self._iterations.append(OptimizerIteration(data, dist, scores))
+        self._steps.append(OptimizerStep(data, dist, scores))
         return scores * self._direction
 
 
@@ -202,7 +202,7 @@ class Optimizer(SmlbObject, metaclass=ABCMeta):
     ) -> OptimizerTrajectory:
         """
         Run the optimization. This first clears the `function_tracker`'s memory of
-        previous iterations, then calls `_minimize`. The score must be configured such that
+        previous steps, then calls `_minimize`. The score must be configured such that
         lower scores are better.
 
         Parameters:
@@ -212,12 +212,12 @@ class Optimizer(SmlbObject, metaclass=ABCMeta):
                 univariate score to minimize
 
         Returns:
-            A sequence of OptimizerIteration objects, one for every time the learner is applied
+            A sequence of OptimizerStep objects, one for every time the learner is applied
             to a dataset.
         """
         function_tracker.clear()
         self._minimize(data, function_tracker)
-        return OptimizerTrajectory(function_tracker.iterations)
+        return OptimizerTrajectory(function_tracker.steps)
 
     @abstractmethod
     def _minimize(self, data: VectorSpaceData, function_tracker: TrackedTransformation):
@@ -227,7 +227,7 @@ class Optimizer(SmlbObject, metaclass=ABCMeta):
 
 
 class RandomOptimizer(Optimizer, Random):
-    """Draws a random sample at each iteration.
+    """Draws random samples.
 
     Parameters:
         num_samples: the number of random samples to draw

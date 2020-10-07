@@ -56,7 +56,7 @@ from smlb.core.scorer import Scorer, ProbabilityOfImprovement
 from smlb.core.optimizer import (
     Optimizer,
     TrackedTransformation,
-    OptimizerIteration,
+    OptimizerStep,
     RandomOptimizer,
     OptimizerTrajectory
 )
