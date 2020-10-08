@@ -112,7 +112,7 @@ class ScipyDualAnnealingOptimizer(ScipyGlobalOptimizer):
     def _minimization_algorithm(
         self, func: callable, bounds: Sequence[Tuple[float, float]], seed: int
     ) -> OptimizeResult:
-        return dual_annealing(
+        result = dual_annealing(
             func,
             bounds,
             seed=seed,
@@ -125,6 +125,7 @@ class ScipyDualAnnealingOptimizer(ScipyGlobalOptimizer):
             maxfun=self._maxfun,
             no_local_search=self._no_local_search,
         )
+        return result
 
 
 class ScipyDifferentialEvolutionOptimizer(ScipyGlobalOptimizer):
@@ -202,7 +203,7 @@ class ScipyDifferentialEvolutionOptimizer(ScipyGlobalOptimizer):
     def _minimization_algorithm(
         self, func: callable, bounds: Sequence[Tuple[float, float]], seed: int
     ) -> OptimizeResult:
-        return differential_evolution(
+        result = differential_evolution(
             func,
             bounds,
             seed=seed,
@@ -213,3 +214,4 @@ class ScipyDifferentialEvolutionOptimizer(ScipyGlobalOptimizer):
             mutation=self._mutation,
             recombination=self._recombination,
         )
+        return result
