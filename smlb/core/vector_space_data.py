@@ -102,9 +102,9 @@ class VectorSpaceData(Data):
 
         samples = params.real_matrix(indices, ncols=self.dimensions)
 
-        # if self.domain is not None:
-        #     if (samples < self._domain[:, 0]).any() or (samples > self._domain[:, 1]).any():
-        #         raise InvalidParameterError("vectors in domain", "vectors outside of domain")
+        if self.domain is not None:
+            if (samples < self._domain[:, 0]).any() or (samples > self._domain[:, 1]).any():
+                raise InvalidParameterError("vectors in domain", "vectors outside of domain")
 
         return samples
 

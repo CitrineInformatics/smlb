@@ -42,8 +42,19 @@ class ScipyGlobalOptimizer(Optimizer, Random):
         raise NotImplementedError
 
     def _minimize(self, data: VectorSpaceData, function_tracker: TrackedTransformation):
-        func = lambda x: function_tracker.apply(TabularData(x.reshape(1, -1)))
+        def _clip_to_bounds(x):
+            """Clip x to obey the bounds along each dimension. This is necessary because
+            dual annealing does not respect bounds, but smlb is strict about bounds and will
+            throw an exception if we try to sample outside of the domain.
+            """
+            for i in range(len(x)):
+                lb = bounds[i, 0]
+                ub = bounds[i, 1]
+                x[i] = min(ub, max(x[i], lb))
+            return x
+
         bounds = data.domain
+        func = lambda x: function_tracker.apply(TabularData(_clip_to_bounds(x).reshape(1, -1)))
         seed = self.random.split(1)[
             0
         ]  # split off a new random seed each time `optimize` is called
