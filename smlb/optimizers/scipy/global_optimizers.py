@@ -69,7 +69,7 @@ class ScipyDualAnnealingOptimizer(ScipyGlobalOptimizer):
     Dual annealing alternates between simulated annealing to explore the global space
     and a local optimization method to efficiently find local minima.
 
-    https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.dual_annealing.html#scipy.optimize.dual_annealing
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.dual_annealing.html
     """
 
     def __init__(
@@ -94,7 +94,7 @@ class ScipyDualAnnealingOptimizer(ScipyGlobalOptimizer):
             maxiter: The maximum number of iterations, where one iteration is one round of
                 simulated annealing followed by one use of a local optimizer to find a local min.
             local_search_options: an optional kwargs dictionary to pass to the local minimizer,
-                scipy.optimize.minimize: https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html#scipy.optimize.minimize
+                scipy.optimize.minimize: https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html
                 If no args are passed then the minimizer defaults to the L-BFGS-B method, since
                 the problems being studied have bounds but no constraints.
             initial_temp: The initial temperature, use higher values to facilitates a wider search
@@ -143,7 +143,7 @@ class ScipyDifferentialEvolutionOptimizer(ScipyGlobalOptimizer):
     """Scipy's Differential Evolution optimizer.
 
     Stochastically generates new candidates by combining and mutating existing candidates.
-    https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html#scipy.optimize.differential_evolution
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html
     """
 
     def __init__(
