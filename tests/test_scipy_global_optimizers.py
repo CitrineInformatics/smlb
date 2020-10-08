@@ -5,6 +5,8 @@ A benchmark of regression models in chem- and materials informatics.
 (c) 2019-20, Citrine Informatics.
 """
 
+import pytest
+
 import numpy as np
 
 from smlb import (
@@ -93,12 +95,41 @@ def test_optimizers_run():
     scorer = ExpectedValue()
     func = TrackedTransformation(learner, scorer, maximize=False)
 
-    optimizer1 = ScipyDualAnnealingOptimizer(rng=0, maxiter=10)
-    optimizer2 = ScipyDifferentialEvolutionOptimizer(rng=0, maxiter=10)
-    trajectory1 = optimizer1.optimize(data=dataset, function_tracker=func)
-    trajectory2 = optimizer2.optimize(data=dataset, function_tracker=func)
+    optimizer_da = ScipyDualAnnealingOptimizer(rng=0, maxiter=10)
+    optimizer_de = ScipyDifferentialEvolutionOptimizer(rng=0, maxiter=10)
+    trajectory_da = optimizer_da.optimize(data=dataset, function_tracker=func)
+    trajectory_de = optimizer_de.optimize(data=dataset, function_tracker=func)
 
-    for trajectory in [trajectory1, trajectory2]:
-        # find the lowest score and assert that it is with 1e-9 of the true min, 0.
+    for trajectory in [trajectory_da, trajectory_de]:
+        # find the lowest score and assert that it is within 1e-9 of the true min, 0.
         best_score = min([step.scores[0] for step in trajectory.steps])
         assert 0 <= best_score <= 1e-9
+
+    # Multiple calls to the same optimizer should use different seeds.
+    # Check that the two trajectories start from different points.
+    trajectory_da_2 = optimizer_da.optimize(data=dataset, function_tracker=func)
+    assert trajectory_da.steps[0].scores[0] != trajectory_da_2.steps[0].scores[0]
+
+
+def test_optimizer_parameters():
+    """For some of the more complicated parameters, test their validation."""
+    # `rng` must be specified.
+    with pytest.raises(InvalidParameterError):
+        ScipyDualAnnealingOptimizer()
+    with pytest.raises(InvalidParameterError):
+        ScipyDifferentialEvolutionOptimizer()
+
+    # `strategy` must be a string from the enumerated list.
+    with pytest.raises(InvalidParameterError):
+        ScipyDifferentialEvolutionOptimizer(rng=0, strategy="notastrategy")
+
+    # `mutation` can either be a float or a 2-tuple. All numbers must be from [0, 2]
+    # and in a tuple the first entry must not be greater than the second entry.
+    valid_mutations = [0, 0.5, 2.0, (0, 1.0), (0, 2.0), (1.3, 1.3)]
+    for mutation in valid_mutations:
+        ScipyDifferentialEvolutionOptimizer(rng=0, mutation=mutation)
+
+    invalid_mutations = [-3, 5.5, (-1, 1), (1, 3), (-1, 3), (1.5, 0.5)]
+    for mutation in invalid_mutations:
+        with pytest.raises(InvalidParameterError):
+            ScipyDifferentialEvolutionOptimizer(rng=0, mutation=mutation)
