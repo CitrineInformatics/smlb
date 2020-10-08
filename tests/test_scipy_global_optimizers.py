@@ -87,14 +87,18 @@ class DoubleWell(VectorSpaceData):
 
 
 def test_optimizers_run():
-    """Test that the optimizers can be instantiated and run without error."""
+    """Test that the optimizers can be instantiated and run to find a global minimum."""
     dataset = DoubleWell()
     learner = IdentityLearner(dataset)
     scorer = ExpectedValue()
-
     func = TrackedTransformation(learner, scorer, maximize=False)
+
     optimizer1 = ScipyDualAnnealingOptimizer(rng=0, maxiter=10)
     optimizer2 = ScipyDifferentialEvolutionOptimizer(rng=0, maxiter=10)
+    trajectory1 = optimizer1.optimize(data=dataset, function_tracker=func)
+    trajectory2 = optimizer2.optimize(data=dataset, function_tracker=func)
 
-    optimizer1.optimize(data=dataset, function_tracker=func)
-    optimizer2.optimize(data=dataset, function_tracker=func)
+    for trajectory in [trajectory1, trajectory2]:
+        # find the lowest score and assert that it is with 1e-9 of the true min, 0.
+        best_score = min([step.scores[0] for step in trajectory.steps])
+        assert 0 <= best_score <= 1e-9
