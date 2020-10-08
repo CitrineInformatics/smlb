@@ -8,7 +8,7 @@ A benchmark of regression models in chem- and materials informatics.
 from typing import Optional, Sequence, Tuple
 from abc import abstractmethod
 
-from scipy.optimize import dual_annealing, OptimizeResult
+from scipy.optimize import dual_annealing, differential_evolution, OptimizeResult
 
 from smlb import (
     params,
@@ -122,4 +122,92 @@ class ScipyDualAnnealingOptimizer(ScipyGlobalOptimizer):
             accept=self._accept,
             maxfun=self._maxfun,
             no_local_search=self._no_local_search,
+        )
+
+
+class ScipyDifferentialEvolutionOptimizer(ScipyGlobalOptimizer):
+    """Scipy's Differential Evolution optimizer.
+
+    Stochastically generates new candidates by combining and mutating existing candidates.
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html#scipy.optimize.differential_evolution
+    """
+
+    def __init__(
+        self,
+        rng: int = None,
+        strategy: str = "best1bin",
+        maxiter: int = 1000,
+        popsize: int = 15,
+        tol: float = 0.01,
+        mutation=(0.5, 1),
+        recombination: float = 0.7,
+        **kwargs
+    ):
+        """Initialize state.
+
+        Scipy-specific parameters are passed through.
+
+        Parameters:
+            rng: integer seed. Will be used to generate a new seed each time the optimizer is run.
+            strategy: The differential evolution strategy to use. See documentation for complete
+                list and explanations.
+            maxiter: The maximum number of generations over which the entire population is evolved.
+            popsize: A multiplier for setting the total population size.
+            tol: Relative tolerance for convergence.
+            mutation: The mutation constant. Either a number between 0 and 2 or a tuple (min, max)
+                in which case the mutation constant is randomly selected uniformly from between
+                min and max with each generation.
+            recombination: The recombination constant. Must be between 0 and 1.
+
+        """
+        super().__init__(rng=rng, **kwargs)
+
+        allowed_strategies = {
+            "best1bin",
+            "best1exp",
+            "rand1exp",
+            "randtobest1exp",
+            "currenttobest1exp",
+            "best2exp",
+            "rand2exp",
+            "randtobest1bin",
+            "currenttobest1bin",
+            "best2bin",
+            "rand2bin",
+            "rand1bin",
+        }
+        self._strategy = params.enumeration(strategy, allowed_strategies)
+
+        self._maxiter = params.integer(maxiter, from_=1)
+        self._popsize = params.integer(popsize, from_=1)
+        self._tol = params.real(tol, above=0.0)
+
+        def test_mutation_range(arg, low=0.0):
+            return params.real(arg, from_=low, to=2.0)
+
+        self._mutation = params.any_(
+            mutation,
+            test_mutation_range,
+            lambda pair: params.tuple_(
+                pair,
+                test_mutation_range,
+                lambda arg2: test_mutation_range(arg2, low=pair[0]),
+                arity=2,
+            ),
+        )
+        self._recombination = params.real(recombination, from_=0.0, to=1.0)
+
+    def _minimization_algorithm(
+        self, func: callable, bounds: Sequence[Tuple[float, float]], seed: int
+    ) -> OptimizeResult:
+        return differential_evolution(
+            func,
+            bounds,
+            seed=seed,
+            strategy=self._strategy,
+            maxiter=self._maxiter,
+            popsize=self._popsize,
+            tol=self._tol,
+            mutation=self._mutation,
+            recombination=self._recombination,
         )
