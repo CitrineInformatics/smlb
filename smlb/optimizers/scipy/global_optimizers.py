@@ -44,7 +44,9 @@ class ScipyGlobalOptimizer(Optimizer, Random):
     def _minimize(self, data: VectorSpaceData, function_tracker: TrackedTransformation):
         func = lambda x: function_tracker.apply(TabularData(x.reshape(1, -1)))
         bounds = data.domain
-        seed = self.random.split(1)  # split off a new random seed each time `optimize` is called
+        seed = self.random.split(1)[
+            0
+        ]  # split off a new random seed each time `optimize` is called
         # TODO: include a callback to record the results of each iteration. Store this info in
         #   TrackedTransformation and include it when creating the OptimizationTrajectory.
         self._minimization_algorithm(func, bounds, seed)
