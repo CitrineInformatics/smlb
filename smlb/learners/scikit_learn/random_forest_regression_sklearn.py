@@ -48,6 +48,7 @@ class RandomForestRegressionSklearn(SupervisedLearner, Random):
 
     def __init__(
         self,
+        rng: int = None,
         uncertainties: Optional[str] = None,
         correlations: Optional[str] = None,
         n_estimators: int = 100,
@@ -62,7 +63,6 @@ class RandomForestRegressionSklearn(SupervisedLearner, Random):
         # min_impurity_split deprecated
         bootstrap: bool = True,
         n_jobs: Optional[int] = None,
-        random_state: int = None,
         ccp_alpha: float = 0.0,
         max_samples: Optional[Union[int, float]] = None,
         force_corr: Optional[bool] = False,
@@ -71,8 +71,6 @@ class RandomForestRegressionSklearn(SupervisedLearner, Random):
         """Initialize state.
 
         sklearn-specific parameters are passed through to the implementation.
-        The parameter `random_state` also acts as the seed `rng` for smlb's pseudo-random number
-        generator and _must_ be specified.
 
         Parameters:
             uncertainties: whether and how to compute predictive uncertainties; possible choices are
@@ -107,9 +105,7 @@ class RandomForestRegressionSklearn(SupervisedLearner, Random):
 
         See skl.ensemble.RandomForestRegressor parameters.
         """
-
-        kwargs["rng"] = random_state
-        super().__init__(**kwargs)
+        super().__init__(rng=rng, **kwargs)
 
         # validate parameters
 
@@ -148,7 +144,6 @@ class RandomForestRegressionSklearn(SupervisedLearner, Random):
             lambda arg: params.integer(arg, from_=1),
             params.none,
         )
-        random_state = params.integer(random_state)
         ccp_alpha = params.real(ccp_alpha, from_=0.0)
         max_samples = params.any_(
             max_samples,
@@ -170,7 +165,6 @@ class RandomForestRegressionSklearn(SupervisedLearner, Random):
             min_impurity_decrease=min_impurity_decrease,
             bootstrap=bootstrap,
             n_jobs=n_jobs,
-            random_state=random_state,
             ccp_alpha=ccp_alpha,
             max_samples=max_samples,
         )
@@ -193,6 +187,7 @@ class RandomForestRegressionSklearn(SupervisedLearner, Random):
         xtrain = params.real_matrix(data.samples(), nrows=n)
         ytrain = params.real_vector(data.labels(), dimensions=n)
 
+        self._model.random_state = self.random.split(1)[0]
         self._model.fit(xtrain, ytrain)
 
         return self
