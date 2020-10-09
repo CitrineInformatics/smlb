@@ -18,12 +18,13 @@ from smlb import (
     NormalPredictiveDistribution,
     params,
     SupervisedLearner,
+    Random,
 )
 
 # todo: hyperparameter optimization.
 
 
-class GradientBoostedTreesRegressionSklearn(SupervisedLearner):
+class GradientBoostedTreesRegressionSklearn(SupervisedLearner, Random):
     """Gradient-boosted trees regression, scikit-learn implementation.
 
     Additive model where in each stage a regression tree is fit on the negative gradient of the loss function.
@@ -43,6 +44,7 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner):
 
     def __init__(
         self,
+        rng: int = None,
         uncertainties: Optional[str] = None,
         loss: str = "ls",
         alpha: float = 0.9,
@@ -58,7 +60,6 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner):
         max_leaf_nodes: Optional[int] = None,
         min_impurity_decrease: float = 0.0,
         # min_impurity_split deprecated
-        random_state: int = None,
         ccp_alpha: float = 0.0,
         init: Optional[Any] = None,
         validation_fraction: float = 0.1,
@@ -105,7 +106,7 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner):
         See skl.ensemble.ExtraTreesRegressor parameters.
         """
 
-        super().__init__(**kwargs)
+        super().__init__(rng=rng, **kwargs)
 
         # validate parameters
 
@@ -140,7 +141,6 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner):
             max_leaf_nodes, lambda arg: params.integer(arg, from_=1), params.none
         )
         min_impurity_decrease = params.real(min_impurity_decrease, from_=0.0)
-        random_state = params.integer(random_state)
         ccp_alpha = params.real(ccp_alpha, from_=0.0)
         # no validation for init (no class signature validator)
         validation_fraction = params.real(validation_fraction, above=0, below=1)
@@ -163,7 +163,6 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner):
             max_features=max_features,
             max_leaf_nodes=max_leaf_nodes,
             min_impurity_decrease=min_impurity_decrease,
-            random_state=random_state,
             ccp_alpha=ccp_alpha,
             init=init,
             validation_fraction=validation_fraction,
@@ -189,6 +188,7 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner):
         xtrain = params.real_matrix(data.samples(), nrows=n)
         ytrain = params.real_vector(data.labels(), dimensions=n)
 
+        self._model.random_state = self.random.split(1)[0]
         self._model.fit(xtrain, ytrain)
 
         return self

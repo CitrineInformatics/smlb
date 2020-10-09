@@ -21,12 +21,13 @@ from smlb import (
     Data,
     DeltaPredictiveDistribution,
     NormalPredictiveDistribution,
+    Random,
 )
 
 # todo: hyperparameter optimization.
 
 
-class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner):
+class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner, Random):
     """Extremely randomized trees regression, scikit-learn implementation.
 
     Ensemble of randomized decision trees via bootstrapping (sampling with replacement).
@@ -42,6 +43,7 @@ class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner):
 
     def __init__(
         self,
+        rng: int = None,
         uncertainties: Optional[str] = None,
         n_estimators: int = 100,
         criterion: str = "mse",
@@ -55,7 +57,6 @@ class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner):
         # min_impurity_split deprecated
         bootstrap: bool = True,
         n_jobs: Optional[int] = None,
-        random_state: int = None,
         ccp_alpha: float = 0.0,
         max_samples: Optional[Union[int, float]] = None,
         **kwargs,
@@ -83,7 +84,6 @@ class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner):
             min_impurity_decrease: minimum impurity decrease required for splitting
             bootstrap: if False, the whole dataset is used to build trees
             n_jobs: number of parallel jobs; -1 to use all available processors; None means 1
-            random_state: pseudo-random number generator seed
             ccp_alpha: complexity parameter for minimal cost-complexity pruning.
             max_samples: number of input samples to draw during bootstrap; integers directly specify the number,
                 floating point values specify which fraction of samples to use; all by default
@@ -93,7 +93,7 @@ class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner):
         See skl.ensemble.ExtraTreesRegressor parameters.
         """
 
-        super().__init__(**kwargs)
+        super().__init__(rng=rng, **kwargs)
 
         # validate parameters
 
@@ -131,7 +131,6 @@ class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner):
             lambda arg: params.integer(arg, from_=1),
             params.none,
         )
-        random_state = params.integer(random_state)
         ccp_alpha = params.real(ccp_alpha, from_=0.0)
         max_samples = params.any_(
             max_samples,
@@ -152,7 +151,6 @@ class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner):
             min_impurity_decrease=min_impurity_decrease,
             bootstrap=bootstrap,
             n_jobs=n_jobs,
-            random_state=random_state,
             ccp_alpha=ccp_alpha,
             max_samples=max_samples,
         )
@@ -176,6 +174,7 @@ class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner):
         xtrain = params.real_matrix(data.samples(), nrows=n)
         ytrain = params.real_vector(data.labels(), dimensions=n)
 
+        self._model.random_state = self.random.split(1)[0]
         self._model.fit(xtrain, ytrain)
 
         return self

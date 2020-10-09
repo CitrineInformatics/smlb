@@ -23,6 +23,7 @@ from smlb import (
     CorrelatedNormalPredictiveDistribution,
     params,
     SupervisedLearner,
+    Random,
 )
 
 # todo: hyperparameter optimization.
@@ -33,7 +34,7 @@ from smlb import (
 #        An empirical good default value is max_features=None for regression problems."
 
 
-class RandomForestRegressionSklearn(SupervisedLearner):
+class RandomForestRegressionSklearn(SupervisedLearner, Random):
     """Random forest regression, scikit-learn implementation.
 
     Ensemble of decision tree regressors via bootstrapping (sampling with replacement).
@@ -47,6 +48,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
 
     def __init__(
         self,
+        rng: int = None,
         uncertainties: Optional[str] = None,
         correlations: Optional[str] = None,
         n_estimators: int = 100,
@@ -61,7 +63,6 @@ class RandomForestRegressionSklearn(SupervisedLearner):
         # min_impurity_split deprecated
         bootstrap: bool = True,
         n_jobs: Optional[int] = None,
-        random_state: int = None,
         ccp_alpha: float = 0.0,
         max_samples: Optional[Union[int, float]] = None,
         force_corr: Optional[bool] = False,
@@ -93,7 +94,6 @@ class RandomForestRegressionSklearn(SupervisedLearner):
             min_impurity_decrease: minimum impurity decrease required for splitting
             bootstrap: if False, the whole dataset is used to build trees
             n_jobs: number of parallel jobs; -1 to use all available processors; None means 1
-            random_state: pseudo-random number generator seed
             ccp_alpha: complexity parameter for minimal cost-complexity pruning.
             max_samples: number of input samples to draw during bootstrap; integers directly specify the number,
                 floating point values specify which fraction of samples to use; all by default
@@ -104,8 +104,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
 
         See skl.ensemble.RandomForestRegressor parameters.
         """
-
-        super().__init__(**kwargs)
+        super().__init__(rng=rng, **kwargs)
 
         # validate parameters
 
@@ -144,7 +143,6 @@ class RandomForestRegressionSklearn(SupervisedLearner):
             lambda arg: params.integer(arg, from_=1),
             params.none,
         )
-        random_state = params.integer(random_state)
         ccp_alpha = params.real(ccp_alpha, from_=0.0)
         max_samples = params.any_(
             max_samples,
@@ -166,7 +164,6 @@ class RandomForestRegressionSklearn(SupervisedLearner):
             min_impurity_decrease=min_impurity_decrease,
             bootstrap=bootstrap,
             n_jobs=n_jobs,
-            random_state=random_state,
             ccp_alpha=ccp_alpha,
             max_samples=max_samples,
         )
@@ -189,6 +186,7 @@ class RandomForestRegressionSklearn(SupervisedLearner):
         xtrain = params.real_matrix(data.samples(), nrows=n)
         ytrain = params.real_vector(data.labels(), dimensions=n)
 
+        self._model.random_state = self.random.split(1)[0]
         self._model.fit(xtrain, ytrain)
 
         return self
