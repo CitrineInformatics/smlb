@@ -105,7 +105,7 @@ class ScipyDualAnnealingOptimizer(ScipyGlobalOptimizer):
                 heavier tail and longer potential jumps.
             accept: a parameter of the acceptance distribution. A lower value means that uphill
                 moves are less likely to be accepted.
-            maxfun: soft limit for the total number of function evaluation calls.
+            maxfun: soft limit for the total number of function evaluation calls that may be exceeded only during a local optimization step if the quota is reached therein.
             no_local_search: if true then the local search step is skipped, and this reduces
                  to a generalized simulated annealing optimizer.
         """
