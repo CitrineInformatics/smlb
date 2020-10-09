@@ -26,7 +26,7 @@ def test_optimization_trajectories():
 
     pi_scorer = smlb.ProbabilityOfImprovement(target=2, goal="minimize")
 
-    from smlb.core.optimizer import RandomOptimizer
+    from smlb.optimizers.random_optimizer import RandomOptimizer
     optimizer = RandomOptimizer(num_samples=30, rng=0)
 
     from smlb.workflows.optimization_trajectory_comparison import OptimizationTrajectoryComparison
