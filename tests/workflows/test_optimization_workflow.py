@@ -21,7 +21,7 @@ def test_optimization_trajectories():
 
     from smlb.learners.scikit_learn.random_forest_regression_sklearn import RandomForestRegressionSklearn
 
-    learner = RandomForestRegressionSklearn(uncertainties="naive", random_state=0)
+    learner = RandomForestRegressionSklearn(uncertainties="naive", rng=0)
     learner.fit(training_data)
 
     pi_scorer = smlb.ProbabilityOfImprovement(target=2, goal="minimize")

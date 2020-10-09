@@ -26,7 +26,7 @@ def test_RandomForestRegressionSklearn_1():
         labels=np.array([1, 1, 1, 1, 1, 1, 1, 1, 1]),
     )
     valid_data = smlb.TabularData(data=np.array([[-4], [-2], [0], [3], [4]]))
-    rf = RandomForestRegressionSklearn(random_state=1, uncertainties="naive")
+    rf = RandomForestRegressionSklearn(rng=1, uncertainties="naive")
     preds = rf.fit(train_data).apply(valid_data)
     mean, stddev = preds.mean, preds.stddev
 
@@ -37,7 +37,7 @@ def test_RandomForestRegressionSklearn_1():
 def test_RandomForestRegressionSklearn_2():
     """Simple examples: linear 1-d function."""
 
-    rf = RandomForestRegressionSklearn(random_state=1, uncertainties="naive", correlations="naive")
+    rf = RandomForestRegressionSklearn(rng=1, uncertainties="naive", correlations="naive")
     train_data = smlb.TabularData(
         data=np.array([[-2], [-1.5], [-1], [-0.5], [0], [0.5], [1], [1.5], [2]]),
         labels=np.array([-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]),
@@ -53,13 +53,13 @@ def test_RandomForestRegressionSklearn_2():
     corr = rf.apply(smlb.TabularData(data=np.array([[-1], [0], [1]]))).corr
     assert corr.shape == (len(mean), len(mean))
     assert np.allclose(corr, 
-        [[1, -0.165, 0.026], 
-        [-0.165, 1, -0.307],
-        [0.0256, -0.307, 1]],
-    rtol=0.02)
+        [[1, -0.08, -0.05],
+        [-0.08, 1, -0.023],
+        [-0.05, -0.023, 1]],
+        rtol=0.1)
 
     # without uncertainties
-    rf = RandomForestRegressionSklearn(random_state=1)  # default for uncertainties is None
+    rf = RandomForestRegressionSklearn(rng=1)  # default for uncertainties is None
     rf.fit(train_data)
 
     preds = rf.apply(smlb.TabularData(data=np.array([[-1], [0], [1]])))
@@ -71,8 +71,8 @@ def test_RandomForestRegressionSklearn_2():
 def test_RandomForestRegressionSklearn_3():
     """Ensure predictions are identical independent of uncertainties method used."""
 
-    rf1 = RandomForestRegressionSklearn(random_state=1, uncertainties=None)
-    rf2 = RandomForestRegressionSklearn(random_state=1, uncertainties="naive")
+    rf1 = RandomForestRegressionSklearn(rng=1, uncertainties=None)
+    rf2 = RandomForestRegressionSklearn(rng=1, uncertainties="naive")
     train_data = smlb.TabularData(
         data=np.array([[-2], [-1.5], [-1], [-0.5], [0], [0.5], [1], [1.5], [2]]),
         labels=np.array([-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]),

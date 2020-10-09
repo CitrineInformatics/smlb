@@ -29,14 +29,12 @@ def test_learning_curve_regression():
         GaussianProcessRegressionSklearn,
     )
 
-    learner_gpr_skl = GaussianProcessRegressionSklearn(
-        random_state=0
-    )  # default is Gaussian kernel
+    learner_gpr_skl = GaussianProcessRegressionSklearn(rng=0)  # default is Gaussian kernel
     from smlb.learners.scikit_learn.random_forest_regression_sklearn import (
         RandomForestRegressionSklearn,
     )
 
-    learner_rf_skl = RandomForestRegressionSklearn(random_state=0)
+    learner_rf_skl = RandomForestRegressionSklearn(rng=0)
 
     from smlb.workflows.learning_curve_regression import LearningCurveRegression
 

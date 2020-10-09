@@ -4,7 +4,7 @@ Scientific Machine Learning Benchmark:
 A benchmark of regression models in chem- and materials informatics.
 (c) Matthias Rupp 2019, Citrine Informatics.
 
-Supports reproducability when using pseudo-random numbers 
+Supports reproducibility when using pseudo-random numbers
 in non-deterministic environments, for example, parallel 
 and distributed computing. See class `Random` for details.
 
@@ -94,7 +94,7 @@ class Random(SmlbObject):
 
         Parameters:
             rng: seed (key) for pseudo-random number generator.
-                 This parameter must be specified to encourage correc usage
+                 This parameter must be specified to encourage correct usage
                  of pseudo-random numbers throughout the benchmark.
         """
 

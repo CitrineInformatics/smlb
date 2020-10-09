@@ -30,14 +30,14 @@ def test_GradientBoostedTreesRegressionSklearn_1():
         labels=np.asarray([1, 1, 1, 1, 1, 1, 1, 1, 1]),
     )
     valid_data = smlb.TabularData(data=np.asarray([[-4], [-2], [0], [3], [4]]))
-    rf = GradientBoostedTreesRegressionSklearn(random_state=1, uncertainties=None)  # "naive"
+    rf = GradientBoostedTreesRegressionSklearn(rng=1, uncertainties=None)  # "naive"
     preds = rf.fit(train_data).apply(valid_data)
     mean, stddev = preds.mean, preds.stddev
 
     assert np.allclose(mean, [1, 1, 1, 1, 1])
     # assert np.allclose(stddev, [0, 0, 0, 0, 0])
 
-    rf = GradientBoostedTreesRegressionSklearn(random_state=1, uncertainties=None)
+    rf = GradientBoostedTreesRegressionSklearn(rng=1, uncertainties=None)
     preds = rf.fit(train_data).apply(valid_data)
     mean, stddev = preds.mean, preds.stddev
 
@@ -51,7 +51,7 @@ def test_GradientBoostedTreesRegressionSklearn_1():
 def test_GradientBoostedTreesRegressionSklearn_2():
     """Simple examples: linear 1-d function."""
 
-    rf = GradientBoostedTreesRegressionSklearn(random_state=1, uncertainties=None)  # "naive"
+    rf = GradientBoostedTreesRegressionSklearn(rng=1, uncertainties=None)  # "naive"
     train_data = smlb.TabularData(
         data=np.asarray([[-2], [-1.5], [-1], [-0.5], [0], [0.5], [1], [1.5], [2]]),
         labels=np.asarray([-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]),
@@ -65,7 +65,7 @@ def test_GradientBoostedTreesRegressionSklearn_2():
     # assert stddev[0] > stddev[1] < stddev[2]
 
     # without uncertainties
-    rf = GradientBoostedTreesRegressionSklearn(random_state=1)  # default for uncertainties is None
+    rf = GradientBoostedTreesRegressionSklearn(rng=1)  # default for uncertainties is None
     rf.fit(train_data)
 
     preds = rf.apply(smlb.TabularData(data=np.asarray([[-1], [0], [1]])))
@@ -78,8 +78,8 @@ def test_GradientBoostedTreesRegressionSklearn_2():
 # def test_GradientBoostedTreesRegressionSklearn_3():
 #     """Ensure predictions are identical independent of uncertainties method used."""
 
-#     rf1 = GradientBoostedTreesRegressionSklearn(random_state=1, uncertainties=None)
-#     rf2 = GradientBoostedTreesRegressionSklearn(random_state=1, uncertainties="naive")
+#     rf1 = GradientBoostedTreesRegressionSklearn(rng=1, uncertainties=None)
+#     rf2 = GradientBoostedTreesRegressionSklearn(rng=1, uncertainties="naive")
 #     train_data = smlb.TabularData(
 #         data=np.asarray([[-2], [-1.5], [-1], [-0.5], [0], [0.5], [1], [1.5], [2]]),
 #         labels=np.asarray([-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]),
@@ -105,7 +105,7 @@ def test_GradientBoostedTreesRegressionSklearn_4():
     )
     valid_data = smlb.TabularData(data=np.asarray([[-4], [-2], [0], [3], [4]]))
     rf = GradientBoostedTreesRegressionSklearn(
-        n_estimators=10, uncertainties=None, random_state=0  # "naive"
+        n_estimators=10, uncertainties=None, rng=0  # "naive"
     )
     preds = rf.fit(train_data).apply(valid_data)
     mean, stddev = preds.mean, preds.stddev
@@ -114,7 +114,7 @@ def test_GradientBoostedTreesRegressionSklearn_4():
     # assert np.allclose(stddev, [0, 0, 0, 0, 0])
 
     # delta distributions (zero standard deviation)
-    rf = GradientBoostedTreesRegressionSklearn(n_estimators=10, uncertainties=None, random_state=0)
+    rf = GradientBoostedTreesRegressionSklearn(n_estimators=10, uncertainties=None, rng=0)
     preds = rf.fit(train_data).apply(valid_data)
     mean, stddev = preds.mean, preds.stddev
 
@@ -138,7 +138,7 @@ def test_GradientBoostedTreesRegressionSklearn_5():
     valid_data = smlb.LabelNoise(noise=smlb.NormalNoise(rng=1)).fit(valid_data).apply(valid_data)
 
     # 12 trees meets minimal requirements for jackknife estimates
-    rf = GradientBoostedTreesRegressionSklearn(random_state=0, uncertainties=None)  # "naive"
+    rf = GradientBoostedTreesRegressionSklearn(rng=0, uncertainties=None)  # "naive"
     preds = rf.fit(train_data).apply(valid_data)
     mae = smlb.MeanAbsoluteError().evaluate(valid_data.labels(), preds)
 
