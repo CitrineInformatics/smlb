@@ -9,10 +9,10 @@ from typing import Optional, Any
 
 from smlb import (
     params,
-    Optimizer,
     Random,
     RandomVectorSampler,
     VectorSpaceData,
+    Optimizer,
     TrackedTransformation,
 )
 
