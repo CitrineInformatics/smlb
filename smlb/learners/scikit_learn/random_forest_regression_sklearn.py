@@ -94,7 +94,6 @@ class RandomForestRegressionSklearn(SupervisedLearner, Random):
             min_impurity_decrease: minimum impurity decrease required for splitting
             bootstrap: if False, the whole dataset is used to build trees
             n_jobs: number of parallel jobs; -1 to use all available processors; None means 1
-            random_state: pseudo-random number generator seed
             ccp_alpha: complexity parameter for minimal cost-complexity pruning.
             max_samples: number of input samples to draw during bootstrap; integers directly specify the number,
                 floating point values specify which fraction of samples to use; all by default

@@ -19,7 +19,7 @@ def test_GaussianProcessRegressionSklearn_1():
 
     # linear function with linear kernel
     kernel = skl.gaussian_process.kernels.DotProduct(sigma_0=0, sigma_0_bounds="fixed")
-    gpr = GaussianProcessRegressionSklearn(kernel=kernel, optimizer=None, random_state=1)
+    gpr = GaussianProcessRegressionSklearn(kernel=kernel, optimizer=None, rng=1)
     train_data = smlb.TabularData(data=np.array([[-1], [1]]), labels=np.array([-1, 1]))
     valid_data = smlb.TabularData(data=np.array([[-2], [-1], [0], [1], [2]]))
     preds = gpr.fit(train_data).apply(valid_data)
@@ -39,7 +39,7 @@ def test_GaussianProcessRegressionSklearn_2():
     kernel = skl.gaussian_process.kernels.DotProduct(
         sigma_0=0, sigma_0_bounds="fixed"
     ) + skl.gaussian_process.kernels.WhiteKernel(noise_level=0.1, noise_level_bounds=(1e-5, 1e-5))
-    gpr = GaussianProcessRegressionSklearn(kernel=kernel, random_state=1)
+    gpr = GaussianProcessRegressionSklearn(kernel=kernel, rng=1)
     n = 100
     train_data = smlb.TabularData(
         data=np.ones(shape=(n, 1)) * 2, labels=np.ones(shape=n) * 3
@@ -70,7 +70,7 @@ def test_GaussianProcessRegressionSklearn_3():
     kernel = skl.gaussian_process.kernels.DotProduct(
         sigma_0=0, sigma_0_bounds="fixed"
     ) + skl.gaussian_process.kernels.WhiteKernel(noise_level=1, noise_level_bounds=(1e-5, 1e5))
-    gpr = GaussianProcessRegressionSklearn(kernel=kernel, random_state=1)
+    gpr = GaussianProcessRegressionSklearn(kernel=kernel, rng=1)
     n, nlsd = 100, 0.5
     data = smlb.TabularData(data=np.ones(shape=(n, 1)) * 2, labels=np.ones(shape=n) * 3)
     data = smlb.LabelNoise(noise=smlb.NormalNoise(stddev=nlsd, rng=1)).fit(data).apply(data)

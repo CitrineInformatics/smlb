@@ -47,20 +47,18 @@ class GaussianProcessRegressionSklearn(SupervisedLearner, Random):
 
     def __init__(
         self,
+        rng: int = None,
         internal_hp_optimization: bool = True,
         kernel: Optional[Kernel] = None,
         alpha: Union[float, Sequence] = 1e-5,
         optimizer="fmin_l_bfgs_b",
         n_restarts_optimizer=0,
         normalize_y=False,
-        random_state: int = None,
         **kwargs
     ):
         """Initialize state.
 
         sklearn-specific parameters are passed through to the implementation.
-        The parameter `random_state` also acts as the seed `rng` for smlb's pseudo-random number
-        generator and _must_ be specified.
 
         Parameters:
             internal_hp_optimization: if True, hyperparameters are optimized "internally"
@@ -75,13 +73,11 @@ class GaussianProcessRegressionSklearn(SupervisedLearner, Random):
             optimizer: hyperparameter optimization algorithm; used only if internal_hp_optimization is True
             n_restarts_optimizer: number of times optimizer is restarted; only used if internal_hp_optimization is True
             normalize_y: whether to subtract the mean of the labels
-            random_state: integer seed
 
         See skl.gaussian_process.GaussianProcessRegressor parameters.
         """
 
-        kwargs["rng"] = random_state
-        super().__init__(**kwargs)
+        super().__init__(rng=rng, **kwargs)
 
         internal_hp_optimization = params.boolean(internal_hp_optimization)
         kernel = params.any_(kernel, lambda arg: params.instance(arg, Kernel), params.none)
@@ -93,7 +89,6 @@ class GaussianProcessRegressionSklearn(SupervisedLearner, Random):
         )
         # todo: check optimizer, requires params.union (of string and callable) and params.function
         normalize_y = params.boolean(normalize_y)
-        random_state = params.integer(random_state)
 
         if kernel is None:
             kernel = RBF() + WhiteKernel()
@@ -106,7 +101,6 @@ class GaussianProcessRegressionSklearn(SupervisedLearner, Random):
             optimizer=optimizer,
             n_restarts_optimizer=n_restarts_optimizer,
             normalize_y=normalize_y,
-            random_state=random_state,
         )
 
     def fit(self, data: Data) -> "GaussianProcessRegressionSklearn":
@@ -128,6 +122,7 @@ class GaussianProcessRegressionSklearn(SupervisedLearner, Random):
         xtrain = params.real_matrix(data.samples(), nrows=n)
         ytrain = params.real_vector(data.labels(), dimensions=n)
 
+        self._model.random_state = self.random.split(1)[0]
         self._model.fit(xtrain, ytrain)
 
         return self
