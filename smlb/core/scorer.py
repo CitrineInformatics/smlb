@@ -39,6 +39,13 @@ class Scorer(SmlbObject, metaclass=ABCMeta):
         raise NotImplementedError
 
 
+class ExpectedValue(Scorer):
+    """The score is equal to the predicted value."""
+
+    def apply(self, dist: PredictiveDistribution) -> Sequence[float]:
+        return dist.mean
+
+
 class ProbabilityOfImprovement(Scorer):
     """Likelihood of improvement beyond a univariate target.
 

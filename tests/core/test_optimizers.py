@@ -14,9 +14,9 @@ from smlb import (
     NormalPredictiveDistribution,
     InvalidParameterError,
     ProbabilityOfImprovement,
-    RandomOptimizer
 )
 from smlb.datasets.synthetic.friedman_1979.friedman_1979 import Friedman1979Data
+from smlb.optimizers.random_optimizer import RandomOptimizer
 
 
 class FakeLearner(Learner):
