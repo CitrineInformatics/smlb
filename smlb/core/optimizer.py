@@ -178,7 +178,7 @@ class TrackedTransformation(DataTransformation):
 
         return self._learner.fit(data)
 
-    def apply(self, data: Data) -> float:
+    def apply(self, data: Data) -> Sequence[float]:
         """Apply the learner to produce an output distribution and score that distribution.
         Append the information about this step to the running list.
         Return a score such that lower is always better.
