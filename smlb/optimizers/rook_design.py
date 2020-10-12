@@ -119,7 +119,7 @@ class RookDesignOptimizer(Optimizer, Random):
         seeds: np.ndarray = seeds_table.samples()
         total_dimensions = seeds.shape[1]
         # Randomly select dimensions to vary
-        dimension_indices = self.random.shuffle(range(total_dimensions))[:num_dimensions]
+        dimension_indices = self.random.permutation(range(total_dimensions))[:num_dimensions]
         # For each seed and each dimension generate uniformly-spaced samples, then stack everything
         candidates_array = np.vstack(
             [
@@ -146,7 +146,7 @@ class RookDesignOptimizer(Optimizer, Random):
         candidates = np.tile(seed, (self._resolution, 1))
 
         # Determine the lower and upper bounds of the range to sample
-        value = seed[d_index]
+        value = seed[0, d_index]
         lb, ub = domain[d_index]
         max_jump = (ub - lb) * self._max_relative_jump
         range_lower = max(lb, value - max_jump)
