@@ -14,13 +14,12 @@ script:
 - pytest tests
 deploy:
 - provider: pypi
-  user: "CitrineInformatics"
+  user: CitrineInformatics
   password: "$PYPI_PASSWORD"
-  distributions: "sdist bdist_wheel"
+  distributions: sdist bdist_wheel
   skip_existing: true
   on:
     tags: true
-
 env:
   global:
-    - secure: 
+    secure: aYCf6H071BLI4a9jI19QeLnt9Zc4rl+ey1ogZEGGmwLP6Gos+bi5g4ibEJtTuEon9vKL0MOqIHj+bJG04GoKB2qEkpZd0cfAQPcdCPMNEZIwY/w8KwBXzcF6XSh91znzSKxEcMYQUBNx6K39cbKiQdEXogqByVykYtbWiJznWxs6iGzMaamM9L7LEVPh18Aa1fyKFtfHZvLltDGpkkZnAyhF6R1UDQ03dA4x3YQwS+pCrzlhq+KMrO+3h4S04MGCupg6+rKkBW1ZJ6fvvOZgFiT0GXg+EhufFfkXdLRosQDt6v8QS5f2249WLTFLOAauI/tv5pNOM0ANrKPDLzmEVg0jizdmtHg5rNSysEdC0NWwId/WLkGKdxI6GgrxzYZujveDkhp6boVEo37e+0HCQAqVgVlNC8Cw5XddOqZYo7rQAFvAaxjVdPUi3iE9nfcsbF6rfO8rWpAd3wayVi7ZKbNlM6EpgxVt/EFzKRKDVGZY9QLzV+jzn2NT9TQfRwCBG/8ICDV67ZUWtrtl7CrXjYKbMra7G/+3gkCugUFZGK1fAivQ5jL14mO6I+kO+Vk4OkPPnp7VfDlHzR6waS/AlmmM6OrlKM0vH4n43qYv+p6Uddw5TBIHHZzPdeZg4qtMc5gIyZekpvDm7kALPDvnNYjUPIi4ABcs/IgTECQHoNo=
