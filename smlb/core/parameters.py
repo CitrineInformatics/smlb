@@ -122,6 +122,7 @@ class params:
             InvalidParameterError: if parameter arg is invalid
         """
 
+        # TODO: throw exception on non-integer floating point values
         bounded = not (from_ is None and to is None and above is None and below is None)
         msg = f"{'bounded ' if bounded else ''}integer"
         if bounded:

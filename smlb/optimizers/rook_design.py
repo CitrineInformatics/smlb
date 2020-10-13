@@ -92,7 +92,7 @@ class RookDesignOptimizer(Optimizer, Random):
         if self._dimensions_varied == "all":
             return total_dimensions
         elif isinstance(self._dimensions_varied, float):
-            return np.ceil(self._dimensions_varied * total_dimensions)
+            return int(np.ceil(self._dimensions_varied * total_dimensions))
         elif isinstance(self._dimensions_varied, int):
             if self._dimensions_varied > total_dimensions:
                 warnings.warn(
