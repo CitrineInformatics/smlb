@@ -12,6 +12,8 @@ install:
 script:
 - black --check smlb -l 99
 - pytest tests
+- if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
+  bash ./scripts/validate-version-bump.sh; fi
 deploy:
 - provider: pypi
   user: CitrineInformatics
