@@ -3,7 +3,7 @@
 set -eu
 
 extract_version() {
-  sed -En "s/.*VERSION = '([0-9]+\.[0-9]+\.[0-9]+).*/\1/p" <<< "$@"
+  sed -En "s/.*VERSION = \"([0-9]+\.[0-9]+\.[0-9]+).*/\1/p" <<< "$@"
 }
 
 extract_major() {
@@ -22,6 +22,8 @@ trap "$(set +eu)" EXIT
 
 CURRENT="$(extract_version $(cat setup.py))"
 MASTER="$(extract_version $(git show master:setup.py))"
+echo "new version is $CURRENT"
+echo "master version is $MASTER"
 
 CURRENT_MAJOR="$(extract_major ${CURRENT})"
 CURRENT_MINOR="$(extract_minor ${CURRENT})"
