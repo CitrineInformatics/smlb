@@ -22,8 +22,6 @@ trap "$(set +eu)" EXIT
 
 CURRENT="$(extract_version $(cat setup.py))"
 MASTER="$(extract_version $(git show master:setup.py))"
-echo "new version is $CURRENT"
-echo "master version is $MASTER"
 
 CURRENT_MAJOR="$(extract_major ${CURRENT})"
 CURRENT_MINOR="$(extract_minor ${CURRENT})"
