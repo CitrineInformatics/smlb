@@ -12,3 +12,14 @@ install:
 script:
 - black --check smlb -l 99
 - pytest tests
+- if [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
+  bash ./scripts/validate-version-bump.sh; fi
+deploy:
+  provider: pypi
+  username: CitrineInformatics
+  distributions: sdist bdist_wheel
+  skip_existing: true
+  on:
+    tags: true
+  password:
+    secure: EWjBsv5WKNlGgGVvIbmxD9Vb7wcUoTfPF2Q43CJTEEou3d6Zq+O4wTs2D8FM+d8yRApc1qt0x/vM5xKiRT0Gw44YLrcNdODzhRB3CRi+EC9uWOZMloOxoHSTYIp1K0LYqHCVp6AVJI0tLh4ogA8sPEIHWQic/ymZ7nn6mioO77a4SuWVfeoLywp03VgqIlspu2uKCAhR6xxiqyUV1I6UsUOZ/wNj9/rs0PkU8EuPQ7YtGG7cGJq3yQ1DjkkCFWM43hemAXvxH8J2QnjjrTODwXdtcf987o6rA9Ae8ZhmeECXleWE3ShzieuTY67uUQbuY0N9T9zsZDgLkcSy7p1sYCms6jozEpcw5Ab1JPRl845bxbgIA9F47LnaKenJkTM5/FBy+Yfu/k3OAP0MWqkschkon30LKuav7oQwcc5wmS8eMKiAMDV7EUPlbZjZE7G/FxdQwv0L8u94+pfmcIJ9pgAQTkfQ7p+gF4Uttyxw0SAH6yAWOaBdw6CI6lGszIYX6pWyIQDxw2qYVCTHhWz5+JMra6POaNw22nW/Aqhr2SzBMReKcb73opdZ7F0nhao9KLHDXrQVBMWdSRHpvAihEwKFO71n+ILUz5wbSYHh82bzBPlDuyTSNbVWbLw/YPM2e9JsiW+oOFjPJfNdwqDAaHnVMfzDcYIeTa4fkpCZq+k=
