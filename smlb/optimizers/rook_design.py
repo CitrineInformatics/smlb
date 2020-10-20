@@ -6,7 +6,6 @@ A benchmark of regression models in chem- and materials informatics.
 """
 
 from typing import Union, Sequence, Tuple
-import warnings
 
 import numpy as np
 
@@ -50,10 +49,11 @@ class RookDesignOptimizer(Optimizer, Random):
                 of each iteration
             resolution: the number of points to sample along a single dimension for a single seed
             max_relative_jump: the maximum relative step size along a single dimension. If a given
-                dimension has length `L` and a seed has value `x` along that dimension, then points
-                are drawn by uniformly sampling `resolution` points from the range
+                dimension has length `L` and a seed has value `x` along that dimension, then the
+                candidates are `resolution` linearly spaced points from the range
                 [x - max_relative_jump * L, x + max_relative_jump * L] (clipped by the bounds).
-                The value must be on (0, 1]. For a value of 1, the entire range is always sampled.
+                `max_relative_jump must be on (0, 1].
+                For a value of 1, the entire range is always considered.
             dimensions_varied: how many randomly selected dimensions to explore with each step.
                 'all' indicates all dimensions. An integer directly specifies the number of
                 dimensions. A float on (0, 1) indicates the fractional number of the total.
@@ -90,18 +90,17 @@ class RookDesignOptimizer(Optimizer, Random):
         determine the number of dimensions varied with each step.
         """
         if self._dimensions_varied == "all":
-            return total_dimensions
+            dimensions = total_dimensions
         elif isinstance(self._dimensions_varied, float):
-            return int(np.ceil(self._dimensions_varied * total_dimensions))
+            dimensions = int(np.ceil(self._dimensions_varied * total_dimensions))
         elif isinstance(self._dimensions_varied, int):
-            if self._dimensions_varied > total_dimensions:
-                warnings.warn(
-                    f"Rook design optimizer attempts to vary {self._dimensions_varied} dimensions "
-                    f"with each iteration, but provided dataset only has {total_dimensions} dimensions."
-                )
-            return min(total_dimensions, self._dimensions_varied)
+            dimensions = self._dimensions_varied
         else:
-            raise BenchmarkError(f"{self._dimensions_varied} is not of acceptable type.")
+            dimensions = 0
+        if dimensions <= 0 or dimensions > total_dimensions:
+            raise BenchmarkError(f"Rook design optimizer cannot vary {dimensions} dimensions "
+                                 f"for a dataset that has {total_dimensions} dimensions")
+        return dimensions
 
     def _make_moves(
         self, seeds_table: TabularData, domain: Sequence[Tuple[float, float]], num_dimensions: int
