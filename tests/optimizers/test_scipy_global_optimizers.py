@@ -12,10 +12,7 @@ import numpy as np
 from smlb import (
     params,
     TrackedTransformation,
-    Learner,
-    Data,
     VectorSpaceData,
-    NormalPredictiveDistribution,
     InvalidParameterError,
     ExpectedValue,
 )
@@ -23,24 +20,7 @@ from smlb.optimizers.scipy.global_optimizers import (
     ScipyDifferentialEvolutionOptimizer,
     ScipyDualAnnealingOptimizer,
 )
-
-
-# TODO: Implement this as a learner
-class IdentityLearner(Learner):
-    """A fake implementation of the Learner class that predicts random values."""
-
-    def __init__(self, function: VectorSpaceData, **kwargs):
-        super().__init__(**kwargs)
-        self._function = params.instance(function, VectorSpaceData)
-
-    def apply(self, data: Data):
-        if not data.is_finite:
-            raise InvalidParameterError(
-                "a finite dataset", f"an infinite dataset of type {data.__class__}"
-            )
-        means = self._function.labels(data.samples())
-        stddevs = np.zeros_like(means)
-        return NormalPredictiveDistribution(means, stddevs)
+from smlb.learners.identity_learner import IdentityLearner
 
 
 class DoubleWell(VectorSpaceData):
