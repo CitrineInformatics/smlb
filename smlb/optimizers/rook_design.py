@@ -55,7 +55,7 @@ class RookDesignOptimizer(Optimizer, Random):
                 [x - max_relative_jump * L, x + max_relative_jump * L] (clipped by the bounds).
                 The value must be on (0, 1]. For a value of 1, the entire range is always sampled.
             dimensions_varied: how many randomly selected dimensions to explore with each step.
-                'all' indicates all dimensions. An integer directly specifies the nubmer of
+                'all' indicates all dimensions. An integer directly specifies the number of
                 dimensions. A float on (0, 1) indicates the fractional number of the total.
 
         TODO: add tolerance stopping conditions
@@ -158,5 +158,5 @@ class RookDesignOptimizer(Optimizer, Random):
 
     def select_best(self, data: TabularData, scores: Sequence[float]) -> TabularData:
         """Select the best points given a tabular data set and a list of matching scores."""
-        best_indices = np.argsort(scores)[: self._num_seeds]
+        best_indices = np.argsort(scores)[:self._num_seeds]
         return data.subset(best_indices)
