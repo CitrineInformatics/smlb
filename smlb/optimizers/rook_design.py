@@ -98,8 +98,10 @@ class RookDesignOptimizer(Optimizer, Random):
         else:
             dimensions = 0
         if dimensions <= 0 or dimensions > total_dimensions:
-            raise BenchmarkError(f"Rook design optimizer cannot vary {dimensions} dimensions "
-                                 f"for a dataset that has {total_dimensions} dimensions")
+            raise BenchmarkError(
+                f"Rook design optimizer cannot vary {dimensions} dimensions "
+                f"for a dataset that has {total_dimensions} dimensions"
+            )
         return dimensions
 
     def _make_moves(
@@ -157,5 +159,5 @@ class RookDesignOptimizer(Optimizer, Random):
 
     def select_best(self, data: TabularData, scores: Sequence[float]) -> TabularData:
         """Select the best points given a tabular data set and a list of matching scores."""
-        best_indices = np.argsort(scores)[:self._num_seeds]
+        best_indices = np.argsort(scores)[: self._num_seeds]
         return data.subset(best_indices)
