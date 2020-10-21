@@ -7,7 +7,7 @@ A benchmark of regression models in chem- and materials informatics.
 
 import numpy as np
 
-from smlb.datasets.experimental.ni_superalloys.Ni_superalloy import NiSuperalloyDataset
+from smlb.datasets.experimental import NiSuperalloyDataset
 
 
 def test_ni_superalloy_basic():
