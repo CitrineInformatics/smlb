@@ -437,6 +437,52 @@ class Plot(Evaluation):
             **kwargs,
         )
 
+    def shaded_line(self, positions, values, color=0, quantile_width=0.5, alpha=0.2, **kwargs):
+        """Draw a line plot with shaded quantiles.
+
+        Parameters:
+            positions: 1-d array of point locations on the horizontal axis
+            values: list of arrays, each one containing all of the values at a given location.
+                len(values) must equal len(positions)
+            color: color index
+            quantile_width: fraction of the range to shade. For the default value, 0.5,
+                shade from the 25th percentile to the 75th percentile.
+            alpha: shading alpha level
+        """
+        positions = params.real_vector(positions)
+        values = params.tuple_(values, params.real_vector, arity=len(positions))
+        color = params.integer(color, from_=0, below=len(self.configuration.color_set))
+        quantile_width = params.real(quantile_width, from_=0, to=1)
+        alpha = params.real(alpha, from_=0, to=1)
+
+        color = self.configuration.color(color)
+        lower_bound = 0.5 - quantile_width / 2.0
+        upper_bound = 0.5 + quantile_width / 2.0
+
+        median = [np.median(samples) for samples in values]
+        lower_shading = [np.quantile(samples, lower_bound) for samples in values]
+        upper_shading = [np.quantile(samples, upper_bound) for samples in values]
+        min_val = [np.min(samples) for samples in values]
+        max_val = [np.max(samples) for samples in values]
+
+        self.ax.plot(
+            positions, median, linestyle="-", color=self.configuration.color(color), **kwargs
+        )
+        self.ax.fill_between(
+            positions,
+            lower_shading,
+            upper_shading,
+            color=self.configuration.color(color),
+            alpha=alpha,
+            **kwargs,
+        )
+        self.ax.plot(
+            positions, min_val, linestyle="--", color=self.configuration.color(color), **kwargs
+        )
+        self.ax.plot(
+            positions, max_val, linestyle="--", color=self.configuration.color(color), **kwargs
+        )
+
 
 class GeneralizedFunctionPlot(Plot):
     """Plot generalized functions.
@@ -466,7 +512,7 @@ class GeneralizedFunctionPlot(Plot):
         Parameters:
             visualization_type: how to visualize generalized functions.
                 Either single value or list of appropriate length.
-                Possible values: "points" (default), "box-whisker"
+                Possible values: "points" (default), "box-whisker", "shaded-line"
             rectify: whether and by how much each curves' values will be horizontally displaced
                 to visually disentangle markers from different curves at the same location.
                 True indicates automatic displacement, False indicates no displacement.
@@ -483,7 +529,7 @@ class GeneralizedFunctionPlot(Plot):
 
         # parameter validation
 
-        enum_f = lambda arg: params.enumeration(arg, {"points", "box-whisker"})
+        enum_f = lambda arg: params.enumeration(arg, {"points", "box-whisker", "shaded-line"})
         self._visualization_type = params.any_(
             visualization_type, enum_f, lambda arg: params.tuple_(arg, enum_f)
         )
@@ -547,7 +593,7 @@ class GeneralizedFunctionPlot(Plot):
             self._visualization_type = (self._visualization_type,) * len(results)
         self._visualization_type = params.tuple_(
             self._visualization_type,
-            lambda arg: params.enumeration(arg, {"points", "box-whisker"}),
+            lambda arg: params.enumeration(arg, {"points", "box-whisker", "shaded-line"}),
             arity=len(results),
             default="points",
         )
@@ -619,6 +665,10 @@ class GeneralizedFunctionPlot(Plot):
                 )
                 positions = powf(positions)
                 self._plotdata[i] = (positions, values, widths)
+            elif self._visualization_type[i] == "shaded-line":
+                positions = np.asfarray([logf(entry[0]) for entry in curve])
+                values = [entry[1] for entry in curve]
+                self._plotdata[i] = (positions, values)
             else:
                 raise BenchmarkError("internal error, unknown visualization type")
 
@@ -814,23 +864,25 @@ class OptimizationTrajectoryPlot(GeneralizedFunctionPlot):
     """Plot a series of optimization trajectories, each one tracking the best score found at
     that point in the optimization run.
     Each trial for a given optimizer is currently plotted as a dot.
-    TODO: plot the median trajectory as a line and shade the quartiles.
-        (Create a new plotting method and override _render to call that method.)
 
     Parameters:
         log_scale: whether or not to use a log scale on the _horizontal_ axis
+        quantile_width: fraction of the range to shade. Shading is centered around the median,
+            going from median - quantile_width / 2 to median + quantile_width / 2
     """
 
-    def __init__(self, log_scale: bool = False, **kwargs):
+    def __init__(self, log_scale: bool = False, quantile_width: float = 0.5, **kwargs):
         log_scale = params.boolean(log_scale)
         scale = "log" if log_scale else "linear"
+
+        self._quantile_width = params.real(quantile_width, from_=0, to=1)
 
         kwargs["axes_scales"] = kwargs.get("axes_scales", (scale, "linear"))
         kwargs["axes_labels"] = kwargs.get(
             "axes_labels", ("function evaluations", "best score", None, None)
         )
         kwargs["rectify"] = False
-        kwargs["visualization_type"] = "points"
+        kwargs["visualization_type"] = "shaded-line"
 
         super().__init__(**kwargs)
 
@@ -849,3 +901,12 @@ class OptimizationTrajectoryPlot(GeneralizedFunctionPlot):
         results = params.tuple_(results, curve_testf)
 
         super().evaluate(results=results, **kwargs)
+
+    def _render(self, target, **kwargs):
+        """Render optimization trajectory plot.
+
+        Parameters:
+            target: rendering target which evaluation outcome is rendered to; see Evaluation._render method
+        """
+        for (i, pd) in enumerate(self._plotdata):
+            self.shaded_line(pd[0], pd[1], color=i, quantile_width=self._quantile_width)
