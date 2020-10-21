@@ -29,12 +29,15 @@ def test_optimization_trajectories():
     from smlb.optimizers import RandomOptimizer
     optimizer = RandomOptimizer(num_samples=30, rng=0)
 
+    evaluator = smlb.OptimizationTrajectoryPlot(optimizer_names=["random1", "random2"])
+
     from smlb.workflows import OptimizationTrajectoryComparison
     workflow = OptimizationTrajectoryComparison(
         data=dataset,
         model=learner,
         scorer=pi_scorer,
         optimizers=[optimizer, optimizer],  # just to check that it can handle multiple optimizers
+        evaluations=[evaluator],
         num_trials=3
     )
     workflow.run()

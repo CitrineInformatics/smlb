@@ -18,7 +18,7 @@ An implementation enabling different plotting backends was put on hold
 due to increased complexity (pull request #22).
 """
 
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -437,51 +437,59 @@ class Plot(Evaluation):
             **kwargs,
         )
 
-    def shaded_line(self, positions, values, color=0, quantile_width=0.5, alpha=0.2, **kwargs):
+    def shaded_line(
+        self,
+        positions: np.ndarray,
+        values: List[np.ndarray],
+        color_idx: int = 0,
+        label: Optional[str] = None,
+        quantile_width: float = 0.5,
+        alpha: float = 0.2,
+        show_extrema: bool = True,
+        **kwargs,
+    ):
         """Draw a line plot with shaded quantiles.
 
         Parameters:
             positions: 1-d array of point locations on the horizontal axis
             values: list of arrays, each one containing all of the values at a given location.
                 len(values) must equal len(positions)
-            color: color index
+            color_idx: color index
+            label: line label
             quantile_width: fraction of the range to shade. For the default value, 0.5,
                 shade from the 25th percentile to the 75th percentile.
             alpha: shading alpha level
+            show_extrema: whether or not to draw dashed lines at the best/worst point
         """
         positions = params.real_vector(positions)
         values = params.tuple_(values, params.real_vector, arity=len(positions))
-        color = params.integer(color, from_=0, below=len(self.configuration.color_set))
+        color_idx = params.integer(color_idx, from_=0, below=len(self.configuration.color_set))
         quantile_width = params.real(quantile_width, from_=0, to=1)
         alpha = params.real(alpha, from_=0, to=1)
 
-        color = self.configuration.color(color)
+        color = self.configuration.color(color_idx)
         lower_bound = 0.5 - quantile_width / 2.0
         upper_bound = 0.5 + quantile_width / 2.0
 
         median = [np.median(samples) for samples in values]
         lower_shading = [np.quantile(samples, lower_bound) for samples in values]
         upper_shading = [np.quantile(samples, upper_bound) for samples in values]
-        min_val = [np.min(samples) for samples in values]
-        max_val = [np.max(samples) for samples in values]
 
-        self.ax.plot(
-            positions, median, linestyle="-", color=self.configuration.color(color), **kwargs
-        )
+        self.ax.plot(positions, median, linestyle="-", color=color, label=label, **kwargs)
         self.ax.fill_between(
             positions,
             lower_shading,
             upper_shading,
-            color=self.configuration.color(color),
+            color=color,
             alpha=alpha,
             **kwargs,
         )
-        self.ax.plot(
-            positions, min_val, linestyle="--", color=self.configuration.color(color), **kwargs
-        )
-        self.ax.plot(
-            positions, max_val, linestyle="--", color=self.configuration.color(color), **kwargs
-        )
+
+        if show_extrema:
+            min_val = [np.min(samples) for samples in values]
+            max_val = [np.max(samples) for samples in values]
+            self.ax.plot(positions, min_val, linestyle="--", color=color, **kwargs)
+            self.ax.plot(positions, max_val, linestyle="--", color=color, **kwargs)
 
 
 class GeneralizedFunctionPlot(Plot):
@@ -866,12 +874,22 @@ class OptimizationTrajectoryPlot(GeneralizedFunctionPlot):
     Each trial for a given optimizer is currently plotted as a dot.
 
     Parameters:
+        optimizer_names: list of names with which to label each optimizer trajectory
         log_scale: whether or not to use a log scale on the _horizontal_ axis
         quantile_width: fraction of the range to shade. Shading is centered around the median,
             going from median - quantile_width / 2 to median + quantile_width / 2
     """
 
-    def __init__(self, log_scale: bool = False, quantile_width: float = 0.5, **kwargs):
+    def __init__(
+        self,
+        optimizer_names: Optional[List[str]] = None,
+        log_scale: bool = False,
+        quantile_width: float = 0.5,
+        **kwargs,
+    ):
+        self._optimizer_names = params.optional_(
+            optimizer_names, lambda arg: params.sequence(arg, type_=str)
+        )
         log_scale = params.boolean(log_scale)
         scale = "log" if log_scale else "linear"
 
@@ -891,7 +909,7 @@ class OptimizationTrajectoryPlot(GeneralizedFunctionPlot):
 
         Parameters:
             results: sequence of curve data, where each curve datum is a sequence of
-                tuples (index, scoress) of function evaluation number (positive integer)
+                tuples (index, scores) of function evaluation number (positive integer)
                 and best scores found after that many evaluations (sequence of real numbers).
         """
         tuple_testf = lambda arg: params.tuple_(
@@ -908,5 +926,12 @@ class OptimizationTrajectoryPlot(GeneralizedFunctionPlot):
         Parameters:
             target: rendering target which evaluation outcome is rendered to; see Evaluation._render method
         """
-        for (i, pd) in enumerate(self._plotdata):
-            self.shaded_line(pd[0], pd[1], color=i, quantile_width=self._quantile_width)
+        if self._optimizer_names is None:
+            self._line_labels = [None] * len(self._plotdata)
+        else:
+            self._line_labels = params.sequence(self._optimizer_names, length=len(self._plotdata))
+
+        for i, (pd, label) in enumerate(zip(self._plotdata, self._line_labels)):
+            self.shaded_line(
+                pd[0], pd[1], color_idx=i, label=label, quantile_width=self._quantile_width
+            )
