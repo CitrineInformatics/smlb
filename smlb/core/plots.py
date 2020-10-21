@@ -674,7 +674,7 @@ class GeneralizedFunctionPlot(Plot):
                 positions = powf(positions)
                 self._plotdata[i] = (positions, values, widths)
             elif self._visualization_type[i] == "shaded-line":
-                positions = np.asfarray([logf(entry[0]) for entry in curve])
+                positions = np.asfarray([entry[0] for entry in curve])
                 values = [entry[1] for entry in curve]
                 self._plotdata[i] = (positions, values)
             else:
