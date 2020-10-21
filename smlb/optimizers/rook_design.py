@@ -5,7 +5,7 @@ A benchmark of regression models in chem- and materials informatics.
 2019-2020, Citrine Informatics.
 """
 
-from typing import Union, Sequence, Tuple
+from typing import Union, Sequence, Tuple, Optional
 
 import numpy as np
 
@@ -18,6 +18,7 @@ from smlb import (
     Optimizer,
     TrackedTransformation,
     BenchmarkError,
+    InvalidParameterError
 )
 
 
@@ -33,18 +34,18 @@ class RookDesignOptimizer(Optimizer, Random):
     def __init__(
         self,
         rng: int = None,
-        max_iters: int = 50,
         num_seeds: int = 1,
         resolution: int = 64,
         max_relative_jump: float = 1.0,
         dimensions_varied: Union[str, float, int] = "all",
+        max_iters: Optional[int] = None,
+        max_evals: Optional[int] = None,
         **kwargs,
     ):
         """Initialize state.
 
         Parameters:
             rng: pseudo-random number generator seed
-            max_iters: the maximum number of iterations
             num_seeds: the number of starting points, and the number of points chosen at the end
                 of each iteration
             resolution: the number of points to sample along a single dimension for a single seed
@@ -57,12 +58,14 @@ class RookDesignOptimizer(Optimizer, Random):
             dimensions_varied: how many randomly selected dimensions to explore with each step.
                 'all' indicates all dimensions. An integer directly specifies the number of
                 dimensions. A float on (0, 1) indicates the fractional number of the total.
+            max_iters: the maximum number of iterations
+            max_evals: the maximum number of function evaluations (this is a soft maximum:
+                once it is reached then the current iteration finishes)
 
         TODO: add tolerance stopping conditions
         """
         super().__init__(rng=rng, **kwargs)
 
-        self._max_iters = params.integer(max_iters, from_=1)
         self._num_seeds = params.integer(num_seeds, from_=1)
         self._resolution = params.integer(resolution, from_=2)
         self._max_relative_jump = params.real(max_relative_jump, above=0.0, to=1.0)
@@ -72,6 +75,10 @@ class RookDesignOptimizer(Optimizer, Random):
             lambda arg: params.real(arg, above=0.0, below=1.0),
             lambda arg: params.enumeration(arg, {"all"}),
         )
+        self._max_iters = params.optional_(max_iters, lambda arg: params.integer(arg, from_=1))
+        self._max_evals = params.optional_(max_evals, lambda arg: params.integer(arg, from_=1))
+        if self._max_iters is None and self._max_evals is None:
+            raise InvalidParameterError("at least one stopping condition defined", "all Nones")
 
     def _minimize(self, data: VectorSpaceData, function_tracker: TrackedTransformation):
         num_dimensions = self._determine_num_dimensions(data.dimensions)
@@ -80,9 +87,11 @@ class RookDesignOptimizer(Optimizer, Random):
         sampler = RandomVectorSampler(size=self._num_seeds, domain=domain, rng=rng)
         current_seeds = sampler.apply(data)  # get starting seeds
 
-        for _ in range(self._max_iters):
+        while True:
             trial_points = self._make_moves(current_seeds, domain, num_dimensions)
             scores = function_tracker.apply(trial_points)
+            if self._check_stopping(function_tracker):
+                break
             current_seeds = self.select_best(trial_points, scores)
 
     def _determine_num_dimensions(self, total_dimensions: int) -> int:
@@ -156,6 +165,14 @@ class RookDesignOptimizer(Optimizer, Random):
         # Replace the values along the `d_index` dimension with the trial values
         candidates[:, d_index] = np.linspace(range_lower, range_upper, self._resolution)
         return candidates
+
+    def _check_stopping(self, function_tracker: TrackedTransformation) -> bool:
+        """Check if a stopping condition has been reached."""
+        if self._max_iters is not None and len(function_tracker.steps) >= self._max_iters:
+            return True
+        if self._max_evals is not None and function_tracker.num_evaluations >= self._max_evals:
+            return True
+        return False
 
     def select_best(self, data: TabularData, scores: Sequence[float]) -> TabularData:
         """Select the best points given a tabular data set and a list of matching scores."""

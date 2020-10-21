@@ -179,6 +179,10 @@ class TrackedTransformation(DataTransformation):
 
         return self._direction
 
+    @property
+    def num_evaluations(self) -> int:
+        return sum([r.num_evaluations for r in self.steps])
+
     def fit(self, data: Data):
         """Fit the learner on the data."""
 
