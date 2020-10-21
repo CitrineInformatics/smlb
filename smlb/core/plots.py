@@ -885,11 +885,13 @@ class OptimizationTrajectoryPlot(GeneralizedFunctionPlot):
         optimizer_names: Optional[List[str]] = None,
         log_scale: bool = False,
         quantile_width: float = 0.5,
+        show_extrama: bool = True,
         **kwargs,
     ):
         self._optimizer_names = params.optional_(
             optimizer_names, lambda arg: params.sequence(arg, type_=str)
         )
+        self._show_extrema = params.boolean(show_extrama)
         log_scale = params.boolean(log_scale)
         scale = "log" if log_scale else "linear"
 
@@ -933,5 +935,10 @@ class OptimizationTrajectoryPlot(GeneralizedFunctionPlot):
 
         for i, (pd, label) in enumerate(zip(self._plotdata, self._line_labels)):
             self.shaded_line(
-                pd[0], pd[1], color_idx=i, label=label, quantile_width=self._quantile_width
+                pd[0],
+                pd[1],
+                color_idx=i,
+                label=label,
+                quantile_width=self._quantile_width,
+                show_extrema=self._show_extrema,
             )
