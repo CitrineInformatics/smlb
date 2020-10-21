@@ -147,9 +147,9 @@ class TrackedTransformation(DataTransformation):
         self._learner = params.instance(learner, Learner)
         self._scorer = params.instance(scorer, Scorer)
 
-        maximize = params.boolean(maximize)
+        self._maximize = params.boolean(maximize)
         # If the goal is to maximize the score, invert the value because optimizers minimize.
-        if maximize:
+        if self.maximize:
             self._direction = -1
         else:
             self._direction = 1
@@ -166,6 +166,12 @@ class TrackedTransformation(DataTransformation):
         """Sequence of what happened at each step of the optimizer."""
 
         return self._steps
+
+    @property
+    def maximize(self) -> bool:
+        """Whether to maximize or minimize the score."""
+
+        return self._maximize
 
     @property
     def direction(self) -> float:

@@ -95,10 +95,9 @@ class OptimizationTrajectoryComparison(Workflow):
                 of all the scores at that point (vertical axis).
             """
             max_trajectory_length = np.max([t.num_evaluations for t in list_of_trajectories])
-            maximize = func.direction == 1.0
             best_score_trajectories = np.vstack(
                 [
-                    t.best_score_trajectory(maximize, max_trajectory_length)
+                    t.best_score_trajectory(func.maximize, max_trajectory_length)
                     for t in list_of_trajectories
                 ]
             )
