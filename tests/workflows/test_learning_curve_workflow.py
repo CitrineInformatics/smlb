@@ -15,7 +15,7 @@ import smlb
 def test_learning_curve_regression():
     """Simple examples"""
 
-    from smlb.datasets.synthetic.friedman_1979.friedman_1979 import Friedman1979Data
+    from smlb.datasets.synthetic import Friedman1979Data
 
     dataset = Friedman1979Data(dimensions=5)
 
@@ -25,18 +25,14 @@ def test_learning_curve_regression():
         smlb.RandomVectorSampler(size=size, rng=0) for size in training_sizes
     )  # dataset domain is used by default
 
-    from smlb.learners.scikit_learn.gaussian_process_regression_sklearn import (
-        GaussianProcessRegressionSklearn,
-    )
+    from smlb.learners import GaussianProcessRegressionSklearn
 
     learner_gpr_skl = GaussianProcessRegressionSklearn(rng=0)  # default is Gaussian kernel
-    from smlb.learners.scikit_learn.random_forest_regression_sklearn import (
-        RandomForestRegressionSklearn,
-    )
+    from smlb.learners import RandomForestRegressionSklearn
 
     learner_rf_skl = RandomForestRegressionSklearn(rng=0)
 
-    from smlb.workflows.learning_curve_regression import LearningCurveRegression
+    from smlb.workflows import LearningCurveRegression
 
     workflow = LearningCurveRegression(
         data=dataset,
