@@ -18,7 +18,7 @@ from smlb import (
     Optimizer,
     TrackedTransformation,
     BenchmarkError,
-    InvalidParameterError
+    InvalidParameterError,
 )
 
 
