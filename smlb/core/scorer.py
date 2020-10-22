@@ -40,10 +40,23 @@ class Scorer(SmlbObject, metaclass=ABCMeta):
 
 
 class ExpectedValue(Scorer):
-    """The score is equal to the predicted value."""
+    """The score is equal to the predicted value.
+
+    Parameters:
+        maximize: whether higher values or lower values are better.
+    """
+
+    def __init__(self, maximize: bool = True, **kwargs):
+        super().__init__(**kwargs)
+
+        maximize = params.boolean(maximize)
+        if maximize:
+            self._direction = 1
+        else:
+            self._direction = -1
 
     def apply(self, dist: PredictiveDistribution) -> Sequence[float]:
-        return dist.mean
+        return dist.mean * self._direction
 
 
 class ProbabilityOfImprovement(Scorer):
