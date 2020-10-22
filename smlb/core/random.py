@@ -79,7 +79,7 @@ class Random(SmlbObject):
         November 12--18, 2011. DOI 10.1145/2063384.2063405
 
     Splittable pseudo-random number generators:
-        Koen Claessen, Micha{\l} H. Pa{\l}ka: Splittable Pseudorandom
+        Koen Claessen, Micha{\\l} H. Pa{\\l}ka: Splittable Pseudorandom
         Number Generators using Cryptographic Hashing, p. 47--58. In:
         The 18th {ACM} {SIGPLAN} International Conference on Functional
         Programming (ICFP 2013), Boston, Massachusetts, September 25--27,
