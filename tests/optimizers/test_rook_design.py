@@ -72,7 +72,7 @@ def test_multiple_iterations(data, func):
         for good_score in best_scores:
             assert good_score in new_scores
 
-    # Subsequent iterations are likely to have duplicates so the there are additional
+    # Subsequent iterations are likely to have duplicates resulting in additional
     # iterations that push the number of evaluations over the soft limit
     assert trajectory.num_evaluations > num_evals
     assert len(trajectory.steps) > min_num_iters
