@@ -52,28 +52,30 @@ def test_multiple_iterations(data, func):
     If the jumps are small then there is no fixed grid and the candidates in a given step
     might not _exactly_ include a seed.
     """
-    num_iters = 5
+    min_num_iters = 5
     num_seeds = 2
     resolution = 8
+    expected_candidates_per_step = num_seeds * resolution * data.dimensions
+    num_evals = expected_candidates_per_step * min_num_iters
     optimizer = RookDesignOptimizer(
         rng=0,
-        max_iters=num_iters,
         num_seeds=num_seeds,
-        resolution=resolution
+        resolution=resolution,
+        max_evals=num_evals
     )
     trajectory = optimizer.optimize(data, func)
 
-    for i in range(num_iters - 1):
+    for i in range(len(trajectory.steps) - 1):
         old_scores = trajectory.steps[i].scores
         best_scores = np.sort(old_scores)[:num_seeds]
         new_scores = trajectory.steps[i+1].scores
         for good_score in best_scores:
             assert good_score in new_scores
 
-    expected_candidates_per_step = num_seeds * resolution * data.dimensions
-    # Subsequent iterations are likely to have duplicates so the actual number of evaluations
-    # is lower than expected_candidates_per_step * num_iters
-    assert trajectory.num_evaluations < expected_candidates_per_step * num_iters
+    # Subsequent iterations are likely to have duplicates resulting in additional
+    # iterations that push the number of evaluations over the soft limit
+    assert trajectory.num_evaluations > num_evals
+    assert len(trajectory.steps) > min_num_iters
 
 
 def test_short_moves(data, func):
@@ -108,13 +110,16 @@ def test_rook_design_parameters():
         RookDesignOptimizer()  # no rng seed
 
     with pytest.raises(InvalidParameterError):
-        RookDesignOptimizer(rng=0, max_relative_jump=0.0)  # jump size cannot be 0
+        RookDesignOptimizer(rng=0, max_relative_jump=0.0, max_iters=1)  # jump size cannot be 0
 
     with pytest.raises(InvalidParameterError):
-        RookDesignOptimizer(rng=0, dimensions_varied=0)  # dimensions varied cannot be 0
+        RookDesignOptimizer(rng=0, dimensions_varied=0, max_iters=1)  # dimensions varied cannot be 0
 
     with pytest.raises(InvalidParameterError):
-        RookDesignOptimizer(rng=0, dimensions_varied=-3)  # dims varied cannot be negative
+        RookDesignOptimizer(rng=0, dimensions_varied=-3, max_iters=1)  # dims varied cannot be negative
 
     with pytest.raises(InvalidParameterError):
-        RookDesignOptimizer(rng=0, dimensions_varied="foo")  # not a valid keyword
+        RookDesignOptimizer(rng=0, dimensions_varied="foo", max_iters=1)  # not a valid keyword
+
+    with pytest.raises(InvalidParameterError):
+        RookDesignOptimizer(rng=0, max_iters=None, max_evals=None)  # no stopping condition
