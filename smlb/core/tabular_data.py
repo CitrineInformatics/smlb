@@ -280,7 +280,7 @@ class TabularData(Data):
         # remove duplicates if required
         if duplicates is False:
             joint = self._joint_data_labels(subset)
-            _, unique = np.unique(joint, return_index=True, axis=0)
+            _, unique = np.unique(joint, return_index=True)
             if len(unique) != subset.num_samples:  # only do work if there are any duplicates
                 unique = np.sort(unique)  # restores original order
                 subset = TabularData(
