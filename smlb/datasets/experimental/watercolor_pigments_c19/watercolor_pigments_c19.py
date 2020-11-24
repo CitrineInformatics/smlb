@@ -240,28 +240,45 @@ class WatercolorPigments2019DatasetFeatures(Features):
         Parameters:
             encoding: how to featurize the two primary pigments in the binary mixtures;
                 possible values:
-                'one-hot': each primary pigment is a column; for example, 0.02 mL of P3
-                    would be encoded as (0, 0, 0.02, 0, ..., 0)
+                'one-hot': the first 13 entries one-hot encode pigmentA and the next 13 entries
+                    one-hot encode pigmentB. For example, 0.01 mL of P3 as PigmentA and 0.02 mL
+                    of P1 as PigmentB would be encoded as 0.01 in the 3rd index and 0.02 in the
+                    13+1=14th index. Everything else would be zero.
+                'amounts': each primary pigment is a column. For example, 0.02 mL of P3
+                    and 0.04 mL of P4 would be encoded as (0, 0, 0.02, 0.04, 0, ..., 0).
         """
 
-        self._encoding = params.enumeration(encoding, {"one-hot"})
+        self._encoding = params.enumeration(encoding, {"one-hot", "amounts"})
 
         super().__init__(**kwargs)
 
-    def _apply_one_hot(self, data: WatercolorPigments2019Dataset, primary: dict) -> TabularData:
+    @staticmethod
+    def _apply_one_hot(data: WatercolorPigments2019Dataset) -> TabularData:
         """One-hot features."""
 
-        # todo: treat primary features
-
-        dim = 2 * 13
+        num_pigments = len(data.COLOR_NAMES[1:])
+        dim = 2 * num_pigments
         features = np.zeros((data.num_samples, dim))
 
         for i, e, y in zip(range(data.num_samples), data.samples(), data.labels()):
             features[i, 0 + e["indexA"] - 1] = e["concentrationA"]
-            features[i, 13 + e["indexB"] - 1] = e["concentrationB"]
+            features[i, num_pigments + e["indexB"] - 1] = e["concentrationB"]
 
         labels = np.asarray(data.labels())
 
+        return TabularData(data=features, labels=labels)
+
+    @staticmethod
+    def _apply_amounts(data: WatercolorPigments2019Dataset) -> TabularData:
+        """Ingredient amounts features."""
+        num_pigments = len(data.COLOR_NAMES[1:])
+        features = np.zeros((data.num_samples, num_pigments))
+
+        for i, sample in zip(range(data.num_samples), data.samples()):
+            features[i, sample["indexA"] - 1] += sample["concentrationA"]
+            features[i, sample["indexB"] - 1] += sample["concentrationB"]
+
+        labels = np.asarray(data.labels())
         return TabularData(data=features, labels=labels)
 
     def apply(self, data: TabularData) -> TabularData:
@@ -269,13 +286,16 @@ class WatercolorPigments2019DatasetFeatures(Features):
 
         data = params.instance(data, TabularData)
 
-        # set up look-up table for primary pigment data
+        # set up look-up table for primary pigment data (currently unused)
+        # todo: create features with pigment amounts
         primary, primary_data = dict(), WatercolorPigments2019Dataset(filter_="primary")
         for e, rgb in zip(primary_data.samples(), primary_data.labels()):
             primary[e["index"], e["concentration"]] = rgb
 
         # apply selected encoding
         if self._encoding == "one-hot":
-            return self._apply_one_hot(data, primary)
+            return self._apply_one_hot(data)
+        elif self._encoding == "amounts":
+            return self._apply_amounts(data)
         else:
             raise InvalidParameterError("valid encoding", self._encoding)

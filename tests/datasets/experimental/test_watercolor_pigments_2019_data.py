@@ -83,3 +83,12 @@ def test_watercolors_pigments_2019_features_1():
         wcmf.samples([256])[0]
         == [0.01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] + [0, 0.02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     ).all()
+
+
+def test_watercolors_pigments_2019_features_2():
+    """Test amounts encoding"""
+
+    wcm = WatercolorPigments2019Dataset(filter_="mixture")
+    wcmf = WatercolorPigments2019DatasetFeatures(encoding="amounts").fit(wcm).apply(wcm)
+    assert wcmf.samples().shape == (256 + 198 + 190, 13)
+    assert (wcmf.samples([256])[0] == [0.01, 0.02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]).all()
