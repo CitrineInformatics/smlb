@@ -287,7 +287,7 @@ class WatercolorPigments2019DatasetFeatures(Features):
         data = params.instance(data, TabularData)
 
         # set up look-up table for primary pigment data (currently unused)
-        # todo: create features with pigment amounts
+        # TODO: create features with pigment amounts
         primary, primary_data = dict(), WatercolorPigments2019Dataset(filter_="primary")
         for e, rgb in zip(primary_data.samples(), primary_data.labels()):
             primary[e["index"], e["concentration"]] = rgb
