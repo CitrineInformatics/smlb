@@ -67,7 +67,7 @@ class OptimizationTrajectoryComparison(Workflow):
         2. For each optimizer calculate the "best score trajectory" for each trial and coerce
             them into the format required by Evaluation objects.
             TODO: there's a potential abstraction here, similar to the Metric in
-                LearningCurveRegression. For example, we could examing individual trajectories.
+                LearningCurveRegression. For example, we could examine individual trajectories.
         3. Apply evaluations to the results.
         """
         if self._training_data is not None:
