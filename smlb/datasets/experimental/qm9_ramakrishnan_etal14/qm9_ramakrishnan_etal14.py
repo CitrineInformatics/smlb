@@ -157,10 +157,7 @@ class Qm9RamakrishnanEtAl2014Dataset(TabularDataFromPandas):
             assert props[0] == "gdb", "internal error: wrong file format parsing QM9 molecule"
             result["index"] = int(props[1])
             assert len(propnames) == len(props[2:]), "internal error parsing QM9 molecule"
-            for key, value in zip(
-                propnames,
-                props[2:],
-            ):
+            for key, value in zip(propnames, props[2:],):
                 result[key] = float(value)
 
             atomblock = np.array([line.split() for line in lines[2 : na + 2]])  # array of strings

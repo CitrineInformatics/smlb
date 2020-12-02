@@ -477,12 +477,7 @@ class Plot(Evaluation):
 
         self.ax.plot(positions, median, linestyle="-", color=color, label=label, **kwargs)
         self.ax.fill_between(
-            positions,
-            lower_shading,
-            upper_shading,
-            color=color,
-            alpha=alpha,
-            **kwargs,
+            positions, lower_shading, upper_shading, color=color, alpha=alpha, **kwargs,
         )
 
         if show_extrema:

@@ -216,13 +216,7 @@ class SuperconductorsCitrine2016Dataset(TabularData):
             formula = ",".join(e[2:-3])
             if formula[0] == '"':
                 formula = formula[1:-1]
-            e = (
-                e[:2]
-                + [
-                    formula,
-                ]
-                + e[-3:]
-            )
+            e = e[:2] + [formula,] + e[-3:]
 
         assert len(e) == 6
         assert e[3] == "Superconducting critical temperature (Tc)"
