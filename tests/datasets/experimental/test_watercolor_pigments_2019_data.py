@@ -72,11 +72,11 @@ def test_watercolors_pigments_2019_1():
 
 
 def test_watercolors_pigments_2019_features_1():
-    """Test one-hot encoding"""
+    """Test single-entry encoding"""
 
     # no primary pigments
     wcm = WatercolorPigments2019Dataset(filter_="mixture")
-    wcmf = WatercolorPigments2019DatasetFeatures(encoding="one-hot").fit(wcm).apply(wcm)
+    wcmf = WatercolorPigments2019DatasetFeatures(encoding="single-entry").fit(wcm).apply(wcm)
 
     assert wcmf.samples().shape == (256 + 198 + 190, 2 * 13)
     assert (

@@ -234,27 +234,28 @@ class WatercolorPigments2019Dataset(TabularData):
 class WatercolorPigments2019DatasetFeatures(Features):
     """Features for the WatercolorPigments2019Dataset."""
 
-    def __init__(self, encoding: str = "one-hot", **kwargs):
+    def __init__(self, encoding: str = "single-entry", **kwargs):
         """Initializes features.
 
         Parameters:
             encoding: how to featurize the two primary pigments in the binary mixtures;
                 possible values:
-                'one-hot': the first 13 entries one-hot encode pigmentA and the next 13 entries
-                    one-hot encode pigmentB. For example, 0.01 mL of P3 as PigmentA and 0.02 mL
-                    of P1 as PigmentB would be encoded as 0.01 in the 3rd index and 0.02 in the
-                    13+1=14th index. Everything else would be zero.
-                'amounts': each primary pigment is a column. For example, 0.02 mL of P3
-                    and 0.04 mL of P4 would be encoded as (0, 0, 0.02, 0.04, 0, ..., 0).
+                'single-entry': a single-entry vector encodes the identity and quantity of pigmentA
+                    and another single-entry vector encodes the identity and quantity of pigmentB.
+                    These two vectors are concatenated. For example, 0.01 mL of P3 as PigmentA
+                    and 0.02 mL of P1 as PigmentB would be encoded as 0.01 in the 3rd index and
+                    0.02 in the 13+1=14th index. Everything else would be 0.
+                'amounts': the total amount of each primary pigment is a column. For example,
+                    0.02 mL of P3 and 0.04 mL of P4 would be (0, 0, 0.02, 0.04, 0, ..., 0).
         """
 
-        self._encoding = params.enumeration(encoding, {"one-hot", "amounts"})
+        self._encoding = params.enumeration(encoding, {"single-entry", "amounts"})
 
         super().__init__(**kwargs)
 
     @staticmethod
-    def _apply_one_hot(data: WatercolorPigments2019Dataset) -> TabularData:
-        """One-hot features."""
+    def apply_single_entry(data: WatercolorPigments2019Dataset) -> TabularData:
+        """Single-entry encoded features."""
 
         num_pigments = len(data.COLOR_NAMES[1:])
         dim = 2 * num_pigments
@@ -287,14 +288,14 @@ class WatercolorPigments2019DatasetFeatures(Features):
         data = params.instance(data, TabularData)
 
         # set up look-up table for primary pigment data (currently unused)
-        # todo: create features with pigment amounts
+        # TODO: create features with pigment amounts
         primary, primary_data = dict(), WatercolorPigments2019Dataset(filter_="primary")
         for e, rgb in zip(primary_data.samples(), primary_data.labels()):
             primary[e["index"], e["concentration"]] = rgb
 
         # apply selected encoding
-        if self._encoding == "one-hot":
-            return self._apply_one_hot(data)
+        if self._encoding == "single-entry":
+            return self.apply_single_entry(data)
         elif self._encoding == "amounts":
             return self._apply_amounts(data)
         else:
