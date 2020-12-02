@@ -104,7 +104,10 @@ class MatminerCompositionFeatures(Features):
             select = SELECT_SETS
         if isinstance(select, str):
             select = (select,)  # tuple(str,) yields tuple of characters in str
-        select = params.tuple_(select, lambda arg: params.enumeration(arg, set(SELECT_SETS)),)
+        select = params.tuple_(
+            select,
+            lambda arg: params.enumeration(arg, set(SELECT_SETS)),
+        )
 
         self._stoichiometry_p_list = params.tuple_(
             stoichiometry_p_list, lambda p: params.integer(p, from_=0)
