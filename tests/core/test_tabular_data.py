@@ -779,3 +779,13 @@ def test_TabularDataFromPandas_initialization():
     )
     assert (ds.samples() == samples).all()
     assert (ds.labels() == labels).all()
+
+def test_TabularDataFromPandas_string_column_uniqueness():
+    data_samples = pd.DataFrame({1:[1,2,3], 2:[4,5,6], 3:[7,8,9], 'id':[1,2,3]})
+    labels_samples = pd.DataFrame({'id':[1.5,2.5,3.5]})
+
+    col_names = np.hstack((data_samples.columns, labels_samples.columns))
+    assert len(col_names) > len(pd.unique(col_names))
+
+    with pytest.raises(smlb.InvalidParameterError):
+        tdfp = smlb.TabularDataFromPandas(data=data_samples, labels=labels_samples)

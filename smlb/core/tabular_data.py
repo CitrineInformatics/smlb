@@ -501,14 +501,14 @@ class TabularDataFromPandas(TabularData):
         if isinstance(labels, pd.DataFrame):
             if len(data) != len(labels):
                 raise InvalidParameterError(
-                    "matching data and labelsa",
+                    "matching data and labels",
                     f"different number of rows ({len(data)} != {len(labels)})",
                 )
 
             labels = labels.reset_index(drop=True)
 
-            col_names = np.hstack((data.columns.values, labels.columns.values))
-            if len(col_names) != len(np.unique(col_names)):
+            col_names = np.hstack((data.columns, labels.columns))
+            if len(col_names) != len(pd.unique(col_names)):
                 raise InvalidParameterError(
                     "unique column names", f"{data.columns.values} and {labels.columns.values}"
                 )
