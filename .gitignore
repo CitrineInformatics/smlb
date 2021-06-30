@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 datasets/experimental/qm9_ramakrishnan_etal14/gdb9-14b.zip
 *.p
+
+# PyCharm
+.idea/

@@ -15,7 +15,7 @@ import setuptools
 
 # Package meta-data.
 NAME = "smlb"
-VERSION = "0.3.3"
+VERSION = "0.3.4"
 DESCRIPTION = "Scientific Machine Learning Benchmark"
 URL = "https://github.com/CitrineInformatics/smlb"
 EMAIL = "mrupp@mrupp.io"
@@ -54,21 +54,21 @@ setuptools.setup(
     # project_urls={"Bug Tracker": ..., "Documentation": ..., "Source Code": ...},
     packages=setuptools.find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
     install_requires=[
-        "numpy>=1.18.3,<2",
-        "scipy>=1.4.1,<2",
-        "pandas>=1.0.3,<2",
-        "matplotlib>=3.2.1,<4",
-        "scikit-learn>=0.22.2,<0.23",
+        "numpy>=1.21.0,<2",
+        "scipy>=1.7.0,<2",
+        "pandas>=1.2.5,<2",
+        "matplotlib>=3.4.2,<4",
+        "scikit-learn>=0.24.0,<0.25",
     ],
     extras_require={
         "lolo": [
-            "lolopy>=1.0.4,<2",
+            "lolopy>=1.2.0,<2",
             "py4j>=0.10.9,<0.11",
         ],
         "optional": [
             "py4j>=0.10.9,<0.11",
-            "pymatgen>=2020.4.2",
-            "matminer>=0.6.2,<0.7",
+            "pymatgen>=2022.0.9",
+            "matminer>=0.7.3,<0.8",
         ],
     },
     include_package_data=True,

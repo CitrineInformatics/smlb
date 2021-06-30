@@ -138,7 +138,7 @@ class MatminerCompositionFeatures(Features):
                 f"'{type(self).__name__}' requires 'matminer' and 'pymatgen' packages"
             ) from e
 
-        self._composition = pymatgen.Composition
+        self._composition = pymatgen.core.composition.Composition
 
         # set up features
         features = []
