@@ -423,7 +423,7 @@ class Plot(Evaluation):
         self.ax.boxplot(
             values,
             positions=positions,
-            whis="range",
+            whis=(0, 100),
             bootstrap=None,
             widths=widths,
             notch=False,
