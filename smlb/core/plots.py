@@ -822,6 +822,8 @@ class LearningCurvePlot(GeneralizedFunctionPlot):
         curve_testf = lambda arg: params.tuple_(arg, tuple_testf)
         results = params.tuple_(results, curve_testf)
 
+        self.add_auxiliary("results", results)
+
         super().evaluate(results=results, **kwargs)
 
         ypowf = self._powf if self.axes_scales[1] == "log" else lambda arg: arg
