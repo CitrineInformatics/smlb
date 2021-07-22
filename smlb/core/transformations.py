@@ -96,7 +96,9 @@ class DataValuedTransformation(DataTransformation):
 
 
 class DataPipelineTransformation(DataValuedTransformation):
-    """Pipeline of data-valued transformations that are applied sequentially."""
+    """Pipeline of data-valued transformations that are applied sequentially.
+
+    """
 
     def __init__(self, steps: Sequence[DataValuedTransformation], *args, **kwargs):
         """Initialize state.
@@ -239,10 +241,10 @@ class DataTransformationFailureMode:
             raise ipe
 
         if (
-            failmode[0] == "mask"
-            and isinstance(failmode[1], np.ndarray)
-            and failmode[1].ndim == 1
-            and failmode[1].dtype.name == "bool"
+                failmode[0] == "mask"
+                and isinstance(failmode[1], np.ndarray)
+                and failmode[1].ndim == 1
+                and failmode[1].dtype.name == "bool"
         ):
             return failmode
 
