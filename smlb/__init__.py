@@ -17,11 +17,12 @@ from smlb.core.vector_space_data import VectorSpaceData
 from smlb.core.transformations import (
     DataTransformation,
     DataValuedTransformation,
+    DataPipelineTransformation,
     IdentityTransformation,
     InvertibleTransformation,
     DataTransformationFailureMode,
 )
-from smlb.core.features import Features, IdentityFeatures
+from smlb.core.features import Features, IdentityFeatures, DataPipelineFeatures
 from smlb.core.sampling import Sampler, RandomSubsetSampler, RandomVectorSampler, GridSampler
 from smlb.core.distributions import (
     PredictiveDistribution,

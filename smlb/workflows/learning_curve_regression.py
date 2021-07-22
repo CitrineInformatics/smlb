@@ -77,7 +77,7 @@ class LearningCurveRegression(Workflow):
         training: Sequence[Sampler],
         validation: Sampler,
         learners: Sequence[SupervisedLearner],
-        features: DataValuedTransformation = IdentityFeatures(),
+        features: Features = IdentityFeatures(),
         metric: ScalarEvaluationMetric = RootMeanSquaredError(),
         evaluations: Sequence[Evaluation] = (LearningCurvePlot(),),  # todo: add table
         progressf: Optional[Callable[[int, int], None]] = None,

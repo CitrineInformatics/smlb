@@ -8,7 +8,7 @@ Features transform datasets.
 """
 
 
-from smlb import DataValuedTransformation, IdentityTransformation
+from smlb import DataValuedTransformation, IdentityTransformation, DataPipelineTransformation
 
 
 class Features(DataValuedTransformation):
@@ -21,5 +21,11 @@ class Features(DataValuedTransformation):
 
 class IdentityFeatures(Features, IdentityTransformation):
     """Leaves dataset unchanged."""
+
+    pass
+
+
+class DataPipelineFeatures(Features, DataPipelineTransformation):
+    """Applies transformation steps sequentially."""
 
     pass
