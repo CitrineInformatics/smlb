@@ -19,9 +19,17 @@ class SelectFromModelSklearn(Features):
 
     """
 
-    def __init__(self, learner: SupervisedLearner, threshold: Optional[Union[str, float]] = None, prefit: bool = False,
-                 norm_order: int = 1, max_features: Optional[int] = None,
-                 estimator_getter: Union[str, Callable] = '_model', *args, **kwargs):
+    def __init__(
+        self,
+        learner: SupervisedLearner,
+        threshold: Optional[Union[str, float]] = None,
+        prefit: bool = False,
+        norm_order: int = 1,
+        max_features: Optional[int] = None,
+        estimator_getter: Union[str, Callable] = "_model",
+        *args,
+        **kwargs
+    ):
         """Initialize State.
 
         Parameters:
@@ -70,7 +78,7 @@ class SelectFromModelSklearn(Features):
             prefit=prefit,
             norm_order=norm_order,
             max_features=max_features,
-            importance_getter='auto'
+            importance_getter="auto",
         )
 
     def fit(self, data: Data) -> "SelectFromModelSklearn":
