@@ -34,9 +34,9 @@ class PCAPrince(DataValuedTransformation, InvertibleTransformation):
         Parameters:
             rng: Random state
             rescale_with_mean: Whether to subtract each column's mean or not.
-            rescale_with_std: Whether to divide each column by it's standard deviation or not.
+            rescale_with_std: Whether to divide each column by its standard deviation or not.
             n_components: The number of principal components to compute.
-            n_iter: The number of iterations used for computing the SVD.
+            n_iter: The number of power iterations used for computing the SVD.
         """
 
         super().__init__(*args, **kwargs)
@@ -93,7 +93,7 @@ class PCAPrince(DataValuedTransformation, InvertibleTransformation):
         return TabularData(preds, data.labels())
 
     def inverse(self) -> "PCAPrince":
-        """Return inverse PCA.
+        """Return inverse PCA if this object is a forward transform, or a forward transform if this object is a reverse transform.
 
         Inverse PCA transforms from the reduced components back to the original space.
         """

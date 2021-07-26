@@ -104,7 +104,7 @@ class PCASklearn(DataValuedTransformation, InvertibleTransformation):
         """Fit the model with input ``data``.
 
         Parameters:
-            data: data to fit
+            data: data on which to compute PCA
 
         Returns:
             the instance itself
