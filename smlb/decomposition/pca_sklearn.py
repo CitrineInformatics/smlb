@@ -1,7 +1,7 @@
 from copy import deepcopy
 from typing import Optional
 
-from sklearn import decomposition
+from sklearn.decomposition import PCA
 
 from smlb import (
     DataValuedTransformation,
@@ -20,8 +20,9 @@ class PCASklearn(DataValuedTransformation, InvertibleTransformation):
     """
 
     @staticmethod
-    def nneg_int_f(arg):
-        return params.integer(arg, from_=0)
+    def __nneg_int_f(arg):
+        """Test ``arg`` is an integer that is >0."""
+        return params.integer(arg, from_=1)
 
     def __init__(
         self,
@@ -41,11 +42,10 @@ class PCASklearn(DataValuedTransformation, InvertibleTransformation):
         """
 
         super().__init__(*args, **kwargs)
-        n_components = params.optional_(n_components, self.nneg_int_f)
-        inverse_transform = params.boolean(inverse_transform)
+        n_components = params.optional_(n_components, self.__nneg_int_f)
 
-        self._inverse_transform: bool = inverse_transform
-        self._pca: decomposition.PCA = decomposition.PCA(n_components, random_state=rng)
+        self._inverse_transform: bool = params.boolean(inverse_transform)
+        self._pca: PCA = PCA(n_components, random_state=rng)
 
     def fit(self, data: Data) -> "PCASklearn":
         """Fit the model with input ``data``.

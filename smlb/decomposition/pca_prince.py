@@ -46,9 +46,8 @@ class PCAPrince(DataValuedTransformation, InvertibleTransformation):
         rescale_with_std = params.boolean(rescale_with_std)
         n_components = params.integer(n_components, from_=1)
         n_iter = params.integer(n_iter, from_=1)
-        inverse_transform = params.boolean(inverse_transform)
 
-        self._inverse_transform: bool = inverse_transform
+        self._inverse_transform: bool = params.boolean(inverse_transform)
         self._pca: prince.PCA = prince.PCA(
             rescale_with_mean=rescale_with_mean,
             rescale_with_std=rescale_with_std,
