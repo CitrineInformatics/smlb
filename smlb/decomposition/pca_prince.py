@@ -26,7 +26,6 @@ class PCAPrince(DataValuedTransformation, InvertibleTransformation):
         rescale_with_std: bool = True,
         n_components: int = 2,
         n_iter: int = 3,
-        inverse_transform: bool = False,
         *args,
         **kwargs
     ):
@@ -38,7 +37,6 @@ class PCAPrince(DataValuedTransformation, InvertibleTransformation):
             rescale_with_std: Whether to divide each column by it's standard deviation or not.
             n_components: The number of principal components to compute.
             n_iter: The number of iterations used for computing the SVD.
-            inverse_transform: Whether to perform inverse transformation. Default is ``False``
         """
 
         super().__init__(*args, **kwargs)
@@ -47,7 +45,7 @@ class PCAPrince(DataValuedTransformation, InvertibleTransformation):
         n_components = params.integer(n_components, from_=1)
         n_iter = params.integer(n_iter, from_=1)
 
-        self._inverse_transform: bool = params.boolean(inverse_transform)
+        self._inverse_transform: bool = False
         self._pca: prince.PCA = prince.PCA(
             rescale_with_mean=rescale_with_mean,
             rescale_with_std=rescale_with_std,
@@ -100,5 +98,5 @@ class PCAPrince(DataValuedTransformation, InvertibleTransformation):
         Inverse PCA transforms from the reduced components back to the original space.
         """
         copy = deepcopy(self)
-        copy._inverse_transform = not copy._inverse_transform
+        copy._inverse_transform = not self._inverse_transform
         return copy

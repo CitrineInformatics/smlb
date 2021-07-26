@@ -28,7 +28,6 @@ class PCASklearn(DataValuedTransformation, InvertibleTransformation):
         self,
         rng: Optional[int] = None,
         n_components: Optional[int] = None,
-        inverse_transform: bool = False,
         *args,
         **kwargs
     ):
@@ -38,13 +37,12 @@ class PCASklearn(DataValuedTransformation, InvertibleTransformation):
             rng: Random state
             n_components: Number of components to keep.
                           If ``None``, ``n_components == min(n_samples, n_features) - 1`` when fit.
-            inverse_transform: Whether to perform inverse transformation. Default is ``False``
         """
 
         super().__init__(*args, **kwargs)
         n_components = params.optional_(n_components, self.__nneg_int_f)
 
-        self._inverse_transform: bool = params.boolean(inverse_transform)
+        self._inverse_transform: bool = False
         self._pca: PCA = PCA(n_components, random_state=rng)
 
     def fit(self, data: Data) -> "PCASklearn":
@@ -91,5 +89,5 @@ class PCASklearn(DataValuedTransformation, InvertibleTransformation):
         Inverse PCA transforms from the reduced components back to the original space.
         """
         copy = deepcopy(self)
-        copy._inverse_transform = not copy._inverse_transform
+        copy._inverse_transform = not self._inverse_transform
         return copy
