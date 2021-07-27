@@ -113,9 +113,8 @@ class PCASklearn(DataValuedTransformation, InvertibleTransformation):
         n = data.num_samples
 
         xtrain = params.real_matrix(data.samples(), nrows=n)
-        ytrain = params.real_vector(data.labels(), dimensions=n)
 
-        self._pca.fit(xtrain, ytrain)
+        self._pca.fit(xtrain)
 
         return self
 

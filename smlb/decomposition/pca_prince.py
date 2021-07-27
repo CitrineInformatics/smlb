@@ -67,9 +67,8 @@ class PCAPrince(DataValuedTransformation, InvertibleTransformation):
         data = params.instance(data, Data)
 
         xtrain = params.real_matrix(data.samples(), nrows=data.num_samples)
-        ytrain = params.real_vector(data.labels(), dimensions=data.num_samples)
 
-        self._pca.fit(xtrain, ytrain)
+        self._pca.fit(xtrain)
 
         return self
 
