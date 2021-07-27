@@ -45,8 +45,9 @@ class SelectFromModelSklearn(Features):
                 Otherwise, "mean" is used by default.
             prefit: Whether a prefit model is expected to be passed into the constructor directly or not.
             norm_order: Order of the norm used to filter the vectors of coefficients below
-                ``threshold`` in the case where the ``coef_`` attribute of the
-                estimator is of dimension 2.
+                ``threshold`` in the case where the ``coef_`` attribute of the estimator is of dimension 2.
+                In other words, this is the order provided to ``np.linalg.norm`` to scale importances before
+                computing the threshold and selecting features.
             max_features: The maximum number of features to select.
             estimator_getter: Name of learner attribute that returns an estimator or a function that returns
                 the estimator given a learner. Default is the ``_model`` attribute.
