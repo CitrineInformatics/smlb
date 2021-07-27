@@ -26,7 +26,6 @@ class PCAPrince(DataValuedTransformation, InvertibleTransformation):
         rescale_with_std: bool = True,
         n_components: int = 2,
         n_iter: int = 3,
-        inverse_transform: bool = False,
         *args,
         **kwargs
     ):
@@ -35,10 +34,9 @@ class PCAPrince(DataValuedTransformation, InvertibleTransformation):
         Parameters:
             rng: Random state
             rescale_with_mean: Whether to subtract each column's mean or not.
-            rescale_with_std: Whether to divide each column by it's standard deviation or not.
+            rescale_with_std: Whether to divide each column by its standard deviation or not.
             n_components: The number of principal components to compute.
-            n_iter: The number of iterations used for computing the SVD.
-            inverse_transform: Whether to perform inverse transformation. Default is ``False``
+            n_iter: The number of power iterations used for computing the SVD.
         """
 
         super().__init__(*args, **kwargs)
@@ -46,9 +44,8 @@ class PCAPrince(DataValuedTransformation, InvertibleTransformation):
         rescale_with_std = params.boolean(rescale_with_std)
         n_components = params.integer(n_components, from_=1)
         n_iter = params.integer(n_iter, from_=1)
-        inverse_transform = params.boolean(inverse_transform)
 
-        self._inverse_transform: bool = inverse_transform
+        self._inverse_transform: bool = False
         self._pca: prince.PCA = prince.PCA(
             rescale_with_mean=rescale_with_mean,
             rescale_with_std=rescale_with_std,
@@ -70,9 +67,8 @@ class PCAPrince(DataValuedTransformation, InvertibleTransformation):
         data = params.instance(data, Data)
 
         xtrain = params.real_matrix(data.samples(), nrows=data.num_samples)
-        ytrain = params.real_vector(data.labels(), dimensions=data.num_samples)
 
-        self._pca.fit(xtrain, ytrain)
+        self._pca.fit(xtrain)
 
         return self
 
@@ -96,10 +92,10 @@ class PCAPrince(DataValuedTransformation, InvertibleTransformation):
         return TabularData(preds, data.labels())
 
     def inverse(self) -> "PCAPrince":
-        """Return inverse PCA.
+        """Return inverse PCA if this object is a forward transform, or a forward transform if this object is a reverse transform.
 
         Inverse PCA transforms from the reduced components back to the original space.
         """
         copy = deepcopy(self)
-        copy._inverse_transform = not copy._inverse_transform
+        copy._inverse_transform = not self._inverse_transform
         return copy
