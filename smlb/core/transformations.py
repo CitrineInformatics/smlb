@@ -103,7 +103,6 @@ class DataPipelineTransformation(DataValuedTransformation):
 
         Parameters:
             steps: List of data-valued transformations
-
         """
         super().__init__(*args, **kwargs)
         steps = params.sequence(steps, type_=DataValuedTransformation)
