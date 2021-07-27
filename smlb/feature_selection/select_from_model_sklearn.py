@@ -16,7 +16,6 @@ class SelectFromModelSklearn(Features):
 
     .. seealso::
         See `here <https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectFromModel.html#sklearn.feature_selection.SelectFromModel>`_ for full documentation.
-
     """
 
     def __init__(
@@ -51,7 +50,6 @@ class SelectFromModelSklearn(Features):
             max_features: The maximum number of features to select.
             estimator_getter: Name of learner attribute that returns an estimator or a function that returns
                 the estimator given a learner. Default is the ``_model`` attribute.
-
         """
 
         learner = params.instance(learner, SupervisedLearner)
@@ -108,7 +106,6 @@ class SelectFromModelSklearn(Features):
 
         Returns:
             data with selected features
-
         """
         data = params.instance(data, Data)
         samples = params.real_matrix(data.samples())
