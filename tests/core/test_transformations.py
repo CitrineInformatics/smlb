@@ -4,11 +4,28 @@ Scientific Machine Learning Benchmark:
 A benchmark of regression models in chem- and materials informatics.
 """
 
+import numpy as np
 import pytest
 
-import numpy as np
-
 import smlb
+from smlb.decomposition import PCASklearn
+
+
+################################
+#  DataPipelineTransformation  #
+################################
+
+
+def test_DataPipelineTransformation(friedman_1979_data):
+    n_rows = friedman_1979_data.num_samples
+    n_components = 3
+    pca = PCASklearn(rng=0, n_components=n_components)
+    identity = smlb.IdentityTransformation()
+    pipeline = smlb.DataPipelineTransformation(steps=(pca, identity))
+    pipeline.fit(friedman_1979_data)
+    transformed = pipeline.apply(friedman_1979_data)
+    assert transformed.samples().shape == (n_rows, n_components)
+
 
 ###########################
 #  InverseTransformation  #

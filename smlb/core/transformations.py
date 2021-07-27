@@ -23,15 +23,15 @@ Design decisions:
 """
 
 from abc import ABCMeta, abstractmethod
-from typing import Any
+from typing import Any, Sequence
 
 import numpy as np
 
-from smlb import Data, complement
 from smlb import BenchmarkError, InvalidParameterError
+from smlb import Data, complement
 from smlb import SmlbObject
-from smlb import params
 from smlb import is_sequence
+from smlb import params
 
 
 class DataTransformation(SmlbObject, metaclass=ABCMeta):
@@ -95,6 +95,51 @@ class DataValuedTransformation(DataTransformation):
         raise NotImplementedError
 
 
+class DataPipelineTransformation(DataValuedTransformation):
+    """Pipeline of data-valued transformations that are applied sequentially."""
+
+    def __init__(self, steps: Sequence[DataValuedTransformation], *args, **kwargs):
+        """Initialize state.
+
+        Parameters:
+            steps: List of data-valued transformations
+        """
+        super().__init__(*args, **kwargs)
+        steps = params.sequence(steps, type_=DataValuedTransformation)
+        self._steps = steps
+
+    def fit(self, data: Data) -> "DataPipelineTransformation":
+        """Fit each step.
+
+        Steps are fit sequentially and used to transform the data.
+        The transformed output of each step is used as the training data for the next step.
+
+        Parameters:
+            data: training data
+
+        Returns:
+            self, to allow chaining
+        """
+        for step in self._steps:
+            data = step.fit(data).apply(data)
+        return self
+
+    def apply(self, data: Data) -> Data:
+        """Apply each step sequentially.
+
+        The transformed output of each step is used as the training data for the next step.
+
+        Parameters:
+            data: data to transform
+
+        Returns:
+            transformed data
+        """
+        for step in self._steps:
+            data = step.apply(data)
+        return data
+
+
 class IdentityTransformation(DataValuedTransformation):
     """Returns data unchanged."""
 
@@ -149,7 +194,7 @@ class DataTransformationFailureMode:
         Parameters:
             failmode: how to handle failed descriptor calculations, either due to rejected SMILES
                 encodings or failing descriptor code. Possible values:
-                "raise" [default]: raise a Benchmarexception
+                "raise" [default]: raise a BenchmarkException
                 "drop": drop the sample. Returned Data will have fewer samples
                 ("mask", mask): where `mask` is a NumPy array with dtype bool whose entries will
                     be set to False for failures
