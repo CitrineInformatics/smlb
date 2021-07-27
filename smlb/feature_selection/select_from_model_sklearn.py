@@ -58,7 +58,7 @@ class SelectFromModelSklearn(Features):
         threshold = params.optional_(threshold, is_str_or_float)
 
         prefit = params.boolean(prefit)
-        norm_order = params.integer(norm_order)
+        norm_order = params.integer(norm_order, from_=1)
         max_features = params.optional_(max_features, params.integer)
 
         is_callable = lambda arg: params.callable(arg, num_pos_or_kw=1)
