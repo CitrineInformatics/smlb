@@ -12,7 +12,7 @@ from smlb import (
 
 
 class SelectFromModelSklearn(Features):
-    """Select features based on importance weights, scikit-learn implementation.
+    """Select features based on importance weights using the scikit-learn SelectFromModel implementation.
 
     .. seealso::
         See `here <https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectFromModel.html#sklearn.feature_selection.SelectFromModel>`_ for full documentation.
@@ -37,7 +37,7 @@ class SelectFromModelSklearn(Features):
                 ``feature_importances_`` or ``coef_`` attributes after fitting that are used for
                 feature selection.
             threshold: Threshold value to use for feature selection. Features whose
-                importance is greater or equal are kept while the others are
+                importance is greater or equal to ``threshold`` are kept while the others are
                 discarded. If "median" (resp. "mean"), then the ``threshold`` value is
                 the median (resp. the mean) of the feature importances. A scaling
                 factor (e.g., "1.25*mean") may also be used. If None and if the
