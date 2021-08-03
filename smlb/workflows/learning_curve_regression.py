@@ -147,24 +147,22 @@ class LearningCurveRegression(Workflow):
                 msg = f"Non-empty intersection between validation and training data ({i} shared samples out of {j} and {k})"
                 raise BenchmarkError(msg)
 
-        # 3) Featurization
-
-        # featurize validation and training sets
-        validation_data = self._features.fit(validation_data).apply(validation_data)
-        training_data = tuple(self._features.fit(train).apply(train) for train in training_data)
-
-        # 4) Training and prediction
+        # 3) Training and prediction
 
         # train each learner on each training set and predict validation set
         predictions = np.empty((nlearn, ntrain), dtype=PredictiveDistribution)
         for i, learner in enumerate(self._learners):
             for j, training in enumerate(training_data):
-                learner.fit(training)
-                predictions[i, j] = learner.apply(validation_data)
+                # featurize training and validation data
+                featurized_training_data = self._features.fit(training).apply(training)
+                featurized_validation_data = self._features.apply(validation_data)
+
+                learner.fit(featurized_training_data)
+                predictions[i, j] = learner.apply(featurized_validation_data)
 
                 self._progressf(i * ntrain + j + 1, ntotal)  # 1-based
 
-        # 5) Evaluate results
+        # 4) Evaluate results
 
         # compute evaluation metric for each run
         metric = np.asfarray(
