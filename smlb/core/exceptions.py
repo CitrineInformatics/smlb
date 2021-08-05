@@ -50,3 +50,20 @@ class InvalidParameterError(BenchmarkError):
 
 # InvalidParameterValue will likely not be pickleable in its current form. See here for a fix if it becomes necessary:
 # https://stackoverflow.com/questions/16244923/how-to-make-a-custom-exception-class-with-multiple-init-args-pickleable
+
+
+class NotFittedError(BenchmarkError):
+    """Raised when a learner is applied before being fit"""
+
+    def __init__(self, learner):
+        """Initialize exception.
+
+        Parameters:
+            learner: Learner that was not fit before being applied
+        """
+        learner_name = type(learner).__name__
+        message = (
+            f"This {learner_name} instance is not fitted yet. "
+            "Call 'fit' with appropriate arguments before applying this learner."
+        )
+        super().__init__(message)
