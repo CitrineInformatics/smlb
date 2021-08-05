@@ -1,5 +1,7 @@
 import numpy as np
+import pytest
 
+import smlb
 from smlb import Data
 from smlb.feature_selection import SelectFromTotalImportance
 from smlb.learners import RandomForestRegressionSklearn
@@ -74,3 +76,10 @@ def test_select_min_features(friedman_1979_data: Data):
     selector.fit(friedman_1979_data)
     selected = selector.apply(friedman_1979_data)
     assert selected.samples().shape == (friedman_1979_data.num_samples, min_features)
+
+
+def test_not_fitted(friedman_1979_data: Data):
+    learner = RandomForestRegressionSklearn(rng=0)
+    selector = SelectFromTotalImportance(learner)
+    with pytest.raises(smlb.NotFittedError):
+        selector.apply(friedman_1979_data)
