@@ -2,15 +2,11 @@ from typing import Callable
 
 from sklearn.feature_selection import SelectPercentile
 
-from smlb import (
-    params,
-    Data,
-    Features,
-    TabularData,
-)
+from smlb import params
+from smlb.feature_selection.feature_selector_sklearn import FeatureSelectorSklearn
 
 
-class SelectPercentileSklearn(Features):
+class SelectPercentileSklearn(FeatureSelectorSklearn):
     """Select features based on percentile of highest scores, scikit-learn implementation.
 
     .. seealso::
@@ -26,42 +22,5 @@ class SelectPercentileSklearn(Features):
         """
         score_func = params.callable(score_func, num_pos_or_kw=2)
         percentile = params.integer(percentile, from_=0, to=100)
-
-        super().__init__(*args, **kwargs)
-        self._select_percentile = SelectPercentile(score_func=score_func, percentile=percentile)
-
-    def fit(self, data: Data) -> "SelectPercentileSklearn":
-        """Fit the model with input ``data``.
-
-        Parameters:
-            data: data to fit
-
-        Returns:
-            the instance itself
-        """
-        data = params.instance(data, Data)
-        n = data.num_samples
-
-        xtrain = params.real_matrix(data.samples(), nrows=n)
-        ytrain = params.real_vector(data.labels(), dimensions=n)
-
-        self._select_percentile.fit(xtrain, ytrain)
-
-        return self
-
-    def apply(self, data: Data) -> TabularData:
-        """Select features from the data.
-
-        Parameters:
-            data: data to select features from
-
-        Returns:
-            data with selected features
-        """
-        data = params.instance(data, Data)
-        samples = params.real_matrix(data.samples())
-
-        support = self._select_percentile.get_support()
-        selected = samples[:, support]
-
-        return TabularData(selected, data.labels())
+        selector = SelectPercentile(score_func=score_func, percentile=percentile)
+        super().__init__(selector=selector, *args, **kwargs)

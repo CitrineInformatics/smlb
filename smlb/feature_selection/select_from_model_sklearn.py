@@ -4,14 +4,12 @@ from sklearn.feature_selection import SelectFromModel
 
 from smlb import (
     params,
-    Data,
-    Features,
     SupervisedLearner,
-    TabularData,
 )
+from smlb.feature_selection.feature_selector_sklearn import FeatureSelectorSklearn
 
 
-class SelectFromModelSklearn(Features):
+class SelectFromModelSklearn(FeatureSelectorSklearn):
     """Select features based on importance weights using the scikit-learn SelectFromModel implementation.
 
     .. seealso::
@@ -70,8 +68,7 @@ class SelectFromModelSklearn(Features):
         else:
             estimator = estimator_getter(learner)
 
-        super().__init__(*args, **kwargs)
-        self._select_from_model = SelectFromModel(
+        selector = SelectFromModel(
             estimator=estimator,
             threshold=threshold,
             prefit=prefit,
@@ -80,38 +77,4 @@ class SelectFromModelSklearn(Features):
             importance_getter="auto",
         )
 
-    def fit(self, data: Data) -> "SelectFromModelSklearn":
-        """Fit the model with input ``data``.
-
-        Parameters:
-            data: data to fit
-
-        Returns:
-            the instance itself
-        """
-        data = params.instance(data, Data)
-        n = data.num_samples
-
-        xtrain = params.real_matrix(data.samples(), nrows=n)
-        ytrain = params.real_vector(data.labels(), dimensions=n)
-
-        self._select_from_model.fit(xtrain, ytrain)
-
-        return self
-
-    def apply(self, data: Data) -> TabularData:
-        """Select features from the data.
-
-        Parameters:
-            data: data to select features from
-
-        Returns:
-            data with selected features
-        """
-        data = params.instance(data, Data)
-        samples = params.real_matrix(data.samples())
-
-        support = self._select_from_model.get_support()
-        selected = samples[:, support]
-
-        return TabularData(selected, data.labels())
+        super().__init__(selector=selector, *args, **kwargs)
