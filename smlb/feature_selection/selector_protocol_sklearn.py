@@ -1,10 +1,11 @@
 from abc import abstractmethod
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 import numpy as np
 from numpy import typing as npt
 
 
+@runtime_checkable
 class SelectorProtocolSklearn(Protocol):
     """Protocol that defines the methods expected from a scikit-learn feature selector."""
 

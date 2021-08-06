@@ -21,7 +21,9 @@ class FeatureSelectorSklearn(Features):
             selector: Feature selection method that provides ``fit`` and ``get_support`` methods.
         """
         super().__init__(*args, **kwargs)
-        self._selector: SelectorProtocolSklearn = selector
+        self._selector: SelectorProtocolSklearn = params.instance(
+            selector, SelectorProtocolSklearn
+        )
 
     def fit(self, data: Data) -> "FeatureSelectorSklearn":
         """Fit the model with input ``data``.
