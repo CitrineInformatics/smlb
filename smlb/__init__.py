@@ -5,7 +5,7 @@ A benchmark of regression models in chem- and materials informatics.
 2019-2020, Matthias Rupp, Citrine Informatics.
 """
 
-from smlb.core.exceptions import BenchmarkError, InvalidParameterError
+from smlb.core.exceptions import BenchmarkError, InvalidParameterError, NotFittedError
 from smlb.core.object import SmlbObject
 from smlb.core.utility import is_sequence, which
 from smlb.core.parameters import params
