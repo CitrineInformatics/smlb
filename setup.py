@@ -22,7 +22,7 @@ EMAIL = "mrupp@mrupp.io"
 AUTHOR = "Matthias Rupp"
 LICENSE = "Apache-2.0"  # SPDX short identifier
 LICENSE_TROVE = "License :: OSI Approved :: Apache Software License"  # https://pypi.python.org/pypi?%3Aaction=list_classifiers
-REQUIRES_PYTHON = ">=3.7.0"
+REQUIRES_PYTHON = ">=3.8.0"
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -79,7 +79,6 @@ setuptools.setup(
         LICENSE_TROVE,
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
     ],

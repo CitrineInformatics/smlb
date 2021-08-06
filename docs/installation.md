@@ -25,7 +25,7 @@ To run the interactive notebooks provided with `smlb`, such as the tutorial, ins
 Creating a virtual environment helps in developing and testing with different versions of packages. A popular tool is [Anaconda](https://www.anaconda.com/); for this, run below before installing `smlb`:
 
 ```
-conda create --name <environment name> python=3.7 numpy scipy pandas jupyterlab scikit-learn
+conda create --name <environment name> python=3.8 numpy scipy pandas jupyterlab scikit-learn
 conda install -c conda-forge matplotlib
 conda activate <environment name>
 ```
