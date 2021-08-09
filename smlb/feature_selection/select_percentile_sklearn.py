@@ -10,7 +10,7 @@ class SelectPercentileSklearn(FeatureSelectorSklearn):
     """Select features based on percentile of highest scores, scikit-learn implementation.
 
     .. seealso::
-        See `here <https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectPercentile.html#sklearn.feature_selection.SelectPercentile`_ for full documentation.
+        See `here <https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectPercentile.html#sklearn.feature_selection.SelectPercentile>`_ for full documentation.
     """
 
     def __init__(self, score_func: Callable, percentile: int = 10, *args, **kwargs):

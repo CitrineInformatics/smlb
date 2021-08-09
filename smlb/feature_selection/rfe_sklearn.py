@@ -14,7 +14,7 @@ class RFESklearn(FeatureSelectorSklearn):
     """Select features by recursive feature elimination, scikit-learn implementation.
 
     .. seealso::
-        See `here <https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html#sklearn.feature_selection.RFE`_ for full documentation.
+        See `here <https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.RFE.html#sklearn.feature_selection.RFE>`_ for full documentation.
     """
 
     def __init__(
