@@ -15,7 +15,7 @@ import setuptools
 
 # Package meta-data.
 NAME = "smlb"
-VERSION = "0.9.0"
+VERSION = "0.9.1"
 DESCRIPTION = "Scientific Machine Learning Benchmark"
 URL = "https://github.com/CitrineInformatics/smlb"
 EMAIL = "mrupp@mrupp.io"

@@ -54,13 +54,14 @@ class RFESklearn(FeatureSelectorSklearn):
         # will cast the argument to an int when it tests is_nneg_int.
         # If you give it a float on the range (0.0, 1.0), you'll be left with
         # n_features == 0 after the conversion instead of the expected fraction of features.
-        if isinstance(n_features_to_select, int):
-            n_features_to_select = params.optional_(n_features_to_select, is_nneg_int)
+        if n_features_to_select is None:
+            pass  # None is allowed, no need for further type checking
+        elif isinstance(n_features_to_select, int):
+            n_features_to_select = is_nneg_int(n_features_to_select)
         elif isinstance(n_features_to_select, float):
-            is_valid_n_features_real = lambda x: params.real(x, above=0, to=1.0)
-            n_features_to_select = params.optional_(n_features_to_select, is_valid_n_features_real)
+            n_features_to_select = params.real(n_features_to_select, above=0, to=1.0)
         else:
-            raise InvalidParameterError("integer or float", n_features_to_select)
+            raise InvalidParameterError("optional integer or float", n_features_to_select)
 
         is_valid_step_int = lambda x: params.integer(x, from_=1)
         is_valid_step_real = lambda x: params.real(x, above=0.0, below=1.0)
