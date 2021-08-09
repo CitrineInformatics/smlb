@@ -48,18 +48,17 @@ class RFESklearn(FeatureSelectorSklearn):
 
         learner = params.instance(learner, SupervisedLearner)
 
-        is_nneg_int = lambda x: params.integer(x, from_=0)
-
         # We need to differentiate between int and float here because params
-        # will cast the argument to an int when it tests is_nneg_int.
-        # If you give it a float on the range (0.0, 1.0), you'll be left with
-        # n_features == 0 after the conversion instead of the expected fraction of features.
+        # will cast the argument to an int when it tests the parameter.
+        # 1 is a valid int and float but has a different meaning based on type.
+        # If it's an int, it means select 1 feature.
+        # If it's a float, it means select all features.
         if n_features_to_select is None:
             pass  # None is allowed, no need for further type checking
         elif isinstance(n_features_to_select, int):
-            n_features_to_select = is_nneg_int(n_features_to_select)
+            n_features_to_select = params.integer(n_features_to_select, from_=1)
         elif isinstance(n_features_to_select, float):
-            n_features_to_select = params.real(n_features_to_select, above=0, to=1.0)
+            n_features_to_select = params.real(n_features_to_select, above=0.0, to=1.0)
         else:
             raise InvalidParameterError("optional integer or float", n_features_to_select)
 
@@ -67,7 +66,7 @@ class RFESklearn(FeatureSelectorSklearn):
         is_valid_step_real = lambda x: params.real(x, above=0.0, below=1.0)
         step = params.any_(step, is_valid_step_int, is_valid_step_real)
 
-        verbose = is_nneg_int(verbose)
+        verbose = params.integer(verbose, from_=0)
 
         is_callable = lambda arg: params.callable(arg, num_pos_or_kw=1)
         estimator_getter = params.any_(estimator_getter, params.string, is_callable)
