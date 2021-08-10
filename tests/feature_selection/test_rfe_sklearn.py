@@ -3,19 +3,14 @@ from smlb.feature_selection import RFESklearn
 from smlb.learners import RandomForestRegressionSklearn
 
 
-def test_transform_default_getter(friedman_1979_data: Data):
+def test_transform_default_init(friedman_1979_data: Data):
     learner = RandomForestRegressionSklearn(rng=0)
-    n_features_to_select = 4
-    step = 2  # remove 2 features at a time
 
-    select_from_model = RFESklearn(
-        learner=learner,
-        n_features_to_select=n_features_to_select,
-        step=step
-    )
+    select_from_model = RFESklearn(learner=learner)
     select_from_model.fit(friedman_1979_data)
     selected = select_from_model.apply(friedman_1979_data)
-    assert selected.samples().shape == (friedman_1979_data.num_samples, n_features_to_select)
+    # by default rfe will select total # of features // 2 (== 2 for friedman data)
+    assert selected.samples().shape == (friedman_1979_data.num_samples, 2)
 
 
 def test_transform_callable_getter(friedman_1979_data: Data):
