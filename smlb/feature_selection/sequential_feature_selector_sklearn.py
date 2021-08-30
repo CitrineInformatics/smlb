@@ -18,16 +18,16 @@ class SequentialFeatureSelectorSklearn(FeatureSelectorSklearn):
     """
 
     def __init__(
-            self,
-            learner: SupervisedLearner,
-            n_features_to_select: Optional[Union[int, float]] = None,
-            direction: str = 'forward',
-            scoring: Optional[Union[str, Callable]] = None,
-            cv: Optional[int] = None,
-            n_jobs: Optional[int] = None,
-            estimator_getter: Union[str, Callable] = "_model",
-            *args,
-            **kwargs
+        self,
+        learner: SupervisedLearner,
+        n_features_to_select: Optional[Union[int, float]] = None,
+        direction: str = "forward",
+        scoring: Optional[Union[str, Callable]] = None,
+        cv: Optional[int] = None,
+        n_jobs: Optional[int] = None,
+        estimator_getter: Union[str, Callable] = "_model",
+        *args,
+        **kwargs
     ):
         """Initialize State.
 
@@ -71,7 +71,7 @@ class SequentialFeatureSelectorSklearn(FeatureSelectorSklearn):
         else:
             raise InvalidParameterError("optional integer or float", n_features_to_select)
 
-        direction = params.enumeration(direction, {'forward', 'backward'})
+        direction = params.enumeration(direction, {"forward", "backward"})
 
         is_callable_scorer = lambda x: params.callable(x, num_pos_or_kw=4)
         is_str_or_callable = lambda x: params.any_(x, params.string, is_callable_scorer)
@@ -100,7 +100,7 @@ class SequentialFeatureSelectorSklearn(FeatureSelectorSklearn):
             direction=direction,
             scoring=scoring,
             cv=cv,
-            n_jobs=n_jobs
+            n_jobs=n_jobs,
         )
 
         super().__init__(selector=selector, *args, **kwargs)
