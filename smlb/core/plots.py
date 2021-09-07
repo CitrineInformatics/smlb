@@ -18,7 +18,7 @@ An implementation enabling different plotting backends was put on hold
 due to increased complexity (pull request #22).
 """
 
-from typing import Optional, Union, List
+from typing import Optional, Union, List, Sequence, Dict, Any
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -28,6 +28,7 @@ from smlb import BenchmarkError, InvalidParameterError
 from smlb import is_sequence
 from smlb import params
 from smlb import Evaluation, EvaluationConfiguration
+
 
 # todo: A possible optimization is to not re-render Plots upon successive calls to render().
 #       Example: rendering to several different file formats.
@@ -43,6 +44,8 @@ class PlotConfiguration(EvaluationConfiguration):
     Provides backend-independent basic settings:
     * font sizes
     * color sets
+
+    Backend-dependent settings can be specified using ``plot_options``.
     """
 
     # Color sets
@@ -87,12 +90,19 @@ class PlotConfiguration(EvaluationConfiguration):
         ),
     }
 
-    def __init__(self, font_size: int = 11, color_set: int = 1, **kwargs):
+    def __init__(
+        self,
+        font_size: int = 11,
+        color_set: int = 1,
+        plot_options: Optional[Sequence[Dict[str, Any]]] = None,
+        **kwargs,
+    ):
         """Initialize plot configuration.
 
         Parameters:
             font_size: base font size in absolute points
             color_set: color scheme
+            plot_options: optional sequence of cyclic plot options provided to the backend plotting library
         """
 
         super().__init__(**kwargs)
@@ -101,6 +111,8 @@ class PlotConfiguration(EvaluationConfiguration):
         self._color_set = self.PREDEFINED_COLORSETS[
             params.integer(color_set, from_=0, below=len(self.PREDEFINED_COLORSETS))
         ]
+        is_seq = lambda x: params.sequence(plot_options, type_=dict)
+        self._plot_options = params.optional_(plot_options, is_seq)
 
     @property
     def font_size(self):
@@ -135,6 +147,35 @@ class PlotConfiguration(EvaluationConfiguration):
         i = params.integer(i, from_=0, below=len(self._color_set))
 
         return self._color_set[i]
+
+    @property
+    def plot_options(self) -> Optional[Sequence[Dict[str, Any]]]:
+        """Query additional options used when plotting data.
+
+        Returns:
+            Optional sequence of dictionaries.
+        """
+        return self._plot_options
+
+    def options(self, i: int) -> Dict[str, Any]:
+        """Query additional plot options for the given index.
+
+        Options cycle to allow repeated use of settings without the need to create identical entries for each unique color.
+
+        Parameters:
+            i: index of queried options
+
+        Returns:
+            Dictionary of keyword arguments used to customize appearance.
+            These options are provided to the backend plotting library directly and allow you to customize aspects
+            of the plot not covered by backend-independent configuration settings.
+            If no options were specified for the given index, an empty dictionary is returned.
+        """
+        if self._plot_options is None:
+            return dict()
+
+        idx = i % len(self._plot_options)
+        return self._plot_options[idx]
 
 
 class Plot(Evaluation):
@@ -367,61 +408,57 @@ class Plot(Evaluation):
         if scales[1] is not None:
             self.ax.set_yscale(scales[1], **kwargs)
 
-    def points(self, points, color=0, **kwargs):
+    def points(self, points, config_idx=0, **kwargs):
         """Draw set of points.
 
         Parameters:
             points: n x 2 matrix of n points in two dimensions
-            color: color index
+            config_idx: plot configuration index
         """
 
         points = params.real_matrix(points, ncols=2)
-        color = params.integer(color, from_=0, below=len(self.configuration.color_set))
-
-        self.ax.plot(
-            points[:, 0],
-            points[:, 1],
-            linestyle="",
+        config_idx = params.integer(config_idx, from_=0, below=len(self.configuration.color_set))
+        default_options = dict(
             marker="o",
-            color=self.configuration.color(color),
-            **kwargs,
+            color=self.configuration.color(config_idx),
         )
 
-    def line(self, line, color=0, **kwargs):
+        plot_options = self._combine_plot_options(default_options, config_idx, **kwargs)
+        plot_options["linestyle"] = ""
+        self.ax.plot(points[:, 0], points[:, 1], **plot_options)
+
+    def line(self, line, config_idx=0, **kwargs):
         """Draw a line.
 
         Parameters:
             line: n x 2 matrix of n points in two dimensions
-            color: color index
+            config_idx: configuration index
         """
 
         line = params.real_matrix(line, ncols=2)
-        color = params.integer(color, from_=0, below=len(self.configuration.color_set))
+        config_idx = params.integer(config_idx, from_=0, below=len(self.configuration.color_set))
+        default_options = dict(linestyle="-", color=self.configuration.color(config_idx))
+        plot_options = self._combine_plot_options(default_options, config_idx, **kwargs)
+        plot_options["marker"] = ""
+        self.ax.plot(line[:, 0], line[:, 1], **plot_options)
 
-        self.ax.plot(
-            line[:, 0], line[:, 1], linestyle="-", color=self.configuration.color(color), **kwargs
-        )
-
-    def box_whisker(self, positions, values, color=0, widths=0.5, **kwargs):
+    def box_whisker(self, positions, values, config_idx=0, widths=0.5, **kwargs):
         """Draw box-whisker plots.
 
         Parameter:
             positions: where to place plots on horizontal axis
             values: samples for each location
-            color: color index
+            color: configuration index
             widths: widths of boxes
         """
 
         positions = params.real_vector(positions)
-        point_set_f = lambda arg: params.real_vector(arg)
         values = params.tuple_(values, params.real_vector, arity=len(positions))
-        color = params.integer(color, from_=0, below=len(self.configuration.color_set))
+        config_idx = params.integer(config_idx, from_=0, below=len(self.configuration.color_set))
         widths = params.real_vector(widths, dimensions=len(positions), domain=(0, 999))
 
-        color = self.configuration.color(color)
-
-        self.ax.boxplot(
-            values,
+        color = self.configuration.color(config_idx)
+        default_options = dict(
             positions=positions,
             whis=(0, 100),
             bootstrap=None,
@@ -434,14 +471,15 @@ class Plot(Evaluation):
             meanprops={"marker": "*", "markerfacecolor": color, "markeredgecolor": color},
             medianprops={"color": color},
             manage_ticks=False,
-            **kwargs,
         )
+        plot_options = self._combine_plot_options(default_options, config_idx, **kwargs)
+        self.ax.boxplot(values, **plot_options)
 
     def shaded_line(
         self,
         positions: np.ndarray,
         values: List[np.ndarray],
-        color_idx: int = 0,
+        config_idx: int = 0,
         label: Optional[str] = None,
         quantile_width: float = 0.5,
         alpha: float = 0.2,
@@ -454,7 +492,7 @@ class Plot(Evaluation):
             positions: 1-d array of point locations on the horizontal axis
             values: list of arrays, each one containing all of the values at a given location.
                 len(values) must equal len(positions)
-            color_idx: color index
+            config_idx: configuration index
             label: line label
             quantile_width: fraction of the range to shade. For the default value, 0.5,
                 shade from the 25th percentile to the 75th percentile.
@@ -463,11 +501,11 @@ class Plot(Evaluation):
         """
         positions = params.real_vector(positions)
         values = params.tuple_(values, params.real_vector, arity=len(positions))
-        color_idx = params.integer(color_idx, from_=0, below=len(self.configuration.color_set))
+        config_idx = params.integer(config_idx, from_=0, below=len(self.configuration.color_set))
         quantile_width = params.real(quantile_width, from_=0, to=1)
         alpha = params.real(alpha, from_=0, to=1)
 
-        color = self.configuration.color(color_idx)
+        color = self.configuration.color(config_idx)
         lower_bound = 0.5 - quantile_width / 2.0
         upper_bound = 0.5 + quantile_width / 2.0
 
@@ -475,7 +513,10 @@ class Plot(Evaluation):
         lower_shading = [np.quantile(samples, lower_bound) for samples in values]
         upper_shading = [np.quantile(samples, upper_bound) for samples in values]
 
-        self.ax.plot(positions, median, linestyle="-", color=color, label=label, **kwargs)
+        default_plot_options = dict(linestyle="-", color=color, label=label)
+        plot_options = self._combine_plot_options(default_plot_options, config_idx, **kwargs)
+        self.ax.plot(positions, median, **plot_options)
+
         self.ax.fill_between(
             positions,
             lower_shading,
@@ -490,6 +531,17 @@ class Plot(Evaluation):
             max_val = [np.max(samples) for samples in values]
             self.ax.plot(positions, min_val, linestyle="--", color=color, **kwargs)
             self.ax.plot(positions, max_val, linestyle="--", color=color, **kwargs)
+
+    def _combine_plot_options(self, default_options: Dict[str, Any], config_idx: int, **kwargs):
+        """Combines plot options from multiple sources.
+
+        This method combines default options set internally based on plot type, additional options set by
+        the stored evaluation configuration, and any keyword arguments passed into the method.
+
+        In case of key collisions, default options are overridden by configuration options, and configuration options
+        are overridden by options passed into the method directly.
+        """
+        return {**default_options, **self.configuration.options(config_idx), **kwargs}
 
 
 class GeneralizedFunctionPlot(Plot):
@@ -691,9 +743,9 @@ class GeneralizedFunctionPlot(Plot):
         for (i, pd) in enumerate(self._plotdata):
             # point markers, every single point is drawn
             if self._visualization_type[i] == "points":
-                self.points(pd, color=i)
+                self.points(pd, config_idx=i)
             elif self._visualization_type[i] == "box-whisker":
-                self.box_whisker(pd[0], pd[1], color=i, widths=pd[2])
+                self.box_whisker(pd[0], pd[1], config_idx=i, widths=pd[2])
             else:
                 raise BenchmarkError("internal error, unknown visualization type")
 
@@ -863,7 +915,7 @@ class LearningCurvePlot(GeneralizedFunctionPlot):
         super()._render(target=target, **kwargs)
 
         for (i, linedata) in enumerate(self._fit_data):
-            self.line(np.transpose(linedata), color=i)
+            self.line(np.transpose(linedata), config_idx=i)
 
 
 # todo: add export of plots to ASCII art
@@ -939,7 +991,7 @@ class OptimizationTrajectoryPlot(GeneralizedFunctionPlot):
             self.shaded_line(
                 pd[0],
                 pd[1],
-                color_idx=i,
+                config_idx=i,
                 label=label,
                 quantile_width=self._quantile_width,
                 show_extrema=self._show_extrema,
