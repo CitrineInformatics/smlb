@@ -1,5 +1,3 @@
-from typing import Optional
-
 from sklearn.linear_model import Lasso
 
 from smlb import (
@@ -20,6 +18,7 @@ class LassoSklearn(SupervisedLearner, Random):
 
     def __init__(
         self,
+        rng: int = None,
         alpha: float = 1.0,
         *,
         fit_intercept: bool = True,
@@ -30,13 +29,17 @@ class LassoSklearn(SupervisedLearner, Random):
         tol: float = 1e-4,
         warm_start: bool = False,
         positive: bool = False,
-        rng: Optional[int] = None,
         selection: str = "cyclic",
         **kwargs,
     ):
         """Initialize state.
 
         Parameters:
+            rng : Seed of the pseudo random number generator that selects a random
+                feature to update.
+                Used when ``selection`` == 'random'.
+                Pass an int for reproducible output across multiple function calls.
+                Default is None.
             alpha : Constant that multiplies the L1 term. Defaults to 1.0.
                 ``alpha = 0`` is equivalent to an ordinary least square. For numerical
                 reasons, using ``alpha = 0`` with the ``Lasso`` object is not advised.
@@ -68,11 +71,6 @@ class LassoSklearn(SupervisedLearner, Random):
                 Default is False.
             positive : When set to ``True``, forces the coefficients to be positive.
                 Default is False.
-            rng : Optional seed of the pseudo random number generator that selects a random
-                feature to update.
-                Used when ``selection`` == 'random'.
-                Pass an int for reproducible output across multiple function calls.
-                Default is None.
             selection : Either ``'cyclic'`` or ``'random'``.
                 If set to ``'random'``, a random coefficient is updated every iteration
                 rather than looping over features sequentially by default.
