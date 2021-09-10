@@ -1,5 +1,6 @@
 from smlb.learners.identity_learner import IdentityLearner
 from smlb.learners.lolo.random_forest_regression_lolo import RandomForestRegressionLolo
+from smlb.learners.scikit_learn.lasso_sklearn import LassoSklearn
 from smlb.learners.scikit_learn.random_forest_regression_sklearn import (
     RandomForestRegressionSklearn,
 )
