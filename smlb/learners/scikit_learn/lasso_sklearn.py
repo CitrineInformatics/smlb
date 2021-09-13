@@ -81,7 +81,7 @@ class LassoSklearn(SupervisedLearner, Random):
         super().__init__(rng=rng, **kwargs)
 
         self._model = Lasso(
-            alpha=params.real(alpha, from_=0, to=1),
+            alpha=params.real(alpha, from_=0),
             fit_intercept=params.boolean(fit_intercept),
             normalize=params.boolean(normalize),
             precompute=params.boolean(precompute),
