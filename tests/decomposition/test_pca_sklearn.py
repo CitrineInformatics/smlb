@@ -27,13 +27,14 @@ def test_inverse_transform(friedman_1979_data: Data):
 
 
 def test_non_default_initialization():
-    svd_solver = 'randomized'
+    svd_solver = 'full'
     tol = 1.0
     iterated_power = 0
     pca = PCASklearn(
-        svd_solver='randomized',
-        tol=1.0,
-        iterated_power=0
+        n_components='mle',
+        svd_solver=svd_solver,
+        tol=tol,
+        iterated_power=iterated_power
     )
 
     assert pca._pca.svd_solver == svd_solver
