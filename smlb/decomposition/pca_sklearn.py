@@ -9,6 +9,7 @@ from smlb import (
     Data,
     TabularData,
     params,
+    InvalidParameterError,
 )
 
 
@@ -37,7 +38,7 @@ class PCASklearn(DataValuedTransformation, InvertibleTransformation):
     def __init__(
         self,
         rng: Optional[int] = None,
-        n_components: Optional[int] = None,
+        n_components: Optional[Union[int, float, str]] = None,
         whiten: bool = False,
         svd_solver: str = "auto",
         tol: float = 0.0,
@@ -50,7 +51,18 @@ class PCASklearn(DataValuedTransformation, InvertibleTransformation):
         Parameters:
             rng: Random state
             n_components: Number of components to keep.
-                If ``None``, ``n_components == min(n_samples, n_features) - 1`` when fit.
+                If ``n_components`` is not set all components are kept: ``n_components == min(n_samples, n_features)``
+                If ``n_components == 'mle'`` and ``svd_solver == 'full'``, Minka's
+                MLE is used to guess the dimension. Use of ``n_components == 'mle'``
+                will interpret ``svd_solver == 'auto'`` as ``svd_solver == 'full'``.
+
+                If ``0 < n_components < 1`` and ``svd_solver == 'full'``, select the
+                number of components such that the amount of variance that needs to be
+                explained is greater than the percentage specified by n_components.
+
+                If ``svd_solver == 'arpack'``, the number of components must be
+                strictly less than the minimum of n_features and n_samples.
+                Hence, the None case results in ``n_components == min(n_samples, n_features) - 1``
             whiten : When True (False by default) the ``components_`` vectors are multiplied
                 by the square root of n_samples and then divided by the singular values
                 to ensure uncorrelated outputs with unit component-wise variances.
@@ -82,7 +94,18 @@ class PCASklearn(DataValuedTransformation, InvertibleTransformation):
         """
 
         super().__init__(*args, **kwargs)
-        n_components = params.optional_(n_components, self.__int_gt_0_f)
+
+        if n_components is None:
+            pass  # None is allowed, no need for further type checking
+        elif isinstance(n_components, int):
+            n_components = self.__int_gt_0_f(n_components)
+        elif isinstance(n_components, float):
+            n_components = params.real(n_components, from_=0.0, to=1.0)
+        elif isinstance(n_components, str):
+            n_components = params.enumeration(n_components, {"mle"})
+        else:
+            raise InvalidParameterError("optional integer, float, or string", n_components)
+
         whiten = params.optional_(whiten, params.boolean)
         svd_solver = params.enumeration(
             svd_solver, values=("auto", "full", "arpack", "randomized")
