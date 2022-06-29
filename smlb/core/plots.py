@@ -802,7 +802,7 @@ class LearningCurvePlot(GeneralizedFunctionPlot):
 
         # variance of the fit
         residuals = y - (offset + slope * self._logf(n))
-        variance = np.mean(np.asfarray(residuals ** 2))
+        variance = np.mean(np.asfarray(residuals**2))
 
         return offset, slope, residuals, variance
 
