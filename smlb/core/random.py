@@ -35,7 +35,7 @@ class PseudoRandomNumberGenerator:
             seed: key to initialize pseudo-random number generator
         """
 
-        seed = params.integer(seed, from_=0, to=2 ** 32 - 1)
+        seed = params.integer(seed, from_=0, to=2**32 - 1)
         self._random = np.random.RandomState(seed=seed)
 
     def split(self, num=2):
@@ -48,7 +48,7 @@ class PseudoRandomNumberGenerator:
             num pseudo-random number generator keys
         """
 
-        return self._random.randint(low=1, high=2 ** 32, size=num)
+        return self._random.randint(low=1, high=2**32, size=num)
 
     def __getattr__(self, name):
         """Forward method calls to underlying pseudo-random number generator.
@@ -104,7 +104,7 @@ class Random(SmlbObject):
             raise InvalidParameterError(
                 "rng seed", "nothing", "pseudo-random number generator seed must be specified"
             )
-        rng = params.integer(rng, from_=0, to=2 ** 32 - 1)
+        rng = params.integer(rng, from_=0, to=2**32 - 1)
         self._random = PseudoRandomNumberGenerator(seed=rng)
 
     @property

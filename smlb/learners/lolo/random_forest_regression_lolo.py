@@ -44,7 +44,7 @@ class RandomForestRegressionLolo(SupervisedLearner):
         leaf_learner: Optional[BaseLoloLearner] = None,
         subset_strategy: Union[str, int, float] = "auto",
         min_leaf_instances: int = 1,
-        max_depth: int = 2 ** 30,
+        max_depth: int = 2**30,
         uncertainty_calibration: bool = False,
         randomize_pivot_location: bool = False,
         # randomly_rotate_features: bool = False, currently in develop branch

@@ -206,7 +206,7 @@ class GridSampler(Sampler, Random):
         # return int( k.to_integral_exact(rounding=decimal.ROUND_CEILING) )
 
         k = int(np.floor(np.power(float(n), 1.0 / d)))
-        return k if k ** d >= n else k + 1
+        return k if k**d >= n else k + 1
 
     def full_grid(self, data: VectorSpaceData, samples_per_dim: int, domain=None):
         """Full multi-dimensional evenly-spaced grid.
