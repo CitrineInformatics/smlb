@@ -46,12 +46,12 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner, Random):
         self,
         rng: int = None,
         uncertainties: Optional[str] = None,
-        loss: str = "ls",
+        loss: str = "squared_error",
         alpha: float = 0.9,
         learning_rate: float = 0.1,
         subsample: float = 1.0,
         n_estimators: int = 100,
-        criterion: str = "mse",
+        criterion: str = "squared_error",
         max_depth: int = 3,
         min_samples_split: Union[int, float] = 2,
         min_samples_leaf: Union[int, float] = 1,
@@ -59,7 +59,6 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner, Random):
         max_features: Union[int, float, str, None] = None,
         max_leaf_nodes: Optional[int] = None,
         min_impurity_decrease: float = 0.0,
-        # min_impurity_split deprecated
         ccp_alpha: float = 0.0,
         init: Optional[Any] = None,
         validation_fraction: float = 0.1,
@@ -74,15 +73,14 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner, Random):
         Parameters:
             uncertainties: whether and how to compute predictive uncertainties; possible choices are
                 None; by default, RandomForestRegressor does not return any predictive uncertainties;
-            loss: loss function to optimize; valid values are "ls" (least squares), "lad" (least absolute deviation),
+            loss: loss function to optimize; valid values are "squared_error", "absolute_error",
                 "huber" (Huber's loss), "quantile" (quantile regression). Use alpha parameter for huber and quantile.
             alpha: quantile for "huber" and "quantile" loss functions
             learning_rate: value by which to shrink contribution of consecutive trees; trade-off with num_estimators
             subsample: fraction of samples for fitting base learners; if <1 results in Stochastic Gradient Boosting.
                 reducing subsample reduces variance and increases bias.
             n_estimators: number of decision trees
-            criterion: either Friedman improved score ("friedman_rmse"), variance reduction ("mse", mean squared error),
-                or, mean absolute error ("mae")
+            criterion: either Friedman improved score ("friedman_mse") or variance reduction ("squared_error")
             max_depth: maximum depth of a tree; default is 3
             min_samples_split: minimum number of samples required to split an internal node;
                 float numbers indicate a fraction of number of training samples
@@ -91,7 +89,7 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner, Random):
             min_weight_fraction_leaf: minimum weighted fraction of weights required in a leaf node
             max_features: number of features considered when splitting; integers directly specify the number,
                 floating point values specify which fraction of all features to use;
-                "auto" uses all features, "sqrt" and "log2" use square root and binary logarithm of number of features
+                "sqrt" and "log2" use square root and binary logarithm of number of features
             max_leaf_nodes: maximum number of leaves a tree can have
             min_impurity_decrease: minimum impurity decrease required for splitting
             random_state: pseudo-random number generator seed
@@ -112,12 +110,12 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner, Random):
 
         self._uncertainties = params.enumeration(uncertainties, {None})
 
-        loss = params.enumeration(loss, {"ls", "lad", "huber", "quantile"})
+        loss = params.enumeration(loss, {"squared_error", "absolute_error", "huber", "quantile"})
         alpha = params.real(alpha, above=0, below=1)
         learning_rate = params.real(learning_rate, above=0, to=1)
         subsample = params.real(subsample, above=0, to=1)
         n_estimators = params.integer(n_estimators, from_=1)
-        criterion = params.enumeration(criterion, {"friedman_rmse", "mse", "mae"})
+        criterion = params.enumeration(criterion, {"friedman_mse", "squared_error"})
         max_depth = params.any_(max_depth, lambda arg: params.integer(arg, from_=1), params.none)
         min_samples_split = params.any_(
             min_samples_split,
@@ -134,7 +132,7 @@ class GradientBoostedTreesRegressionSklearn(SupervisedLearner, Random):
             max_features,
             lambda arg: params.integer(arg, above=0),
             lambda arg: params.real(arg, above=0.0, to=1.0),
-            lambda arg: params.enumeration(arg, {"auto", "sqrt", "log2"}),
+            lambda arg: params.enumeration(arg, {"sqrt", "log2"}),
             params.none,
         )
         max_leaf_nodes = params.any_(

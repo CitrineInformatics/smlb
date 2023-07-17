@@ -133,7 +133,6 @@ class BandGapsStrehlowCook1973Dataset(smlb.TabularData):
         ignored_conditions = ("Transition", "Electric field polarization")
 
         for prop in e["properties"]:
-
             # crystallinity
             if prop["name"] == "Crystallinity":
                 assert crystallinity == self.CRYSTALLINITY_NONE
@@ -290,9 +289,12 @@ class BandGapsStrehlowCook1973Dataset(smlb.TabularData):
 
         # split out band_gap as labels
         labels = [labelf(e["band_gap"]) for e in data]
+        labels_dtype = None if join is False else object
         for i in range(len(data)):
             del data[i]["band_gap"]
             data[i] = samplef(data[i])
 
         # initialize state
-        super().__init__(data=np.array(data), labels=np.array(labels), **kwargs)
+        super().__init__(
+            data=np.array(data), labels=np.array(labels, dtype=labels_dtype), **kwargs
+        )

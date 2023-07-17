@@ -38,12 +38,12 @@ def test_GaussianProcessRegressionSklearn_2():
 
     kernel = skl.gaussian_process.kernels.DotProduct(
         sigma_0=0, sigma_0_bounds="fixed"
-    ) + skl.gaussian_process.kernels.WhiteKernel(noise_level=0.1, noise_level_bounds=(1e-5, 1e-5))
+    ) + skl.gaussian_process.kernels.WhiteKernel(noise_level=0.1, noise_level_bounds=(1e-5, 1))
     gpr = GaussianProcessRegressionSklearn(kernel=kernel, rng=1)
     n = 100
-    train_data = smlb.TabularData(
-        data=np.ones(shape=(n, 1)) * 2, labels=np.ones(shape=n) * 3
-    )
+    data = np.reshape(np.linspace(start=1, stop=n, num=n) * 2, (n, 1))
+    labels = np.linspace(start=1, stop=n, num=n) * 3
+    train_data = smlb.TabularData(data=data, labels=labels)
     valid_data = smlb.TabularData(data=train_data.samples())
     preds = gpr.fit(train_data).apply(valid_data)
 

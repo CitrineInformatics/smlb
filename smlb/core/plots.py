@@ -645,7 +645,7 @@ class GeneralizedFunctionPlot(Plot):
         # determine positions
         self._plotdata = [None] * len(results)
         deltas = self.RECTIFY_DELTAS[len(results)] if self._rectify else np.zeros(len(results))
-        for (i, curve) in enumerate(results):
+        for i, curve in enumerate(results):
             # point markers, every single point is drawn
             if self._visualization_type[i] == "points":
                 positions = powf(
@@ -688,7 +688,7 @@ class GeneralizedFunctionPlot(Plot):
         """
 
         # draw curves
-        for (i, pd) in enumerate(self._plotdata):
+        for i, pd in enumerate(self._plotdata):
             # point markers, every single point is drawn
             if self._visualization_type[i] == "points":
                 self.points(pd, color=i)
@@ -862,7 +862,7 @@ class LearningCurvePlot(GeneralizedFunctionPlot):
 
         super()._render(target=target, **kwargs)
 
-        for (i, linedata) in enumerate(self._fit_data):
+        for i, linedata in enumerate(self._fit_data):
             self.line(np.transpose(linedata), color=i)
 
 

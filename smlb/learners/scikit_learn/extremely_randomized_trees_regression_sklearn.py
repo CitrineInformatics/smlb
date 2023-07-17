@@ -46,12 +46,12 @@ class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner, Random):
         rng: int = None,
         uncertainties: Optional[str] = None,
         n_estimators: int = 100,
-        criterion: str = "mse",
+        criterion: str = "squared_error",
         max_depth: Optional[int] = None,
         min_samples_split: Union[int, float] = 2,
         min_samples_leaf: Union[int, float] = 1,
         min_weight_fraction_leaf: float = 0.0,
-        max_features: Union[int, float, str, None] = "auto",
+        max_features: Union[int, float, str, None] = 1.0,
         max_leaf_nodes: Optional[int] = None,
         min_impurity_decrease: float = 0.0,
         # min_impurity_split deprecated
@@ -70,7 +70,7 @@ class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner, Random):
                 None; by default, RandomForestRegressor does not return predictive uncertainties;
                 "naive"; uses the ensembles standard deviation
             n_estimators: number of decision trees
-            criterion: either variance reduction ("mse", mean squared error), or, mean absolute error ("mae")
+            criterion: either variance reduction ("squared_error"), or mean absolute error ("absolute_error")
             max_depth: maximum depth of a tree; default is restricted only by min_samples_leaf
             min_samples_split: minimum number of samples required to split an internal node;
                 float numbers indicate a fraction of number of training samples
@@ -79,7 +79,7 @@ class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner, Random):
             min_weight_fraction_leaf: minimum weighted fraction of weights required in a leaf node
             max_features: number of features considered when splitting; integers directly specify the number,
                 floating point values specify which fraction of all features to use;
-                "auto" uses all features, "sqrt" and "log2" use square root and binary logarithm of number of features
+                "sqrt" and "log2" use square root and binary logarithm of number of features
             max_leaf_nodes: maximum number of leaves a tree can have
             min_impurity_decrease: minimum impurity decrease required for splitting
             bootstrap: if False, the whole dataset is used to build trees
@@ -100,7 +100,7 @@ class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner, Random):
         self._uncertainties = params.enumeration(uncertainties, {None, "naive"})
 
         n_estimators = params.integer(n_estimators, from_=1)
-        criterion = params.enumeration(criterion, {"mse", "mae"})
+        criterion = params.enumeration(criterion, {"squared_error", "absolute_error"})
         max_depth = params.any_(max_depth, lambda arg: params.integer(arg, from_=1), params.none)
         min_samples_split = params.any_(
             min_samples_split,
@@ -117,7 +117,7 @@ class ExtremelyRandomizedTreesRegressionSklearn(SupervisedLearner, Random):
             max_features,
             lambda arg: params.integer(arg, above=0),
             lambda arg: params.real(arg, above=0.0, to=1.0),
-            lambda arg: params.enumeration(arg, {"auto", "sqrt", "log2"}),
+            lambda arg: params.enumeration(arg, {"sqrt", "log2"}),
             params.none,
         )
         max_leaf_nodes = params.any_(
