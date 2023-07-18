@@ -76,7 +76,7 @@ class ScipyDualAnnealingOptimizer(ScipyGlobalOptimizer):
         self,
         rng: int = None,
         maxiter: int = 1000,
-        local_search_options: Optional[dict] = None,
+        minimizer_kwargs: Optional[dict] = None,
         initial_temp: float = 5230.0,
         restart_temp_ratio: float = 2e-05,
         visit: float = 2.62,
@@ -93,7 +93,7 @@ class ScipyDualAnnealingOptimizer(ScipyGlobalOptimizer):
             rng: integer seed. Will be used to generate a new seed each time the optimizer is run.
             maxiter: The maximum number of iterations, where one iteration is one round of
                 simulated annealing followed by one use of a local optimizer to find a local min.
-            local_search_options: an optional kwargs dictionary to pass to the local minimizer,
+            minimizer_kwargs: an optional kwargs dictionary to pass to the local minimizer,
                 scipy.optimize.minimize: https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html
                 If no args are passed then the minimizer defaults to the L-BFGS-B method, since
                 the problems being studied have bounds but no constraints.
@@ -112,7 +112,7 @@ class ScipyDualAnnealingOptimizer(ScipyGlobalOptimizer):
         super().__init__(rng=rng, **kwargs)
 
         self._maxiter = params.integer(maxiter, from_=1)
-        self._local_search_options = local_search_options or {}  # TODO: verify dictionaries
+        self._minimizer_kwargs = minimizer_kwargs or {}  # TODO: verify dictionaries
         self._initial_temp = params.real(initial_temp, above=0.01, to=5e4)
         self._restart_temp_ratio = params.real(restart_temp_ratio, above=0.0, below=1.0)
         self._visit = params.real(visit, above=0.0, to=3.0)
@@ -128,7 +128,7 @@ class ScipyDualAnnealingOptimizer(ScipyGlobalOptimizer):
             bounds,
             seed=seed,
             maxiter=self._maxiter,
-            local_search_options=self._local_search_options,
+            minimizer_kwargs=self._minimizer_kwargs,
             initial_temp=self._initial_temp,
             restart_temp_ratio=self._restart_temp_ratio,
             visit=self._visit,
