@@ -26,7 +26,7 @@ def _cdk_jar_filepath():
     return os.path.join("build", "cdk.jar")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def java_gateway(_cdk_jar_filepath):
     if not os.access(_cdk_jar_filepath, os.R_OK):
         # automatically download CDK jar
