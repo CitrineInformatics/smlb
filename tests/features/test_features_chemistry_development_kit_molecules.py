@@ -27,7 +27,7 @@ def _cdk_jar_filepath():
 
 
 @pytest.fixture(scope="module")
-def load_cdk(_cdk_jar_filepath):
+def java_gateway(_cdk_jar_filepath):
     if not os.access(_cdk_jar_filepath, os.R_OK):
         # automatically download CDK jar
         # https://github.com/cdk/cdk/releases/latest
@@ -42,7 +42,6 @@ def load_cdk(_cdk_jar_filepath):
                 hash_actual = hashlib.sha256(cdk_jar_contents).hexdigest()
                 hash_expected = cdk_hash
                 assert hash_actual == hash_expected, "CDK jar checksum is invalid. Aborting."
-                print(f"Writing cdk jar to {os.path.abspath(_cdk_jar_filepath)}")
                 with open(_cdk_jar_filepath, "wb") as f:
                     f.write(cdk_jar_contents)
         except AssertionError:
@@ -57,10 +56,11 @@ def load_cdk(_cdk_jar_filepath):
                 "Please download from 'https://github.com/cdk/cdk/releases/latest' as 'build/cdk.jar'",
                 allow_module_level=True,
             )
+    return CdkJavaGateway(cdk_jar_path=_cdk_jar_filepath)
 
 
 @pytest.mark.timeout(5)
-def test_ChemistryDevelopmentKitMoleculeFeatures_1(load_cdk):
+def test_ChemistryDevelopmentKitMoleculeFeatures_1(java_gateway):
     """Simple examples."""
 
     # specific descriptors
@@ -73,6 +73,7 @@ def test_ChemistryDevelopmentKitMoleculeFeatures_1(load_cdk):
             # in ChemistryDevelopmentKitMoleculeFeatures to test that descriptors are
             # calculated in the order specified by `select`
             select=["acidic_group_count", "bond_count", "atom_count"],
+            java_gateway=java_gateway
         )
         .fit(data)
         .apply(data)
@@ -88,6 +89,7 @@ def test_ChemistryDevelopmentKitMoleculeFeatures_1(load_cdk):
     features = (
         ChemistryDevelopmentKitMoleculeFeatures(
             select=ChemistryDevelopmentKitMoleculeFeatures.PRESET_ALL,
+            java_gateway=java_gateway
         )
         .fit(data)
         .apply(data)
@@ -100,6 +102,7 @@ def test_ChemistryDevelopmentKitMoleculeFeatures_1(load_cdk):
         (
             ChemistryDevelopmentKitMoleculeFeatures(
                 select=ChemistryDevelopmentKitMoleculeFeatures.PRESET_ROBUST,
+                java_gateway=java_gateway
             )
         )
         .fit(data)
@@ -109,13 +112,13 @@ def test_ChemistryDevelopmentKitMoleculeFeatures_1(load_cdk):
     # fragile descriptors
     data = smlb.TabularData(data=np.array(["CCCCl"]))
     features = (
-        (ChemistryDevelopmentKitMoleculeFeatures(select=["alogp"])).fit(data).apply(data)
+        (ChemistryDevelopmentKitMoleculeFeatures(select=["alogp"], java_gateway=java_gateway)).fit(data).apply(data)
     ).samples()[0]
     assert np.allclose((features[0], features[2]), (1.719, 20.585), atol=0.01)
 
     # raise for unknown descriptors
     with pytest.raises(smlb.InvalidParameterError):
-        ChemistryDevelopmentKitMoleculeFeatures(select=["atoms_counts"])
+        ChemistryDevelopmentKitMoleculeFeatures(select=["atoms_counts"], java_gateway=java_gateway)
 
     # raise for invalid cdk_path
     with pytest.raises(smlb.InvalidParameterError):
@@ -131,24 +134,24 @@ def test_ChemistryDevelopmentKitMoleculeFeatures_1(load_cdk):
     #        >       _port = int(proc.stdout.readline())
     #        E       Failed: Timeout >10.0s
     #        ../../../virtualenv/python3.6.7/lib/python3.6/site-packages/py4j/java_gateway.py:332: Failed
-    CdkJavaGateway()._shutdown_gateway()
+    java_gateway._shutdown_gateway()
 
 
 @pytest.mark.timeout(5)
-def test_ChemistryDevelopmentKitMoleculeFeatures_2():
+def test_ChemistryDevelopmentKitMoleculeFeatures_2(java_gateway):
     """Failures during SMILES parsing."""
 
     # specific descriptors
 
     # "raise"
     data = smlb.TabularData(data=np.array(["[NH]c1cc[nH]nn1"]))
-    features = ChemistryDevelopmentKitMoleculeFeatures(select=["atom_count"], failmode="raise")
+    features = ChemistryDevelopmentKitMoleculeFeatures(select=["atom_count"], failmode="raise", java_gateway=java_gateway)
     with pytest.raises(smlb.BenchmarkError):
         features.fit(data).apply(data)
 
     # "drop"
     data = smlb.TabularData(data=np.array(["N", "[NH]c1cc[nH]nn1", "O"]))
-    features = ChemistryDevelopmentKitMoleculeFeatures(select=["atom_count"], failmode="drop")
+    features = ChemistryDevelopmentKitMoleculeFeatures(select=["atom_count"], failmode="drop", java_gateway=java_gateway)
     data = features.fit(data).apply(data)
     assert (data.samples() == [[4], [3]]).all()
 
@@ -156,18 +159,18 @@ def test_ChemistryDevelopmentKitMoleculeFeatures_2():
     data = smlb.TabularData(data=np.array(["N", "[NH]c1cc[nH]nn1", "O"]))
     mask = np.empty(3, dtype=bool)
     features = ChemistryDevelopmentKitMoleculeFeatures(
-        select=["atom_count"], failmode=("mask", mask)
+        select=["atom_count"], failmode=("mask", mask), java_gateway=java_gateway
     )
-    data = features.fit(data).apply(data)
+    _ = features.fit(data).apply(data)
     assert (mask == [False, True, False]).all()
 
     # "index"
     data = smlb.TabularData(data=np.array(["N", "[NH]c1cc[nH]nn1", "O"]))
     index = []
     features = ChemistryDevelopmentKitMoleculeFeatures(
-        select=["atom_count"], failmode=("index", index)
+        select=["atom_count"], failmode=("index", index), java_gateway=java_gateway
     )
-    data = features.fit(data).apply(data)
+    _ = features.fit(data).apply(data)
     assert index == [1]
 
     # todo: this is a temporary fix for problems in the interaction between
@@ -178,4 +181,4 @@ def test_ChemistryDevelopmentKitMoleculeFeatures_2():
     #        >       _port = int(proc.stdout.readline())
     #        E       Failed: Timeout >10.0s
     #        ../../../virtualenv/python3.6.7/lib/python3.6/site-packages/py4j/java_gateway.py:332: Failed
-    CdkJavaGateway()._shutdown_gateway()
+    java_gateway._shutdown_gateway()
