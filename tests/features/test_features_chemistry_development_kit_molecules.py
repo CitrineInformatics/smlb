@@ -42,6 +42,7 @@ def load_cdk(_cdk_jar_filepath):
                 hash_actual = hashlib.sha256(cdk_jar_contents).hexdigest()
                 hash_expected = cdk_hash
                 assert hash_actual == hash_expected, "CDK jar checksum is invalid. Aborting."
+                print(f"Writing cdk jar to {os.path.abspath(_cdk_jar_filepath)}")
                 with open(_cdk_jar_filepath, "wb") as f:
                     f.write(cdk_jar_contents)
         except AssertionError:
