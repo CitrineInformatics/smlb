@@ -7,7 +7,7 @@ A benchmark of regression models in chem- and materials informatics.
 
 import hashlib
 import os
-import urllib
+from urllib.request import urlopen
 
 import numpy as np
 
@@ -20,41 +20,46 @@ from smlb.features.chemistry_development_kit_molecules import (
     CdkJavaGateway,
 )
 
-# access to CDK .jar
-_cdk_jar_filename = os.path.join("build", "cdk.jar")
-if not os.access(_cdk_jar_filename, os.R_OK):
-    # automatically download CDK jar
-    # https://github.com/cdk/cdk/releases/latest
-    # verify by checksum for security
-    cdk_version = "cdk-2.3"
-    cdk_jar_path = os.path.join("build", "cdk.jar")
-    cdk_hash = "bf60002d40b88136f185a96b1f38135e240733360c6b684cfc2bfd64972eb04a"
-    try:
-        with urllib.request.urlopen(
-            f"https://github.com/cdk/cdk/releases/download/{cdk_version}/{cdk_version}.jar"
-        ) as cdk_jar:
-            cdk_jar_contents = cdk_jar.read()
-            hash_actual = hashlib.sha256(cdk_jar_contents).hexdigest()
-            hash_expected = cdk_hash
-            assert hash_actual == hash_expected, "CDK jar checksum is invalid. Aborting."
-            with open(cdk_jar_path, "wb") as f:
-                f.write(cdk_jar_contents)
-    except AssertionError:
-        pytest.skip(
-            "Downloaded CDK .jar file has wrong checksum. "
-            "Please download from 'https://github.com/cdk/cdk/releases/latest' as 'build/cdk.jar'",
-            allow_module_level=True,
-        )
-    except Exception:
-        pytest.skip(
-            "Could not access CDK .jar file. "
-            "Please download from 'https://github.com/cdk/cdk/releases/latest' as 'build/cdk.jar'",
-            allow_module_level=True,
-        )
+
+@pytest.fixture(scope="module")
+def _cdk_jar_filepath():
+    return os.path.join("build", "cdk.jar")
+
+
+@pytest.fixture(scope="module")
+def load_cdk(_cdk_jar_filepath):
+    if not os.access(_cdk_jar_filepath, os.R_OK):
+        # automatically download CDK jar
+        # https://github.com/cdk/cdk/releases/latest
+        # verify by checksum for security
+        cdk_version = "cdk-2.8"
+        cdk_hash = "5dff6e365ecc21020e44aa31861b36a9cce34c51ed0b8713b8d25275552239b4"
+        try:
+            with urlopen(
+                f"https://github.com/cdk/cdk/releases/download/{cdk_version}/{cdk_version}.jar"
+            ) as cdk_jar:
+                cdk_jar_contents = cdk_jar.read()
+                hash_actual = hashlib.sha256(cdk_jar_contents).hexdigest()
+                hash_expected = cdk_hash
+                assert hash_actual == hash_expected, "CDK jar checksum is invalid. Aborting."
+                with open(_cdk_jar_filepath, "wb") as f:
+                    f.write(cdk_jar_contents)
+        except AssertionError:
+            pytest.skip(
+                "Downloaded CDK .jar file has wrong checksum. "
+                "Please download from 'https://github.com/cdk/cdk/releases/latest' as 'build/cdk.jar'",
+                allow_module_level=True,
+            )
+        except Exception:
+            pytest.skip(
+                "Could not access CDK .jar file. "
+                "Please download from 'https://github.com/cdk/cdk/releases/latest' as 'build/cdk.jar'",
+                allow_module_level=True,
+            )
 
 
 @pytest.mark.timeout(5)
-def test_ChemistryDevelopmentKitMoleculeFeatures_1():
+def test_ChemistryDevelopmentKitMoleculeFeatures_1(load_cdk):
     """Simple examples."""
 
     # specific descriptors
@@ -114,7 +119,7 @@ def test_ChemistryDevelopmentKitMoleculeFeatures_1():
     # raise for invalid cdk_path
     with pytest.raises(smlb.InvalidParameterError):
         ChemistryDevelopmentKitMoleculeFeatures(
-            CdkJavaGateway(cdk_jar_path="/nonexisting/path/to/cdk.jar")
+            java_gateway=CdkJavaGateway(cdk_jar_path="/nonexisting/path/to/cdk.jar")
         )
 
     # todo: this is a temporary fix for problems in the interaction between
