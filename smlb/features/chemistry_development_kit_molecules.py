@@ -80,7 +80,6 @@ class CdkJavaGateway(JavaGateway):
                 explanation=f"Jar file {cdk_jar_path} does not exist or is not readable.",
             )
 
-
         super().__init__(cdk_jar_path)
 
 
