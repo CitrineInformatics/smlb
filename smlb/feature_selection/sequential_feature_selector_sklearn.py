@@ -20,7 +20,7 @@ class SequentialFeatureSelectorSklearn(FeatureSelectorSklearn):
     def __init__(
         self,
         learner: SupervisedLearner,
-        n_features_to_select: Optional[Union[int, float]] = None,
+        n_features_to_select: Union[int, float, str] = "auto",
         direction: str = "forward",
         scoring: Optional[Union[str, Callable]] = None,
         cv: Optional[int] = None,
@@ -34,7 +34,7 @@ class SequentialFeatureSelectorSklearn(FeatureSelectorSklearn):
         Parameters:
             learner: Learner that contains an estimator.
             n_features_to_select: number of features to select.
-                If None, half of the features are selected.
+                If "auto", half of the features are selected.
                 If integer, the parameter is the absolute number of features to select.
                 If float between 0 and 1, it is the fraction of features to select.
             direction: Either ``'forward'`` or ``'backward'``,
@@ -62,8 +62,8 @@ class SequentialFeatureSelectorSklearn(FeatureSelectorSklearn):
         # 1 is a valid int and float but has a different meaning based on type.
         # If it's an int, it means select 1 feature.
         # If it's a float, it means select all features.
-        if n_features_to_select is None:
-            pass  # None is allowed, no need for further type checking
+        if n_features_to_select == "auto":
+            pass  # "auto"" is allowed, no need for further type checking
         elif isinstance(n_features_to_select, int):
             n_features_to_select = params.integer(n_features_to_select, from_=1)
         elif isinstance(n_features_to_select, float):

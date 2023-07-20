@@ -22,7 +22,6 @@ class LassoSklearn(SupervisedLearner, Random):
         alpha: float = 1.0,
         *,
         fit_intercept: bool = True,
-        normalize: bool = False,
         precompute: bool = False,
         copy_X: bool = True,
         max_iter: int = 1000,
@@ -47,13 +46,6 @@ class LassoSklearn(SupervisedLearner, Random):
                 If set to False, no intercept will be used in calculations
                 (i.e. data is expected to be centered).
                 Default is True.
-            normalize : This parameter is ignored when ``fit_intercept`` is set to False.
-                If True, the regressors X will be normalized before regression by
-                subtracting the mean and dividing by the l2-norm.
-                If you wish to standardize, please use
-                :class:`~sklearn.preprocessing.StandardScaler` before calling ``fit``
-                on an estimator with ``normalize=False``.
-                Default is False.
             precompute : Whether to use a precomputed Gram matrix to speed up calculations.
                 The Gram matrix can also be passed as argument.
                 For sparse input this option is always ``False`` to preserve sparsity.
@@ -83,7 +75,6 @@ class LassoSklearn(SupervisedLearner, Random):
         self._model = Lasso(
             alpha=params.real(alpha, from_=0),
             fit_intercept=params.boolean(fit_intercept),
-            normalize=params.boolean(normalize),
             precompute=params.boolean(precompute),
             copy_X=params.boolean(copy_X),
             max_iter=params.integer(max_iter, from_=1),

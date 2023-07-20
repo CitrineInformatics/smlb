@@ -16,7 +16,8 @@ class BenchmarkError(Exception):
     This is the exception generally raised within the benchmark.
     All more specific exceptions derive from it."""
 
-    pass
+    def __init__(self, message, *args, **kwargs):
+        super(BenchmarkError, self).__init__(message, *args, **kwargs)
 
 
 class InvalidParameterError(BenchmarkError):

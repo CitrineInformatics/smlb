@@ -15,14 +15,14 @@ import setuptools
 
 # Package meta-data.
 NAME = "smlb"
-VERSION = "0.13.1"
+VERSION = "0.13.2"
 DESCRIPTION = "Scientific Machine Learning Benchmark"
 URL = "https://github.com/CitrineInformatics/smlb"
 EMAIL = "mrupp@mrupp.io"
 AUTHOR = "Matthias Rupp"
 LICENSE = "Apache-2.0"  # SPDX short identifier
 LICENSE_TROVE = "License :: OSI Approved :: Apache Software License"  # https://pypi.python.org/pypi?%3Aaction=list_classifiers
-REQUIRES_PYTHON = ">=3.8.0"
+REQUIRES_PYTHON = ">=3.9.0"
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -54,21 +54,21 @@ setuptools.setup(
     # project_urls={"Bug Tracker": ..., "Documentation": ..., "Source Code": ...},
     packages=setuptools.find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
     install_requires=[
-        "numpy>=1.21.0,<2",
-        "scipy>=1.7.0,<2",
-        "pandas>=1.2.5,<2",
-        "matplotlib>=3.4.2,<4",
-        "scikit-learn>=0.24.0,<0.25",
+        "numpy>=1.25.0,<2",
+        "scipy>=1.11.0,<2",
+        "pandas>=1.5.0,<1.6",
+        "matplotlib>=3.7.2,<4",
+        "scikit-learn>=1.3.0,<2",
     ],
     extras_require={
         "lolo": [
-            "lolopy>=1.2.0,<2",
+            "lolopy>=3.0.0,<4",
             "py4j>=0.10.9,<0.11",
         ],
         "optional": [
             "py4j>=0.10.9,<0.11",
-            "pymatgen>=2022.0.9",
-            "matminer>=0.7.3,<0.8",
+            "pymatgen>=2023.7.14",
+            "matminer>=0.9.0,<0.10",
         ],
     },
     include_package_data=True,
@@ -79,7 +79,6 @@ setuptools.setup(
         LICENSE_TROVE,
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
     ],
 )

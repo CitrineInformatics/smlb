@@ -154,12 +154,15 @@ class SuperconductorsCitrine2016Dataset(TabularData):
 
         # split out T_c as labels
         labels = [labelf(e["Tc/K"]) for e in data]
+        labels_dtype = None if join is False and process is True else object
         for i in range(len(data)):
             del data[i]["Tc/K"]
             data[i] = samplef(data[i])
 
         # initialize state
-        super().__init__(data=np.array(data), labels=np.array(labels), **kwargs)
+        super().__init__(
+            data=np.array(data), labels=np.array(labels, dtype=labels_dtype), **kwargs
+        )
 
     def _process(self, e: dict) -> dict:
         """Helper function, process single entry.

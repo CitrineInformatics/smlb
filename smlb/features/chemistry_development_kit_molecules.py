@@ -23,6 +23,7 @@ import py4j.java_gateway
 
 from smlb import (
     BenchmarkError,
+    InvalidParameterError,
     Data,
     DataTransformationFailureMode,
     Features,
@@ -54,7 +55,7 @@ class CdkJavaGateway(JavaGateway):
                 find the CDK jar.
 
         Raises:
-            BenchmarkError if the CDK .jar file can not be found.
+            InvalidParameterError if the CDK .jar file can not be found.
         """
 
         # todo: optional_
@@ -70,15 +71,14 @@ class CdkJavaGateway(JavaGateway):
                 # attempt to find CDK .jar file
                 # todo: find correct path for installed versions
 
-                path = os.path.join(os.path.dirname(__file__), "../build/cdk.jar")
-                if not os.access(path, os.R_OK):
-                    raise BenchmarkError(
-                        "Valid path to .jar file",
-                        path,
-                        explanation=f"Jar file {path} does not exist or is not readable.",
-                    )
+                cdk_jar_path = os.path.join(os.path.dirname(__file__), "../build/cdk.jar")
 
-                cdk_jar_path = path
+        if not os.access(cdk_jar_path, os.R_OK):
+            raise InvalidParameterError(
+                "Valid path to .jar file",
+                cdk_jar_path,
+                explanation=f"Jar file {cdk_jar_path} does not exist or is not readable.",
+            )
 
         super().__init__(cdk_jar_path)
 
